@@ -335,6 +335,9 @@ int main() {
     int ctrl = create_server_socket(ctrl_port, 128);
     int cli = create_server_socket(cli_port, 128);
     printf("SS ctrl fd=%d, client fd=%d\n", ctrl, cli);
+    // Start accept loops BEFORE registering to avoid deadlock when NM queries LIST_FILES during registration
+    pthread_t th; pthread_create(&th, NULL, ctrl_accept_loop, &ctrl); pthread_detach(th);
+    pthread_t th2; pthread_create(&th2, NULL, client_accept_loop, &cli); pthread_detach(th2);
     // Register with NameServer
     int nm_sock = create_client_socket(nm_ip, nm_port);
     if (nm_sock >= 0) {
@@ -348,10 +351,6 @@ int main() {
     } else {
         fprintf(stderr, "Failed to register with NM\n");
     }
-    // Control accept loop in thread
-    pthread_t th; pthread_create(&th, NULL, ctrl_accept_loop, &ctrl); pthread_detach(th);
-    // Client accept loop in thread
-    pthread_t th2; pthread_create(&th2, NULL, client_accept_loop, &cli); pthread_detach(th2);
     // Keep process alive
     while (1) sleep(1);
     return 0;

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <arpa/inet.h>
+#include <sys/time.h>
 #include "../../include/common.h"
 #include "file_registry.h"
 
@@ -43,6 +44,8 @@ static void handle_client_conn(int connfd, struct sockaddr_in* addr) {
                 // Query SS for current files and update registry
                 int s = create_client_socket(g_ss.ip, g_ss.ctrl_port);
                 if (s >= 0) {
+                    struct timeval tv; tv.tv_sec = 2; tv.tv_usec = 0;
+                    setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
                     const char* lcmd = "LIST_FILES"; send_u32_and_data(s, lcmd, (uint32_t)strlen(lcmd));
                     char* lresp=NULL; uint32_t llen=0;
                     if (recv_u32_and_data(s, &lresp, &llen) == 0) {
@@ -117,6 +120,9 @@ static void handle_client_conn(int connfd, struct sockaddr_in* addr) {
                     } else {
                         char cmdline[512]; snprintf(cmdline, sizeof(cmdline), "CREATE %s %s", fname, owner);
                         send_u32_and_data(s, cmdline, (uint32_t)strlen(cmdline));
+                        // Set a 3s receive timeout so client doesn't hang indefinitely if SS is unresponsive
+                        struct timeval tv; tv.tv_sec = 3; tv.tv_usec = 0;
+                        setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
                         char* resp=NULL; uint32_t rlen=0;
                         if (recv_u32_and_data(s, &resp, &rlen) < 0) {
                             const char* e = "ERR ss_noresp"; send_u32_and_data(connfd, e, (uint32_t)strlen(e));
