@@ -1,0 +1,302 @@
+[2025-11-05 05:37:17] [INFO] File created: af.txt
+[2025-11-05 05:37:57] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:37:57] [INFO] LOCK request for af.txt sentence 0 by manja
+[2025-11-05 05:37:57] [INFO] Sentence 0 locked by manja (total locks: 1)
+[2025-11-05 05:38:27] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:38:27] [INFO] LOCK request for af.txt sentence 1 by samyak
+[2025-11-05 05:38:27] [INFO] Sentence 1 locked by samyak (total locks: 2)
+[2025-11-05 05:38:32] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:38:32] [INFO] WRITE request for af.txt sentence 1 by samyak
+[2025-11-05 05:38:32] [INFO] Loaded content, length: 0
+[2025-11-05 05:38:32] [INFO] Parsed 0 sentences
+[2025-11-05 05:38:32] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:38:32] [INFO] UNLOCK request for af.txt sentence 1 by samyak
+[2025-11-05 05:38:32] [INFO] Sentence 1 unlocked by samyak (remaining locks: 1)
+[2025-11-05 05:38:47] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:38:47] [INFO] WRITE request for af.txt sentence 0 by manja
+[2025-11-05 05:38:47] [INFO] Loaded content, length: 0
+[2025-11-05 05:38:47] [INFO] Parsed 0 sentences
+[2025-11-05 05:38:47] [INFO] Processing write data: 1 ebopbe
+
+[2025-11-05 05:38:47] [INFO] Inserting at word 1: ebopbe
+[2025-11-05 05:38:47] [INFO] Current word count: 0
+[2025-11-05 05:38:47] [INFO] Inserting 1 words at position 0
+[2025-11-05 05:38:47] [INFO] Reconstructed sentence: ebopbe
+[2025-11-05 05:38:47] [INFO] Saved new content, length: 6
+[2025-11-05 05:38:47] [INFO] Write completed successfully for af.txt
+[2025-11-05 05:38:47] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:38:47] [INFO] UNLOCK request for af.txt sentence 0 by manja
+[2025-11-05 05:38:47] [INFO] Sentence 0 unlocked by manja (remaining locks: 0)
+[2025-11-05 05:39:04] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:39:04] [INFO] LOCK request for af.txt sentence 0 by manja
+[2025-11-05 05:39:04] [INFO] Sentence 0 locked by manja (total locks: 1)
+[2025-11-05 05:39:12] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:39:12] [INFO] LOCK request for af.txt sentence 0 by samyak
+[2025-11-05 05:39:12] [INFO] Sentence 0 already locked by manja
+[2025-11-05 05:39:18] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:39:18] [INFO] WRITE request for af.txt sentence 0 by manja
+[2025-11-05 05:39:18] [INFO] Loaded content, length: 6
+[2025-11-05 05:39:18] [INFO] Parsed 1 sentences
+[2025-11-05 05:39:18] [INFO] Processing write data: 
+[2025-11-05 05:39:18] [INFO] Saved new content, length: 6
+[2025-11-05 05:39:18] [INFO] Write completed successfully for af.txt
+[2025-11-05 05:39:18] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:39:18] [INFO] UNLOCK request for af.txt sentence 0 by manja
+[2025-11-05 05:39:18] [INFO] Sentence 0 unlocked by manja (remaining locks: 0)
+[2025-11-05 05:39:23] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:39:23] [INFO] LOCK request for af.txt sentence 0 by manja
+[2025-11-05 05:39:23] [INFO] Sentence 0 locked by manja (total locks: 1)
+[2025-11-05 05:39:27] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:39:27] [INFO] WRITE request for af.txt sentence 0 by manja
+[2025-11-05 05:39:27] [INFO] Loaded content, length: 6
+[2025-11-05 05:39:27] [INFO] Parsed 1 sentences
+[2025-11-05 05:39:27] [INFO] Processing write data: 1 manja
+
+[2025-11-05 05:39:27] [INFO] Inserting at word 1: manja
+[2025-11-05 05:39:27] [INFO] Current word count: 1
+[2025-11-05 05:39:27] [INFO] Inserting 1 words at position 0
+[2025-11-05 05:39:27] [INFO] Reconstructed sentence: manja ebopbe
+[2025-11-05 05:39:27] [INFO] Saved new content, length: 12
+[2025-11-05 05:39:27] [INFO] Write completed successfully for af.txt
+[2025-11-05 05:39:27] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:39:27] [INFO] UNLOCK request for af.txt sentence 0 by manja
+[2025-11-05 05:39:27] [INFO] Sentence 0 unlocked by manja (remaining locks: 0)
+[2025-11-05 05:39:32] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:39:32] [INFO] File read: af.txt by manja
+[2025-11-05 05:40:00] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:40:00] [INFO] File read: af.txt by samyak
+[2025-11-05 05:40:30] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:40:30] [INFO] LOCK request for af.txt sentence 0 by samyak
+[2025-11-05 05:40:30] [INFO] Sentence 0 locked by samyak (total locks: 1)
+[2025-11-05 05:40:37] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:40:37] [INFO] LOCK request for af.txt sentence 1 by manja
+[2025-11-05 05:40:37] [INFO] Sentence 1 locked by manja (total locks: 2)
+[2025-11-05 05:40:39] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:40:39] [INFO] WRITE request for af.txt sentence 1 by manja
+[2025-11-05 05:40:39] [INFO] Loaded content, length: 12
+[2025-11-05 05:40:39] [INFO] Parsed 1 sentences
+[2025-11-05 05:40:39] [INFO] Processing write data: 
+[2025-11-05 05:40:39] [INFO] Saved new content, length: 13
+[2025-11-05 05:40:39] [INFO] Write completed successfully for af.txt
+[2025-11-05 05:40:39] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:40:39] [INFO] UNLOCK request for af.txt sentence 1 by manja
+[2025-11-05 05:40:39] [INFO] Sentence 1 unlocked by manja (remaining locks: 1)
+[2025-11-05 05:40:43] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:40:43] [INFO] WRITE request for af.txt sentence 0 by samyak
+[2025-11-05 05:40:43] [INFO] Loaded content, length: 13
+[2025-11-05 05:40:43] [INFO] Parsed 1 sentences
+[2025-11-05 05:40:43] [INFO] Processing write data: 
+[2025-11-05 05:40:43] [INFO] Saved new content, length: 13
+[2025-11-05 05:40:43] [INFO] Write completed successfully for af.txt
+[2025-11-05 05:40:43] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:40:43] [INFO] UNLOCK request for af.txt sentence 0 by samyak
+[2025-11-05 05:40:43] [INFO] Sentence 0 unlocked by samyak (remaining locks: 0)
+[2025-11-05 05:40:51] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:40:51] [INFO] LOCK request for af.txt sentence 0 by samyak
+[2025-11-05 05:40:51] [INFO] Sentence 0 locked by samyak (total locks: 1)
+[2025-11-05 05:40:58] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:40:58] [INFO] LOCK request for af.txt sentence 1 by manja
+[2025-11-05 05:40:58] [INFO] Sentence 1 locked by manja (total locks: 2)
+[2025-11-05 05:41:11] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:41:11] [INFO] WRITE request for af.txt sentence 0 by samyak
+[2025-11-05 05:41:11] [INFO] Loaded content, length: 13
+[2025-11-05 05:41:11] [INFO] Parsed 1 sentences
+[2025-11-05 05:41:11] [INFO] Processing write data: 2 vekw
+
+[2025-11-05 05:41:11] [INFO] Inserting at word 2: vekw
+[2025-11-05 05:41:11] [INFO] Current word count: 2
+[2025-11-05 05:41:11] [INFO] Inserting 1 words at position 1
+[2025-11-05 05:41:11] [INFO] Reconstructed sentence: manja vekw ebopbe
+[2025-11-05 05:41:11] [INFO] Saved new content, length: 17
+[2025-11-05 05:41:11] [INFO] Write completed successfully for af.txt
+[2025-11-05 05:41:11] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:41:11] [INFO] UNLOCK request for af.txt sentence 0 by samyak
+[2025-11-05 05:41:11] [INFO] Sentence 0 unlocked by samyak (remaining locks: 1)
+[2025-11-05 05:41:15] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:41:15] [INFO] WRITE request for af.txt sentence 1 by manja
+[2025-11-05 05:41:15] [INFO] Loaded content, length: 17
+[2025-11-05 05:41:15] [INFO] Parsed 1 sentences
+[2025-11-05 05:41:15] [INFO] Processing write data: 1 bepok
+
+[2025-11-05 05:41:15] [INFO] Inserting at word 1: bepok
+[2025-11-05 05:41:15] [INFO] Current word count: 0
+[2025-11-05 05:41:15] [INFO] Inserting 1 words at position 0
+[2025-11-05 05:41:15] [INFO] Reconstructed sentence: bepok
+[2025-11-05 05:41:15] [INFO] Saved new content, length: 23
+[2025-11-05 05:41:15] [INFO] Write completed successfully for af.txt
+[2025-11-05 05:41:15] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:41:15] [INFO] UNLOCK request for af.txt sentence 1 by manja
+[2025-11-05 05:41:15] [INFO] Sentence 1 unlocked by manja (remaining locks: 0)
+[2025-11-05 05:41:24] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:41:25] [INFO] File read: af.txt by manja
+[2025-11-05 05:41:38] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:41:38] [INFO] File read: af.txt by samyak
+[2025-11-05 05:42:58] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:42:58] [INFO] LOCK request for af.txt sentence 2 by samyak
+[2025-11-05 05:42:58] [INFO] Sentence 2 locked by samyak (total locks: 1)
+[2025-11-05 05:43:27] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:43:27] [INFO] WRITE request for af.txt sentence 2 by samyak
+[2025-11-05 05:43:27] [INFO] Loaded content, length: 23
+[2025-11-05 05:43:27] [INFO] Parsed 1 sentences
+[2025-11-05 05:43:27] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:43:27] [INFO] UNLOCK request for af.txt sentence 2 by samyak
+[2025-11-05 05:43:27] [INFO] Sentence 2 unlocked by samyak (remaining locks: 0)
+[2025-11-05 05:44:09] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:44:09] [INFO] File read: af.txt by samyak
+[2025-11-05 05:44:17] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:44:17] [INFO] LOCK request for af.txt sentence 1 by samyak
+[2025-11-05 05:44:17] [INFO] Sentence 1 locked by samyak (total locks: 1)
+[2025-11-05 05:44:31] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:44:31] [INFO] LOCK request for af.txt sentence 1 by samyak
+[2025-11-05 05:44:39] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:44:39] [INFO] WRITE request for af.txt sentence 1 by samyak
+[2025-11-05 05:44:39] [INFO] Loaded content, length: 23
+[2025-11-05 05:44:39] [INFO] Parsed 1 sentences
+[2025-11-05 05:44:39] [INFO] Processing write data: 1 vpojvepoepnwoewnpobewnbpoewnbew
+
+[2025-11-05 05:44:39] [INFO] Inserting at word 1: vpojvepoepnwoewnpobewnbpoewnbew
+[2025-11-05 05:44:39] [INFO] Current word count: 0
+[2025-11-05 05:44:39] [INFO] Inserting 1 words at position 0
+[2025-11-05 05:44:39] [INFO] Reconstructed sentence: vpojvepoepnwoewnpobewnbpoewnbew
+[2025-11-05 05:44:39] [INFO] Saved new content, length: 55
+[2025-11-05 05:44:39] [INFO] Write completed successfully for af.txt
+[2025-11-05 05:44:39] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:44:39] [INFO] UNLOCK request for af.txt sentence 1 by samyak
+[2025-11-05 05:44:39] [INFO] Sentence 1 unlocked by samyak (remaining locks: 0)
+[2025-11-05 05:44:43] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:44:43] [INFO] File read: af.txt by samyak
+[2025-11-05 05:44:49] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:44:49] [INFO] File read: af.txt by manja
+[2025-11-05 05:45:08] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:45:08] [INFO] File streamed:  to 
+[2025-11-05 05:45:09] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:45:09] [INFO] File streamed:  to 
+[2025-11-05 05:45:23] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:45:23] [INFO] LOCK request for af.txt sentence 1 by manja
+[2025-11-05 05:45:23] [INFO] Sentence 1 locked by manja (total locks: 1)
+[2025-11-05 05:45:34] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:45:34] [INFO] WRITE request for af.txt sentence 1 by manja
+[2025-11-05 05:45:34] [INFO] Loaded content, length: 55
+[2025-11-05 05:45:34] [INFO] Parsed 1 sentences
+[2025-11-05 05:45:34] [INFO] Processing write data: 1 voepveopwbnewoibewboierboeirbneroibernborebn;reiobnere'n
+
+[2025-11-05 05:45:34] [INFO] Inserting at word 1: voepveopwbnewoibewboierboeirbneroibernborebn;reiobnere'n
+[2025-11-05 05:45:34] [INFO] Current word count: 0
+[2025-11-05 05:45:34] [INFO] Inserting 1 words at position 0
+[2025-11-05 05:45:34] [INFO] Reconstructed sentence: voepveopwbnewoibewboierboeirbneroibernborebn;reiobnere'n
+[2025-11-05 05:45:34] [INFO] Saved new content, length: 112
+[2025-11-05 05:45:34] [INFO] Write completed successfully for af.txt
+[2025-11-05 05:45:34] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:45:34] [INFO] UNLOCK request for af.txt sentence 1 by manja
+[2025-11-05 05:45:34] [INFO] Sentence 1 unlocked by manja (remaining locks: 0)
+[2025-11-05 05:45:39] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:45:39] [INFO] File read: af.txt by manja
+[2025-11-05 05:45:47] [REQUEST] From client:6 [samyak] - Client operation
+[2025-11-05 05:45:48] [INFO] File streamed:  to 
+[2025-11-05 05:45:48] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:45:49] [INFO] File streamed:  to 
+[2025-11-05 05:46:35] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:46:35] [INFO] LOCK request for af.txt sentence 2 by manja
+[2025-11-05 05:46:35] [INFO] Sentence 2 locked by manja (total locks: 1)
+[2025-11-05 05:46:43] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:46:43] [INFO] WRITE request for af.txt sentence 2 by manja
+[2025-11-05 05:46:43] [INFO] Loaded content, length: 112
+[2025-11-05 05:46:43] [INFO] Parsed 1 sentences
+[2025-11-05 05:46:43] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:46:43] [INFO] UNLOCK request for af.txt sentence 2 by manja
+[2025-11-05 05:46:43] [INFO] Sentence 2 unlocked by manja (remaining locks: 0)
+[2025-11-05 05:47:02] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:47:02] [INFO] File read: af.txt by manja
+[2025-11-05 05:47:54] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:47:54] [INFO] LOCK request for af.txt sentence 3 by manja
+[2025-11-05 05:47:54] [INFO] Sentence 3 locked by manja (total locks: 1)
+[2025-11-05 05:48:00] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:48:00] [INFO] WRITE request for af.txt sentence 3 by manja
+[2025-11-05 05:48:00] [INFO] Loaded content, length: 112
+[2025-11-05 05:48:00] [INFO] Parsed 1 sentences
+[2025-11-05 05:48:00] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:48:00] [INFO] UNLOCK request for af.txt sentence 3 by manja
+[2025-11-05 05:48:00] [INFO] Sentence 3 unlocked by manja (remaining locks: 0)
+[2025-11-05 05:48:33] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:48:33] [INFO] LOCK request for af.txt sentence 3 by manja
+[2025-11-05 05:48:33] [INFO] Sentence 3 locked by manja (total locks: 1)
+[2025-11-05 05:48:35] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:48:35] [INFO] WRITE request for af.txt sentence 3 by manja
+[2025-11-05 05:48:35] [INFO] Loaded content, length: 112
+[2025-11-05 05:48:35] [INFO] Parsed 1 sentences
+[2025-11-05 05:48:35] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:48:35] [INFO] UNLOCK request for af.txt sentence 3 by manja
+[2025-11-05 05:48:35] [INFO] Sentence 3 unlocked by manja (remaining locks: 0)
+[2025-11-05 05:48:56] [INFO] File created: led.txt
+[2025-11-05 05:49:01] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:49:01] [INFO] LOCK request for led.txt sentence 1 by manja
+[2025-11-05 05:49:01] [INFO] Sentence 1 locked by manja (total locks: 1)
+[2025-11-05 05:49:06] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:49:06] [INFO] WRITE request for led.txt sentence 1 by manja
+[2025-11-05 05:49:06] [INFO] Loaded content, length: 0
+[2025-11-05 05:49:06] [INFO] Parsed 0 sentences
+[2025-11-05 05:49:06] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:49:06] [INFO] UNLOCK request for led.txt sentence 1 by manja
+[2025-11-05 05:49:06] [INFO] Sentence 1 unlocked by manja (remaining locks: 0)
+[2025-11-05 05:49:11] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:49:11] [INFO] File read: led.txt by manja
+[2025-11-05 05:49:33] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:49:33] [INFO] LOCK request for led.txt sentence 1 by manja
+[2025-11-05 05:49:33] [INFO] Sentence 1 locked by manja (total locks: 1)
+[2025-11-05 05:49:37] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:49:37] [INFO] WRITE request for led.txt sentence 1 by manja
+[2025-11-05 05:49:37] [INFO] Loaded content, length: 0
+[2025-11-05 05:49:37] [INFO] Parsed 0 sentences
+[2025-11-05 05:49:37] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:49:37] [INFO] UNLOCK request for led.txt sentence 1 by manja
+[2025-11-05 05:49:37] [INFO] Sentence 1 unlocked by manja (remaining locks: 0)
+[2025-11-05 05:49:40] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:49:40] [INFO] LOCK request for led.txt sentence 0 by manja
+[2025-11-05 05:49:40] [INFO] Sentence 0 locked by manja (total locks: 1)
+[2025-11-05 05:49:43] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:49:43] [INFO] WRITE request for led.txt sentence 0 by manja
+[2025-11-05 05:49:43] [INFO] Loaded content, length: 0
+[2025-11-05 05:49:43] [INFO] Parsed 0 sentences
+[2025-11-05 05:49:43] [INFO] Processing write data: 1 wekpowe
+
+[2025-11-05 05:49:43] [INFO] Inserting at word 1: wekpowe
+[2025-11-05 05:49:43] [INFO] Current word count: 0
+[2025-11-05 05:49:43] [INFO] Inserting 1 words at position 0
+[2025-11-05 05:49:43] [INFO] Reconstructed sentence: wekpowe
+[2025-11-05 05:49:43] [INFO] Saved new content, length: 7
+[2025-11-05 05:49:43] [INFO] Write completed successfully for led.txt
+[2025-11-05 05:49:43] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:49:43] [INFO] UNLOCK request for led.txt sentence 0 by manja
+[2025-11-05 05:49:43] [INFO] Sentence 0 unlocked by manja (remaining locks: 0)
+[2025-11-05 05:49:50] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:49:50] [INFO] File read: led.txt by manja
+[2025-11-05 05:50:28] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:50:28] [INFO] LOCK request for led.txt sentence 1 by manja
+[2025-11-05 05:50:28] [INFO] Sentence 1 locked by manja (total locks: 1)
+[2025-11-05 05:50:36] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:50:36] [INFO] WRITE request for led.txt sentence 1 by manja
+[2025-11-05 05:50:36] [INFO] Loaded content, length: 7
+[2025-11-05 05:50:36] [INFO] Parsed 1 sentences
+[2025-11-05 05:50:36] [INFO] Processing write data: 1 VWPKOEVWE
+
+[2025-11-05 05:50:36] [INFO] Inserting at word 1: VWPKOEVWE
+[2025-11-05 05:50:36] [INFO] Current word count: 0
+[2025-11-05 05:50:36] [INFO] Inserting 1 words at position 0
+[2025-11-05 05:50:36] [INFO] Reconstructed sentence: VWPKOEVWE
+[2025-11-05 05:50:36] [INFO] Saved new content, length: 17
+[2025-11-05 05:50:36] [INFO] Write completed successfully for led.txt
+[2025-11-05 05:50:36] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:50:36] [INFO] UNLOCK request for led.txt sentence 1 by manja
+[2025-11-05 05:50:36] [INFO] Sentence 1 unlocked by manja (remaining locks: 0)
+[2025-11-05 05:50:50] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:50:50] [INFO] File read: led.txt by manja
+[2025-11-05 05:50:57] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:50:57] [INFO] LOCK request for led.txt sentence 2 by manja
+[2025-11-05 05:50:57] [INFO] Sentence 2 locked by manja (total locks: 1)
+[2025-11-05 05:51:01] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:51:01] [INFO] WRITE request for led.txt sentence 2 by manja
+[2025-11-05 05:51:01] [INFO] Loaded content, length: 17
+[2025-11-05 05:51:01] [INFO] Parsed 1 sentences
+[2025-11-05 05:51:01] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-05 05:51:01] [INFO] UNLOCK request for led.txt sentence 2 by manja
+[2025-11-05 05:51:01] [INFO] Sentence 2 unlocked by manja (remaining locks: 0)

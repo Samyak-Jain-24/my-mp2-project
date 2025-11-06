@@ -1,0 +1,60 @@
+[2025-11-05 05:36:53] [INFO] New connection from 127.0.0.1:58242
+[2025-11-05 05:36:53] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:36:53] [INFO] Registered Client: manja from 127.0.0.1:10000
+[2025-11-05 05:37:17] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-05 05:37:17] [INFO] File created: af.txt by samyak on SS 0
+[2025-11-05 05:37:20] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-05 05:37:20] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-05 05:37:26] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:37:26] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-05 05:37:28] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:37:28] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-05 05:37:46] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-05 05:37:46] [INFO] Access granted to manja for file af.txt
+[2025-11-05 05:37:52] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:37:52] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-05 05:37:57] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:38:27] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-05 05:39:04] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:39:12] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-05 05:39:23] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:39:32] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:40:00] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-05 05:40:30] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-05 05:40:37] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:40:51] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-05 05:40:58] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:41:24] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:41:38] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-05 05:42:58] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-05 05:44:09] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-05 05:44:17] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-05 05:44:20] [INFO] Client disconnected
+[2025-11-05 05:44:23] [INFO] New connection from 127.0.0.1:48132
+[2025-11-05 05:44:23] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-05 05:44:23] [INFO] Registered Client: samyak from 127.0.0.1:10000
+[2025-11-05 05:44:26] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-05 05:44:26] [RESPONSE] To client:6 - Status: 0, VIEW command completed
+[2025-11-05 05:44:31] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-05 05:44:43] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-05 05:44:49] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:45:08] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-05 05:45:09] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:45:23] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:45:39] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:45:47] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-05 05:45:48] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:46:35] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:47:02] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:47:54] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:48:33] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:48:56] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:48:56] [INFO] File created: led.txt by manja on SS 0
+[2025-11-05 05:49:01] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:49:11] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:49:33] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:49:40] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:49:50] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:50:28] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:50:50] [REQUEST] From client:4 [manja] - Operation
+[2025-11-05 05:50:57] [REQUEST] From client:4 [manja] - Operation
