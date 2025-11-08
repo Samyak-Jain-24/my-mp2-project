@@ -125,6 +125,15 @@ void* handle_client_connection(void* arg) {
         
         if (receive_message(client_sock, &msg) <= 0) {
             log_message("NM", "INFO", "Client disconnected");
+            // Mark the client inactive based on socket_fd
+            pthread_mutex_lock(&nm_lock);
+            for (int i = 0; i < client_count; i++) {
+                if (clients[i].socket_fd == client_sock) {
+                    clients[i].active = 0;
+                    break;
+                }
+            }
+            pthread_mutex_unlock(&nm_lock);
             break;
         }
         
@@ -214,7 +223,22 @@ void register_storage_server(int socket_fd, Message* msg) {
 
 void register_client(int socket_fd, Message* msg) {
     pthread_mutex_lock(&nm_lock);
-    
+
+    // If a client with the same username already exists, update it instead of adding duplicates
+    for (int i = 0; i < client_count; i++) {
+        if (strcmp(clients[i].username, msg->username) == 0) {
+            sscanf(msg->data, "%s %d %d", clients[i].ip, &clients[i].nm_port, &clients[i].ss_port);
+            clients[i].socket_fd = socket_fd;
+            clients[i].active = 1;
+            log_message("NM", "INFO", "Re-registered Client: %s from %s:%d", clients[i].username, clients[i].ip, clients[i].nm_port);
+            msg->error_code = ERR_SUCCESS;
+            strcpy(msg->data, "Registration successful");
+            pthread_mutex_unlock(&nm_lock);
+            send_message(socket_fd, msg);
+            return;
+        }
+    }
+
     if (client_count >= MAX_CLIENTS) {
         msg->error_code = ERR_SERVER_ERROR;
         strcpy(msg->error_msg, "Maximum clients reached");
@@ -222,21 +246,20 @@ void register_client(int socket_fd, Message* msg) {
         send_message(socket_fd, msg);
         return;
     }
-    
+
     ClientInfo* client = &clients[client_count];
     strcpy(client->username, msg->username);
     sscanf(msg->data, "%s %d %d", client->ip, &client->nm_port, &client->ss_port);
     client->socket_fd = socket_fd;
     client->active = 1;
-    
-    log_message("NM", "INFO", "Registered Client: %s from %s:%d", 
-                client->username, client->ip, client->nm_port);
-    
+
+    log_message("NM", "INFO", "Registered Client: %s from %s:%d", client->username, client->ip, client->nm_port);
+
     client_count++;
-    
+
     msg->error_code = ERR_SUCCESS;
     strcpy(msg->data, "Registration successful");
-    
+
     pthread_mutex_unlock(&nm_lock);
     send_message(socket_fd, msg);
 }

@@ -42,6 +42,7 @@ void save_file_content(const char* filename, const char* content);
 char* load_file_content(const char* filename);
 void parse_sentences(const char* content, char sentences[][MAX_SENTENCE_LEN], int* sentence_count);
 void reconstruct_content(char sentences[][MAX_SENTENCE_LEN], int sentence_count, char* output);
+void load_storage_files();
 
 int main(int argc, char* argv[]) {
     if (argc < 4) {
@@ -68,6 +69,9 @@ int main(int argc, char* argv[]) {
         file_lock_info[i].lock_count = 0;
         file_lock_info[i].has_undo = 0;
     }
+
+    // Populate file_lock_info from existing files in storage_dir so locks and undo work after restarts
+    load_storage_files();
     
     // Register with Name Server
     register_with_nm();
@@ -91,6 +95,43 @@ int main(int argc, char* argv[]) {
     }
     
     return 0;
+}
+
+// Load existing files from storage directory into file_lock_info
+void load_storage_files() {
+    DIR* d = opendir(storage_dir);
+    if (!d) return;
+
+    struct dirent* entry;
+    while ((entry = readdir(d)) != NULL) {
+        // skip . and ..
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) continue;
+
+        // Skip metadata files
+        size_t len = strlen(entry->d_name);
+        if (len > 5 && strcmp(entry->d_name + len - 5, ".meta") == 0) continue;
+
+        // Only add regular files (ignore directories)
+        char path[MAX_PATH];
+        snprintf(path, sizeof(path), "%s%s", storage_dir, entry->d_name);
+        struct stat st;
+        if (stat(path, &st) != 0) continue;
+        if (!S_ISREG(st.st_mode)) continue;
+
+        // Add to file_lock_info if space
+        pthread_mutex_lock(&global_lock);
+        if (file_lock_count < MAX_FILES) {
+            strncpy(file_lock_info[file_lock_count].filename, entry->d_name, MAX_FILENAME - 1);
+            file_lock_info[file_lock_count].filename[MAX_FILENAME - 1] = '\0';
+            file_lock_info[file_lock_count].lock_count = 0;
+            file_lock_info[file_lock_count].has_undo = 0;
+            file_lock_count++;
+            log_message("SS", "INFO", "Discovered file on startup: %s", entry->d_name);
+        }
+        pthread_mutex_unlock(&global_lock);
+    }
+
+    closedir(d);
 }
 
 void register_with_nm() {
@@ -377,16 +418,16 @@ void handle_write_file(Message* msg) {
             return;
         }
     }
-    
+
     log_message("SS", "INFO", "Loaded content, length: %zu", strlen(content));
-    
+
     // Save for undo
     strncpy(lock_info->undo_content, content, MAX_CONTENT - 1);
     lock_info->undo_content[MAX_CONTENT - 1] = '\0';
     lock_info->has_undo = 1;
     
-    // Parse into sentences
-    char (*sentences)[MAX_SENTENCE_LEN] = calloc(100, sizeof(char[MAX_SENTENCE_LEN]));
+    // Parse into sentences (split by sentence delimiters)
+    char (*sentences)[MAX_SENTENCE_LEN] = calloc(1000, sizeof(char[MAX_SENTENCE_LEN]));
     if (sentences == NULL) {
         msg->error_code = ERR_SERVER_ERROR;
         strcpy(msg->error_msg, "Memory allocation failed");
@@ -394,16 +435,16 @@ void handle_write_file(Message* msg) {
         pthread_mutex_unlock(&file_locks[lock_index]);
         return;
     }
-    
+
     int sentence_count = 0;
     parse_sentences(content, sentences, &sentence_count);
-    
+
     free(content);
     content = NULL;
-    
+
     log_message("SS", "INFO", "Parsed %d sentences", sentence_count);
-    
-    // Check sentence index - allow writing to sentence_count (new sentence)
+
+    // Validate sentence index - allow writing to sentence_count (append new sentence)
     if (msg->sentence_number < 0 || msg->sentence_number > sentence_count) {
         msg->error_code = ERR_INVALID_INDEX;
         sprintf(msg->error_msg, "Sentence index out of range (0-%d allowed)", sentence_count);
@@ -411,12 +452,13 @@ void handle_write_file(Message* msg) {
         pthread_mutex_unlock(&file_locks[lock_index]);
         return;
     }
-    
-    // If writing to a new sentence (sentence_count), add it
+
+    // If writing to a new sentence (== sentence_count), extend count
     if (msg->sentence_number == sentence_count) {
         sentence_count++;
+        sentences[msg->sentence_number][0] = '\0';
     }
-    
+
     // Verify the sentence is locked by this user
     int has_lock = 0;
     for (int i = 0; i < lock_info->lock_count; i++) {
@@ -426,194 +468,141 @@ void handle_write_file(Message* msg) {
             break;
         }
     }
-    
+
     if (!has_lock) {
         msg->error_code = ERR_SENTENCE_LOCKED;
         strcpy(msg->error_msg, "Sentence must be locked before writing");
         free(sentences);
         pthread_mutex_unlock(&file_locks[lock_index]);
-        log_message("SS", "ERROR", "Write attempt without lock by %s on sentence %d", 
+        log_message("SS", "ERROR", "Write attempt without lock by %s on sentence %d",
                     msg->username, msg->sentence_number);
         return;
     }
-    
+
     log_message("SS", "INFO", "Processing write data: %s", msg->data);
-    
-    // Apply write operations from msg->data
-    // Format: "word_index content\nword_index content\n..."
-    
-    // Make a copy of msg->data since strtok modifies the string
-    char* data_copy = strdup(msg->data);
-    if (data_copy == NULL) {
+
+    // Build token list from the current sentence words (each existing word is one token)
+    // Insert each user line as a single phrase token to keep multi-word inserts contiguous
+    char (*tokens)[MAX_SENTENCE_LEN] = calloc(500, sizeof(char[MAX_SENTENCE_LEN]));
+    if (tokens == NULL) {
         msg->error_code = ERR_SERVER_ERROR;
         strcpy(msg->error_msg, "Memory allocation failed");
         free(sentences);
         pthread_mutex_unlock(&file_locks[lock_index]);
         return;
     }
-    
-    // Process each line
+
+    int token_count = 0;
+    if (sentences[msg->sentence_number][0] != '\0') {
+        // Split existing sentence into words as separate tokens
+        char* sentence_copy = strdup(sentences[msg->sentence_number]);
+        if (sentence_copy == NULL) {
+            msg->error_code = ERR_SERVER_ERROR;
+            strcpy(msg->error_msg, "Memory allocation failed");
+            free(tokens);
+            free(sentences);
+            pthread_mutex_unlock(&file_locks[lock_index]);
+            return;
+        }
+
+        char* saveptr2 = NULL;
+        char* w = strtok_r(sentence_copy, " ", &saveptr2);
+        while (w != NULL && token_count < 500) {
+            strncpy(tokens[token_count], w, MAX_SENTENCE_LEN - 1);
+            tokens[token_count][MAX_SENTENCE_LEN - 1] = '\0';
+            token_count++;
+            w = strtok_r(NULL, " ", &saveptr2);
+        }
+        free(sentence_copy);
+    }
+
+    // Process each user-provided line (format: <word_index> <content>)
+    char* data_copy = strdup(msg->data);
+    if (data_copy == NULL) {
+        msg->error_code = ERR_SERVER_ERROR;
+        strcpy(msg->error_msg, "Memory allocation failed");
+        free(tokens);
+        free(sentences);
+        pthread_mutex_unlock(&file_locks[lock_index]);
+        return;
+    }
+
     char* saveptr1 = NULL;
     char* line = strtok_r(data_copy, "\n", &saveptr1);
-    
     while (line != NULL) {
         int word_index;
-        char word_content[MAX_CONTENT];
-        
-        // Parse line: word_index content
-        if (sscanf(line, "%d ", &word_index) == 1) {
-            // Extract content after the number
-            char* content_start = line;
-            while (*content_start && (*content_start == ' ' || (*content_start >= '0' && *content_start <= '9'))) {
-                content_start++;
-            }
-            
-            if (*content_start) {
-                strncpy(word_content, content_start, sizeof(word_content) - 1);
-                word_content[sizeof(word_content) - 1] = '\0';
-                
-                log_message("SS", "INFO", "Inserting at word %d: %s", word_index, word_content);
-                
-                // Allocate arrays on heap
-                char (*words)[MAX_WORD_LEN] = calloc(500, sizeof(char[MAX_WORD_LEN]));
-                if (words == NULL) {
-                    msg->error_code = ERR_SERVER_ERROR;
-                    strcpy(msg->error_msg, "Memory allocation failed");
-                    free(data_copy);
-                    free(sentences);
-                    pthread_mutex_unlock(&file_locks[lock_index]);
-                    return;
-                }
-                
-                int word_count = 0;
-                
-                // Parse existing sentence
-                if (msg->sentence_number < sentence_count && sentences[msg->sentence_number][0] != '\0') {
-                    char* sentence_copy = strdup(sentences[msg->sentence_number]);
-                    if (sentence_copy == NULL) {
-                        msg->error_code = ERR_SERVER_ERROR;
-                        strcpy(msg->error_msg, "Memory allocation failed");
-                        free(words);
-                        free(data_copy);
-                        free(sentences);
-                        pthread_mutex_unlock(&file_locks[lock_index]);
-                        return;
-                    }
-                    
-                    char* saveptr2 = NULL;
-                    char* word = strtok_r(sentence_copy, " ", &saveptr2);
-                    while (word != NULL && word_count < 500) {
-                        strncpy(words[word_count], word, MAX_WORD_LEN - 1);
-                        words[word_count][MAX_WORD_LEN - 1] = '\0';
-                        word_count++;
-                        word = strtok_r(NULL, " ", &saveptr2);
-                    }
-                    free(sentence_copy);
-                }
-                
-                log_message("SS", "INFO", "Current word count: %d", word_count);
-                
-                // Check word index (1-based)
-                if (word_index < 1 || word_index > word_count + 1) {
-                    msg->error_code = ERR_INVALID_INDEX;
-                    sprintf(msg->error_msg, "Word index out of range (1-%d allowed)", word_count + 1);
-                    free(words);
-                    free(data_copy);
-                    free(sentences);
-                    pthread_mutex_unlock(&file_locks[lock_index]);
-                    return;
-                }
-                
-                // Convert to 0-based
-                word_index = word_index - 1;
-                
-                // Parse new content into words to insert
-                char* content_copy = strdup(word_content);
-                if (content_copy == NULL) {
-                    msg->error_code = ERR_SERVER_ERROR;
-                    strcpy(msg->error_msg, "Memory allocation failed");
-                    free(words);
-                    free(data_copy);
-                    free(sentences);
-                    pthread_mutex_unlock(&file_locks[lock_index]);
-                    return;
-                }
-                
-                char (*temp_words)[MAX_WORD_LEN] = calloc(100, sizeof(char[MAX_WORD_LEN]));
-                if (temp_words == NULL) {
-                    msg->error_code = ERR_SERVER_ERROR;
-                    strcpy(msg->error_msg, "Memory allocation failed");
-                    free(content_copy);
-                    free(words);
-                    free(data_copy);
-                    free(sentences);
-                    pthread_mutex_unlock(&file_locks[lock_index]);
-                    return;
-                }
-                
-                int temp_count = 0;
-                char* saveptr3 = NULL;
-                char* new_word = strtok_r(content_copy, " ", &saveptr3);
-                while (new_word != NULL && temp_count < 100) {
-                    strncpy(temp_words[temp_count], new_word, MAX_WORD_LEN - 1);
-                    temp_words[temp_count][MAX_WORD_LEN - 1] = '\0';
-                    temp_count++;
-                    new_word = strtok_r(NULL, " ", &saveptr3);
-                }
-                
-                free(content_copy);
-                
-                if (temp_count == 0) {
-                    free(temp_words);
-                    free(words);
-                    line = strtok_r(NULL, "\n", &saveptr1);
-                    continue;
-                }
-                
-                log_message("SS", "INFO", "Inserting %d words at position %d", temp_count, word_index);
-                
-                // Shift existing words to make room
-                for (int i = word_count - 1; i >= word_index; i--) {
-                    if (i + temp_count < 500) {
-                        strcpy(words[i + temp_count], words[i]);
-                    }
-                }
-                
-                // Insert new words
-                for (int i = 0; i < temp_count && word_index + i < 500; i++) {
-                    strcpy(words[word_index + i], temp_words[i]);
-                }
-                
-                word_count += temp_count;
-                if (word_count > 500) word_count = 500;
-                
-                // Reconstruct sentence
-                sentences[msg->sentence_number][0] = '\0';
-                for (int i = 0; i < word_count; i++) {
-                    size_t current_len = strlen(sentences[msg->sentence_number]);
-                    size_t word_len = strlen(words[i]);
-                    
-                    if (current_len + word_len + 2 < MAX_SENTENCE_LEN) {
-                        strcat(sentences[msg->sentence_number], words[i]);
-                        if (i < word_count - 1) {
-                            strcat(sentences[msg->sentence_number], " ");
-                        }
-                    }
-                }
-                
-                log_message("SS", "INFO", "Reconstructed sentence: %s", sentences[msg->sentence_number]);
-                
-                free(temp_words);
-                free(words);
-            }
+        if (sscanf(line, "%d", &word_index) != 1) {
+            line = strtok_r(NULL, "\n", &saveptr1);
+            continue;
         }
-        
+
+        // Find the start of content after number and spaces
+        char* content_start = line;
+        while (*content_start && (*content_start == ' ' || (*content_start >= '0' && *content_start <= '9'))) {
+            content_start++;
+        }
+
+        if (!*content_start) { // Empty content line; skip
+            line = strtok_r(NULL, "\n", &saveptr1);
+            continue;
+        }
+
+        // Validate index against current token count (phrase-aware)
+        if (word_index < 1 || word_index > token_count + 1) {
+            msg->error_code = ERR_INVALID_INDEX;
+            sprintf(msg->error_msg, "Word index out of range (1-%d allowed)", token_count + 1);
+            free(data_copy);
+            free(tokens);
+            free(sentences);
+            pthread_mutex_unlock(&file_locks[lock_index]);
+            return;
+        }
+
+        if (token_count >= 500) {
+            msg->error_code = ERR_SERVER_ERROR;
+            strcpy(msg->error_msg, "Too many tokens in sentence");
+            free(data_copy);
+            free(tokens);
+            free(sentences);
+            pthread_mutex_unlock(&file_locks[lock_index]);
+            return;
+        }
+
+        // Insert the entire content as a single phrase token at position (word_index - 1)
+        int insert_pos = word_index - 1; // 0-based
+
+        for (int i = token_count - 1; i >= insert_pos; --i) {
+            strcpy(tokens[i + 1], tokens[i]);
+        }
+
+        // Trim and assign content
+        char phrase[MAX_SENTENCE_LEN];
+        strncpy(phrase, content_start, sizeof(phrase) - 1);
+        phrase[sizeof(phrase) - 1] = '\0';
+        trim_whitespace(phrase);
+        strncpy(tokens[insert_pos], phrase, MAX_SENTENCE_LEN - 1);
+        tokens[insert_pos][MAX_SENTENCE_LEN - 1] = '\0';
+
+        token_count++;
         line = strtok_r(NULL, "\n", &saveptr1);
     }
-    
+
     free(data_copy);
-    
-    // Reconstruct file content
+
+    // Rebuild the updated sentence by joining tokens with spaces
+    sentences[msg->sentence_number][0] = '\0';
+    for (int i = 0; i < token_count; i++) {
+        size_t current_len = strlen(sentences[msg->sentence_number]);
+        size_t token_len = strlen(tokens[i]);
+        if (current_len + token_len + 2 < MAX_SENTENCE_LEN) {
+            if (i > 0) strcat(sentences[msg->sentence_number], " ");
+            strcat(sentences[msg->sentence_number], tokens[i]);
+        }
+    }
+
+    free(tokens);
+
+    // Reconstruct file content from sentences[] and persist
     char* new_content = malloc(MAX_CONTENT);
     if (new_content == NULL) {
         msg->error_code = ERR_SERVER_ERROR;
@@ -622,15 +611,15 @@ void handle_write_file(Message* msg) {
         pthread_mutex_unlock(&file_locks[lock_index]);
         return;
     }
-    
+
     new_content[0] = '\0';
     reconstruct_content(sentences, sentence_count, new_content);
-    
+
     // Save file
     save_file_content(msg->filename, new_content);
-    
+
     log_message("SS", "INFO", "Saved new content, length: %zu", strlen(new_content));
-    
+
     free(new_content);
     free(sentences);
     
@@ -725,6 +714,27 @@ void handle_lock_sentence(Message* msg) {
     
     pthread_mutex_lock(&file_locks[lock_index]);
     
+    // Validate sentence index: must be in [0, current_sentence_count].
+    // Allow locking a new sentence by permitting == current_sentence_count.
+    int current_sentence_count = 0;
+    {
+        char* content = load_file_content(msg->filename);
+        // Parse existing content to determine current number of sentences
+        char (*sentences)[MAX_SENTENCE_LEN] = calloc(100, sizeof(char[MAX_SENTENCE_LEN]));
+        if (sentences != NULL) {
+            parse_sentences(content ? content : "", sentences, &current_sentence_count);
+            free(sentences);
+        }
+        if (content) free(content);
+    }
+
+    if (msg->sentence_number < 0 || msg->sentence_number > current_sentence_count) {
+        msg->error_code = ERR_INVALID_INDEX;
+        sprintf(msg->error_msg, "Sentence index out of range (0-%d allowed)", current_sentence_count);
+        pthread_mutex_unlock(&file_locks[lock_index]);
+        return;
+    }
+
     FileLockInfo* lock_info = &file_lock_info[lock_index];
     
     // Check if sentence is already locked by another user
@@ -820,11 +830,40 @@ void handle_unlock_sentence(Message* msg) {
 }
 
 int get_file_lock_info(const char* filename) {
+    // Fast path: existing entry
     for (int i = 0; i < file_lock_count; i++) {
         if (strcmp(file_lock_info[i].filename, filename) == 0) {
             return i;
         }
     }
+
+    // Not found. If the file exists on disk (e.g., after SS restart), lazily create lock info.
+    char filepath[MAX_PATH];
+    snprintf(filepath, sizeof(filepath), "%s%s", storage_dir, filename);
+    if (access(filepath, F_OK) == 0) {
+        pthread_mutex_lock(&global_lock);
+        // Re-check under lock to avoid races
+        for (int i = 0; i < file_lock_count; i++) {
+            if (strcmp(file_lock_info[i].filename, filename) == 0) {
+                pthread_mutex_unlock(&global_lock);
+                return i;
+            }
+        }
+
+        if (file_lock_count < MAX_FILES) {
+            int idx = file_lock_count;
+            strncpy(file_lock_info[idx].filename, filename, MAX_FILENAME - 1);
+            file_lock_info[idx].filename[MAX_FILENAME - 1] = '\0';
+            file_lock_info[idx].lock_count = 0;
+            file_lock_info[idx].has_undo = 0;
+            file_lock_count++;
+            pthread_mutex_unlock(&global_lock);
+            return idx;
+        }
+        pthread_mutex_unlock(&global_lock);
+    }
+
+    // File truly unknown
     return -1;
 }
 

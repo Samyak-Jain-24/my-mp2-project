@@ -198,6 +198,9 @@ void handle_read_command(char* command) {
     
     if (msg.error_code != ERR_SUCCESS) {
         print_error(msg.error_code, "READ");
+        if (msg.error_msg[0] != '\0') {
+            fprintf(stderr, "Details: %s\n", msg.error_msg);
+        }
         return;
     }
     
@@ -251,6 +254,9 @@ void handle_create_command(char* command) {
         printf("File Created Successfully!\n");
     } else {
         print_error(msg.error_code, "CREATE");
+        if (msg.error_msg[0] != '\0') {
+            fprintf(stderr, "Details: %s\n", msg.error_msg);
+        }
     }
 }
 
@@ -277,6 +283,9 @@ void handle_write_command(char* command) {
     
     if (msg.error_code != ERR_SUCCESS) {
         print_error(msg.error_code, "WRITE");
+        if (msg.error_msg[0] != '\0') {
+            fprintf(stderr, "Details: %s\n", msg.error_msg);
+        }
         return;
     }
     
@@ -305,6 +314,9 @@ void handle_write_command(char* command) {
     
     if (msg.error_code != ERR_SUCCESS) {
         print_error(msg.error_code, "LOCK");
+        if (msg.error_msg[0] != '\0') {
+            fprintf(stderr, "Details: %s\n", msg.error_msg);
+        }
         return;
     }
     
@@ -368,6 +380,9 @@ void handle_write_command(char* command) {
     
     if (msg.error_code != ERR_SUCCESS) {
         print_error(msg.error_code, "WRITE");
+        if (msg.error_msg[0] != '\0') {
+            fprintf(stderr, "Details: %s\n", msg.error_msg);
+        }
         // Still need to unlock even if write failed
     } else {
         printf("Write Successful!\n");
@@ -441,6 +456,9 @@ void handle_info_command(char* command) {
         printf("%s\n", msg.data);
     } else {
         print_error(msg.error_code, "INFO");
+        if (msg.error_msg[0] != '\0') {
+            fprintf(stderr, "Details: %s\n", msg.error_msg);
+        }
     }
 }
 
@@ -463,6 +481,9 @@ void handle_stream_command(char* command) {
     
     if (msg.error_code != ERR_SUCCESS) {
         print_error(msg.error_code, "STREAM");
+        if (msg.error_msg[0] != '\0') {
+            fprintf(stderr, "Details: %s\n", msg.error_msg);
+        }
         return;
     }
     
@@ -488,6 +509,9 @@ void handle_stream_command(char* command) {
     
     if (msg.error_code != ERR_SUCCESS) {
         print_error(msg.error_code, "STREAM");
+        if (msg.error_msg[0] != '\0') {
+            fprintf(stderr, "Details: %s\n", msg.error_msg);
+        }
         close(ss_sock);
         return;
     }
@@ -553,6 +577,9 @@ void handle_addaccess_command(char* command) {
         printf("Access granted successfully!\n");
     } else {
         print_error(msg.error_code, "ADDACCESS");
+        if (msg.error_msg[0] != '\0') {
+            fprintf(stderr, "Details: %s\n", msg.error_msg);
+        }
     }
 }
 
@@ -579,6 +606,9 @@ void handle_remaccess_command(char* command) {
         printf("Access removed successfully!\n");
     } else {
         print_error(msg.error_code, "REMACCESS");
+        if (msg.error_msg[0] != '\0') {
+            fprintf(stderr, "Details: %s\n", msg.error_msg);
+        }
     }
 }
 
@@ -603,6 +633,9 @@ void handle_exec_command(char* command) {
         printf("%s", msg.data);
     } else {
         print_error(msg.error_code, "EXEC");
+        if (msg.error_msg[0] != '\0') {
+            fprintf(stderr, "Details: %s\n", msg.error_msg);
+        }
     }
 }
 
@@ -625,6 +658,9 @@ void handle_undo_command(char* command) {
     
     if (msg.error_code != ERR_SUCCESS) {
         print_error(msg.error_code, "UNDO");
+        if (msg.error_msg[0] != '\0') {
+            fprintf(stderr, "Details: %s\n", msg.error_msg);
+        }
         return;
     }
     
@@ -652,6 +688,9 @@ void handle_undo_command(char* command) {
         printf("Undo Successful!\n");
     } else {
         print_error(msg.error_code, "UNDO");
+        if (msg.error_msg[0] != '\0') {
+            fprintf(stderr, "Details: %s\n", msg.error_msg);
+        }
     }
     
     close(ss_sock);

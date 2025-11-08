@@ -1,302 +1,509 @@
-[2025-11-05 05:37:17] [INFO] File created: af.txt
-[2025-11-05 05:37:57] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:37:57] [INFO] LOCK request for af.txt sentence 0 by manja
-[2025-11-05 05:37:57] [INFO] Sentence 0 locked by manja (total locks: 1)
-[2025-11-05 05:38:27] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:38:27] [INFO] LOCK request for af.txt sentence 1 by samyak
-[2025-11-05 05:38:27] [INFO] Sentence 1 locked by samyak (total locks: 2)
-[2025-11-05 05:38:32] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:38:32] [INFO] WRITE request for af.txt sentence 1 by samyak
-[2025-11-05 05:38:32] [INFO] Loaded content, length: 0
-[2025-11-05 05:38:32] [INFO] Parsed 0 sentences
-[2025-11-05 05:38:32] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:38:32] [INFO] UNLOCK request for af.txt sentence 1 by samyak
-[2025-11-05 05:38:32] [INFO] Sentence 1 unlocked by samyak (remaining locks: 1)
-[2025-11-05 05:38:47] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:38:47] [INFO] WRITE request for af.txt sentence 0 by manja
-[2025-11-05 05:38:47] [INFO] Loaded content, length: 0
-[2025-11-05 05:38:47] [INFO] Parsed 0 sentences
-[2025-11-05 05:38:47] [INFO] Processing write data: 1 ebopbe
+[2025-11-06 22:15:49] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-06 22:15:49] [INFO] Successfully registered with Name Server, assigned ID: 0
+[2025-11-06 22:15:49] [INFO] Listening for NM connections on port 9001
+[2025-11-06 22:15:49] [INFO] Listening for client connections on port 9101
+[2025-11-06 22:16:46] [INFO] File created: sam.txt
+[2025-11-06 22:17:35] [REQUEST] From client:6 [Samarth] - Client operation
+[2025-11-06 22:17:35] [INFO] LOCK request for sam.txt sentence 1 by Samarth
+[2025-11-06 22:17:35] [INFO] Sentence 1 locked by Samarth (total locks: 1)
+[2025-11-06 22:18:07] [REQUEST] From client:6 [Samarth] - Client operation
+[2025-11-06 22:18:07] [INFO] WRITE request for sam.txt sentence 1 by Samarth
+[2025-11-06 22:18:07] [INFO] Loaded content, length: 0
+[2025-11-06 22:18:07] [INFO] Parsed 0 sentences
+[2025-11-06 22:18:07] [REQUEST] From client:6 [Samarth] - Client operation
+[2025-11-06 22:18:07] [INFO] UNLOCK request for sam.txt sentence 1 by Samarth
+[2025-11-06 22:18:07] [INFO] Sentence 1 unlocked by Samarth (remaining locks: 0)
+[2025-11-06 22:18:13] [REQUEST] From client:6 [Samarth] - Client operation
+[2025-11-06 22:18:13] [INFO] File read: sam.txt by Samarth
+[2025-11-06 22:18:28] [REQUEST] From client:6 [Samarth] - Client operation
+[2025-11-06 22:18:28] [INFO] File read: sam.txt by Samarth
+[2025-11-06 22:19:22] [REQUEST] From client:6 [Samarth] - Client operation
+[2025-11-06 22:19:22] [INFO] LOCK request for sam.txt sentence 1 by Samarth
+[2025-11-06 22:19:22] [INFO] Sentence 1 locked by Samarth (total locks: 1)
+[2025-11-06 22:19:30] [REQUEST] From client:6 [Samarth] - Client operation
+[2025-11-06 22:19:30] [INFO] WRITE request for sam.txt sentence 1 by Samarth
+[2025-11-06 22:19:30] [INFO] Loaded content, length: 0
+[2025-11-06 22:19:30] [INFO] Parsed 0 sentences
+[2025-11-06 22:19:30] [REQUEST] From client:6 [Samarth] - Client operation
+[2025-11-06 22:19:30] [INFO] UNLOCK request for sam.txt sentence 1 by Samarth
+[2025-11-06 22:19:30] [INFO] Sentence 1 unlocked by Samarth (remaining locks: 0)
+[2025-11-06 22:19:42] [REQUEST] From client:6 [Samarth] - Client operation
+[2025-11-06 22:19:42] [INFO] File read: sam.txt by Samarth
+[2025-11-06 22:23:40] [REQUEST] From client:6 [Samarth] - Client operation
+[2025-11-06 22:23:40] [INFO] LOCK request for sam.txt sentence 1 by Samarth
+[2025-11-06 22:23:40] [INFO] Sentence 1 locked by Samarth (total locks: 1)
+[2025-11-06 22:23:54] [REQUEST] From client:6 [Samarth] - Client operation
+[2025-11-06 22:23:54] [INFO] WRITE request for sam.txt sentence 1 by Samarth
+[2025-11-06 22:23:54] [INFO] Loaded content, length: 0
+[2025-11-06 22:23:54] [INFO] Parsed 0 sentences
+[2025-11-06 22:23:54] [REQUEST] From client:6 [Samarth] - Client operation
+[2025-11-06 22:23:54] [INFO] UNLOCK request for sam.txt sentence 1 by Samarth
+[2025-11-06 22:23:54] [INFO] Sentence 1 unlocked by Samarth (remaining locks: 0)
+[2025-11-06 22:24:07] [REQUEST] From client:6 [Samarth] - Client operation
+[2025-11-06 22:24:07] [INFO] File read: sam.txt by Samarth
+[2025-11-06 22:25:46] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-06 22:25:46] [INFO] Successfully registered with Name Server, assigned ID: 1
+[2025-11-06 22:25:46] [INFO] Listening for NM connections on port 9001
+[2025-11-06 22:25:46] [INFO] Listening for client connections on port 9101
+[2025-11-06 22:29:30] [INFO] File created: hello.txt
+[2025-11-06 22:29:38] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:29:38] [INFO] LOCK request for hello.txt sentence 1 by Sam
+[2025-11-06 22:29:58] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:29:58] [INFO] LOCK request for hello.txt sentence 0 by Sam
+[2025-11-06 22:29:58] [INFO] Sentence 0 locked by Sam (total locks: 1)
+[2025-11-06 22:30:14] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:30:14] [INFO] WRITE request for hello.txt sentence 0 by Sam
+[2025-11-06 22:30:14] [INFO] Loaded content, length: 0
+[2025-11-06 22:30:14] [INFO] Parsed 0 sentences
+[2025-11-06 22:30:14] [INFO] Processing write data: 1 hello
+2 lelo
 
-[2025-11-05 05:38:47] [INFO] Inserting at word 1: ebopbe
-[2025-11-05 05:38:47] [INFO] Current word count: 0
-[2025-11-05 05:38:47] [INFO] Inserting 1 words at position 0
-[2025-11-05 05:38:47] [INFO] Reconstructed sentence: ebopbe
-[2025-11-05 05:38:47] [INFO] Saved new content, length: 6
-[2025-11-05 05:38:47] [INFO] Write completed successfully for af.txt
-[2025-11-05 05:38:47] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:38:47] [INFO] UNLOCK request for af.txt sentence 0 by manja
-[2025-11-05 05:38:47] [INFO] Sentence 0 unlocked by manja (remaining locks: 0)
-[2025-11-05 05:39:04] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:39:04] [INFO] LOCK request for af.txt sentence 0 by manja
-[2025-11-05 05:39:04] [INFO] Sentence 0 locked by manja (total locks: 1)
-[2025-11-05 05:39:12] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:39:12] [INFO] LOCK request for af.txt sentence 0 by samyak
-[2025-11-05 05:39:12] [INFO] Sentence 0 already locked by manja
-[2025-11-05 05:39:18] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:39:18] [INFO] WRITE request for af.txt sentence 0 by manja
-[2025-11-05 05:39:18] [INFO] Loaded content, length: 6
-[2025-11-05 05:39:18] [INFO] Parsed 1 sentences
-[2025-11-05 05:39:18] [INFO] Processing write data: 
-[2025-11-05 05:39:18] [INFO] Saved new content, length: 6
-[2025-11-05 05:39:18] [INFO] Write completed successfully for af.txt
-[2025-11-05 05:39:18] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:39:18] [INFO] UNLOCK request for af.txt sentence 0 by manja
-[2025-11-05 05:39:18] [INFO] Sentence 0 unlocked by manja (remaining locks: 0)
-[2025-11-05 05:39:23] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:39:23] [INFO] LOCK request for af.txt sentence 0 by manja
-[2025-11-05 05:39:23] [INFO] Sentence 0 locked by manja (total locks: 1)
-[2025-11-05 05:39:27] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:39:27] [INFO] WRITE request for af.txt sentence 0 by manja
-[2025-11-05 05:39:27] [INFO] Loaded content, length: 6
-[2025-11-05 05:39:27] [INFO] Parsed 1 sentences
-[2025-11-05 05:39:27] [INFO] Processing write data: 1 manja
+[2025-11-06 22:30:14] [INFO] Inserting at word 1: hello
+[2025-11-06 22:30:14] [INFO] Current word count: 0
+[2025-11-06 22:30:14] [INFO] Inserting 1 words at position 0
+[2025-11-06 22:30:14] [INFO] Reconstructed sentence: hello
+[2025-11-06 22:30:14] [INFO] Inserting at word 2: lelo
+[2025-11-06 22:30:14] [INFO] Current word count: 1
+[2025-11-06 22:30:14] [INFO] Inserting 1 words at position 1
+[2025-11-06 22:30:14] [INFO] Reconstructed sentence: hello lelo
+[2025-11-06 22:30:14] [INFO] Saved new content, length: 10
+[2025-11-06 22:30:14] [INFO] Write completed successfully for hello.txt
+[2025-11-06 22:30:14] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:30:14] [INFO] UNLOCK request for hello.txt sentence 0 by Sam
+[2025-11-06 22:30:14] [INFO] Sentence 0 unlocked by Sam (remaining locks: 0)
+[2025-11-06 22:30:25] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:30:25] [INFO] File read: hello.txt by Sam
+[2025-11-06 22:41:38] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:41:38] [INFO] File undo: hello.txt by Sam
+[2025-11-06 22:41:44] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:41:44] [INFO] File read: hello.txt by Sam
+[2025-11-06 22:41:55] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:41:55] [INFO] LOCK request for hello.txt sentence 0 by Sam
+[2025-11-06 22:41:55] [INFO] Sentence 0 locked by Sam (total locks: 1)
+[2025-11-06 22:42:10] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:42:10] [INFO] WRITE request for hello.txt sentence 0 by Sam
+[2025-11-06 22:42:10] [INFO] Loaded content, length: 0
+[2025-11-06 22:42:10] [INFO] Parsed 0 sentences
+[2025-11-06 22:42:10] [INFO] Processing write data: 1 lala ji
+2 kehdee
 
-[2025-11-05 05:39:27] [INFO] Inserting at word 1: manja
-[2025-11-05 05:39:27] [INFO] Current word count: 1
-[2025-11-05 05:39:27] [INFO] Inserting 1 words at position 0
-[2025-11-05 05:39:27] [INFO] Reconstructed sentence: manja ebopbe
-[2025-11-05 05:39:27] [INFO] Saved new content, length: 12
-[2025-11-05 05:39:27] [INFO] Write completed successfully for af.txt
-[2025-11-05 05:39:27] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:39:27] [INFO] UNLOCK request for af.txt sentence 0 by manja
-[2025-11-05 05:39:27] [INFO] Sentence 0 unlocked by manja (remaining locks: 0)
-[2025-11-05 05:39:32] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:39:32] [INFO] File read: af.txt by manja
-[2025-11-05 05:40:00] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:40:00] [INFO] File read: af.txt by samyak
-[2025-11-05 05:40:30] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:40:30] [INFO] LOCK request for af.txt sentence 0 by samyak
-[2025-11-05 05:40:30] [INFO] Sentence 0 locked by samyak (total locks: 1)
-[2025-11-05 05:40:37] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:40:37] [INFO] LOCK request for af.txt sentence 1 by manja
-[2025-11-05 05:40:37] [INFO] Sentence 1 locked by manja (total locks: 2)
-[2025-11-05 05:40:39] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:40:39] [INFO] WRITE request for af.txt sentence 1 by manja
-[2025-11-05 05:40:39] [INFO] Loaded content, length: 12
-[2025-11-05 05:40:39] [INFO] Parsed 1 sentences
-[2025-11-05 05:40:39] [INFO] Processing write data: 
-[2025-11-05 05:40:39] [INFO] Saved new content, length: 13
-[2025-11-05 05:40:39] [INFO] Write completed successfully for af.txt
-[2025-11-05 05:40:39] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:40:39] [INFO] UNLOCK request for af.txt sentence 1 by manja
-[2025-11-05 05:40:39] [INFO] Sentence 1 unlocked by manja (remaining locks: 1)
-[2025-11-05 05:40:43] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:40:43] [INFO] WRITE request for af.txt sentence 0 by samyak
-[2025-11-05 05:40:43] [INFO] Loaded content, length: 13
-[2025-11-05 05:40:43] [INFO] Parsed 1 sentences
-[2025-11-05 05:40:43] [INFO] Processing write data: 
-[2025-11-05 05:40:43] [INFO] Saved new content, length: 13
-[2025-11-05 05:40:43] [INFO] Write completed successfully for af.txt
-[2025-11-05 05:40:43] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:40:43] [INFO] UNLOCK request for af.txt sentence 0 by samyak
-[2025-11-05 05:40:43] [INFO] Sentence 0 unlocked by samyak (remaining locks: 0)
-[2025-11-05 05:40:51] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:40:51] [INFO] LOCK request for af.txt sentence 0 by samyak
-[2025-11-05 05:40:51] [INFO] Sentence 0 locked by samyak (total locks: 1)
-[2025-11-05 05:40:58] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:40:58] [INFO] LOCK request for af.txt sentence 1 by manja
-[2025-11-05 05:40:58] [INFO] Sentence 1 locked by manja (total locks: 2)
-[2025-11-05 05:41:11] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:41:11] [INFO] WRITE request for af.txt sentence 0 by samyak
-[2025-11-05 05:41:11] [INFO] Loaded content, length: 13
-[2025-11-05 05:41:11] [INFO] Parsed 1 sentences
-[2025-11-05 05:41:11] [INFO] Processing write data: 2 vekw
+[2025-11-06 22:42:10] [INFO] Inserting at word 1: lala ji
+[2025-11-06 22:42:10] [INFO] Current word count: 0
+[2025-11-06 22:42:10] [INFO] Inserting 2 words at position 0
+[2025-11-06 22:42:10] [INFO] Reconstructed sentence: lala ji
+[2025-11-06 22:42:10] [INFO] Inserting at word 2: kehdee
+[2025-11-06 22:42:10] [INFO] Current word count: 2
+[2025-11-06 22:42:10] [INFO] Inserting 1 words at position 1
+[2025-11-06 22:42:10] [INFO] Reconstructed sentence: lala kehdee ji
+[2025-11-06 22:42:10] [INFO] Saved new content, length: 14
+[2025-11-06 22:42:10] [INFO] Write completed successfully for hello.txt
+[2025-11-06 22:42:10] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:42:10] [INFO] UNLOCK request for hello.txt sentence 0 by Sam
+[2025-11-06 22:42:10] [INFO] Sentence 0 unlocked by Sam (remaining locks: 0)
+[2025-11-06 22:42:25] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:42:25] [INFO] File read: hello.txt by Sam
+[2025-11-06 22:42:38] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:42:38] [INFO] LOCK request for hello.txt sentence 2 by Sam
+[2025-11-06 22:42:45] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:42:45] [INFO] LOCK request for hello.txt sentence 1 by Sam
+[2025-11-06 22:42:45] [INFO] Sentence 1 locked by Sam (total locks: 1)
+[2025-11-06 22:43:06] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:43:06] [INFO] WRITE request for hello.txt sentence 1 by Sam
+[2025-11-06 22:43:06] [INFO] Loaded content, length: 14
+[2025-11-06 22:43:06] [INFO] Parsed 1 sentences
+[2025-11-06 22:43:06] [INFO] Processing write data: 1 ram ram
+2 bebe
+3 !!
+4 .
 
-[2025-11-05 05:41:11] [INFO] Inserting at word 2: vekw
-[2025-11-05 05:41:11] [INFO] Current word count: 2
-[2025-11-05 05:41:11] [INFO] Inserting 1 words at position 1
-[2025-11-05 05:41:11] [INFO] Reconstructed sentence: manja vekw ebopbe
-[2025-11-05 05:41:11] [INFO] Saved new content, length: 17
-[2025-11-05 05:41:11] [INFO] Write completed successfully for af.txt
-[2025-11-05 05:41:11] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:41:11] [INFO] UNLOCK request for af.txt sentence 0 by samyak
-[2025-11-05 05:41:11] [INFO] Sentence 0 unlocked by samyak (remaining locks: 1)
-[2025-11-05 05:41:15] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:41:15] [INFO] WRITE request for af.txt sentence 1 by manja
-[2025-11-05 05:41:15] [INFO] Loaded content, length: 17
-[2025-11-05 05:41:15] [INFO] Parsed 1 sentences
-[2025-11-05 05:41:15] [INFO] Processing write data: 1 bepok
+[2025-11-06 22:43:06] [INFO] Inserting at word 1: ram ram
+[2025-11-06 22:43:06] [INFO] Current word count: 0
+[2025-11-06 22:43:06] [INFO] Inserting 2 words at position 0
+[2025-11-06 22:43:06] [INFO] Reconstructed sentence: ram ram
+[2025-11-06 22:43:06] [INFO] Inserting at word 2: bebe
+[2025-11-06 22:43:06] [INFO] Current word count: 2
+[2025-11-06 22:43:06] [INFO] Inserting 1 words at position 1
+[2025-11-06 22:43:06] [INFO] Reconstructed sentence: ram bebe ram
+[2025-11-06 22:43:06] [INFO] Inserting at word 3: !!
+[2025-11-06 22:43:06] [INFO] Current word count: 3
+[2025-11-06 22:43:06] [INFO] Inserting 1 words at position 2
+[2025-11-06 22:43:06] [INFO] Reconstructed sentence: ram bebe !! ram
+[2025-11-06 22:43:06] [INFO] Inserting at word 4: .
+[2025-11-06 22:43:06] [INFO] Current word count: 4
+[2025-11-06 22:43:06] [INFO] Inserting 1 words at position 3
+[2025-11-06 22:43:06] [INFO] Reconstructed sentence: ram bebe !! . ram
+[2025-11-06 22:43:06] [INFO] Saved new content, length: 32
+[2025-11-06 22:43:06] [INFO] Write completed successfully for hello.txt
+[2025-11-06 22:43:06] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:43:06] [INFO] UNLOCK request for hello.txt sentence 1 by Sam
+[2025-11-06 22:43:06] [INFO] Sentence 1 unlocked by Sam (remaining locks: 0)
+[2025-11-06 22:43:12] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:43:12] [INFO] File read: hello.txt by Sam
+[2025-11-06 22:44:48] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:44:48] [INFO] LOCK request for hello.txt sentence 3 by Sam
+[2025-11-06 22:44:48] [INFO] Sentence 3 locked by Sam (total locks: 1)
+[2025-11-06 22:45:04] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:45:04] [INFO] WRITE request for hello.txt sentence 3 by Sam
+[2025-11-06 22:45:04] [INFO] Loaded content, length: 32
+[2025-11-06 22:45:04] [INFO] Parsed 4 sentences
+[2025-11-06 22:45:04] [INFO] Processing write data: 0 oo
+1 ll
 
-[2025-11-05 05:41:15] [INFO] Inserting at word 1: bepok
-[2025-11-05 05:41:15] [INFO] Current word count: 0
-[2025-11-05 05:41:15] [INFO] Inserting 1 words at position 0
-[2025-11-05 05:41:15] [INFO] Reconstructed sentence: bepok
-[2025-11-05 05:41:15] [INFO] Saved new content, length: 23
-[2025-11-05 05:41:15] [INFO] Write completed successfully for af.txt
-[2025-11-05 05:41:15] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:41:15] [INFO] UNLOCK request for af.txt sentence 1 by manja
-[2025-11-05 05:41:15] [INFO] Sentence 1 unlocked by manja (remaining locks: 0)
-[2025-11-05 05:41:24] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:41:25] [INFO] File read: af.txt by manja
-[2025-11-05 05:41:38] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:41:38] [INFO] File read: af.txt by samyak
-[2025-11-05 05:42:58] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:42:58] [INFO] LOCK request for af.txt sentence 2 by samyak
-[2025-11-05 05:42:58] [INFO] Sentence 2 locked by samyak (total locks: 1)
-[2025-11-05 05:43:27] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:43:27] [INFO] WRITE request for af.txt sentence 2 by samyak
-[2025-11-05 05:43:27] [INFO] Loaded content, length: 23
-[2025-11-05 05:43:27] [INFO] Parsed 1 sentences
-[2025-11-05 05:43:27] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:43:27] [INFO] UNLOCK request for af.txt sentence 2 by samyak
-[2025-11-05 05:43:27] [INFO] Sentence 2 unlocked by samyak (remaining locks: 0)
-[2025-11-05 05:44:09] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:44:09] [INFO] File read: af.txt by samyak
-[2025-11-05 05:44:17] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:44:17] [INFO] LOCK request for af.txt sentence 1 by samyak
-[2025-11-05 05:44:17] [INFO] Sentence 1 locked by samyak (total locks: 1)
-[2025-11-05 05:44:31] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:44:31] [INFO] LOCK request for af.txt sentence 1 by samyak
-[2025-11-05 05:44:39] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:44:39] [INFO] WRITE request for af.txt sentence 1 by samyak
-[2025-11-05 05:44:39] [INFO] Loaded content, length: 23
-[2025-11-05 05:44:39] [INFO] Parsed 1 sentences
-[2025-11-05 05:44:39] [INFO] Processing write data: 1 vpojvepoepnwoewnpobewnbpoewnbew
+[2025-11-06 22:45:04] [INFO] Inserting at word 0: oo
+[2025-11-06 22:45:04] [INFO] Current word count: 1
+[2025-11-06 22:45:04] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:45:04] [INFO] UNLOCK request for hello.txt sentence 3 by Sam
+[2025-11-06 22:45:04] [INFO] Sentence 3 unlocked by Sam (remaining locks: 0)
+[2025-11-06 22:45:10] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:45:10] [INFO] File read: hello.txt by Sam
+[2025-11-06 22:54:05] [INFO] File created: kriti.txt
+[2025-11-06 22:54:41] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:54:41] [INFO] LOCK request for kriti.txt sentence 0 by Sam
+[2025-11-06 22:54:41] [INFO] Sentence 0 locked by Sam (total locks: 1)
+[2025-11-06 22:55:33] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:55:33] [INFO] WRITE request for kriti.txt sentence 0 by Sam
+[2025-11-06 22:55:33] [INFO] Loaded content, length: 0
+[2025-11-06 22:55:33] [INFO] Parsed 0 sentences
+[2025-11-06 22:55:33] [INFO] Processing write data: 0 fuck me
+1 kriti
+2 AAAAAAAA.
 
-[2025-11-05 05:44:39] [INFO] Inserting at word 1: vpojvepoepnwoewnpobewnbpoewnbew
-[2025-11-05 05:44:39] [INFO] Current word count: 0
-[2025-11-05 05:44:39] [INFO] Inserting 1 words at position 0
-[2025-11-05 05:44:39] [INFO] Reconstructed sentence: vpojvepoepnwoewnpobewnbpoewnbew
-[2025-11-05 05:44:39] [INFO] Saved new content, length: 55
-[2025-11-05 05:44:39] [INFO] Write completed successfully for af.txt
-[2025-11-05 05:44:39] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:44:39] [INFO] UNLOCK request for af.txt sentence 1 by samyak
-[2025-11-05 05:44:39] [INFO] Sentence 1 unlocked by samyak (remaining locks: 0)
-[2025-11-05 05:44:43] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:44:43] [INFO] File read: af.txt by samyak
-[2025-11-05 05:44:49] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:44:49] [INFO] File read: af.txt by manja
-[2025-11-05 05:45:08] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:45:08] [INFO] File streamed:  to 
-[2025-11-05 05:45:09] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:45:09] [INFO] File streamed:  to 
-[2025-11-05 05:45:23] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:45:23] [INFO] LOCK request for af.txt sentence 1 by manja
-[2025-11-05 05:45:23] [INFO] Sentence 1 locked by manja (total locks: 1)
-[2025-11-05 05:45:34] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:45:34] [INFO] WRITE request for af.txt sentence 1 by manja
-[2025-11-05 05:45:34] [INFO] Loaded content, length: 55
-[2025-11-05 05:45:34] [INFO] Parsed 1 sentences
-[2025-11-05 05:45:34] [INFO] Processing write data: 1 voepveopwbnewoibewboierboeirbneroibernborebn;reiobnere'n
+[2025-11-06 22:55:33] [INFO] Inserting at word 0: fuck me
+[2025-11-06 22:55:33] [INFO] Current word count: 0
+[2025-11-06 22:55:33] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:55:33] [INFO] UNLOCK request for kriti.txt sentence 0 by Sam
+[2025-11-06 22:55:33] [INFO] Sentence 0 unlocked by Sam (remaining locks: 0)
+[2025-11-06 22:55:39] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:55:39] [INFO] File read: kriti.txt by Sam
+[2025-11-06 22:56:13] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:56:13] [INFO] LOCK request for kriti.txt sentence 0 by Sam
+[2025-11-06 22:56:13] [INFO] Sentence 0 locked by Sam (total locks: 1)
+[2025-11-06 22:56:27] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:56:27] [INFO] WRITE request for kriti.txt sentence 0 by Sam
+[2025-11-06 22:56:27] [INFO] Loaded content, length: 0
+[2025-11-06 22:56:27] [INFO] Parsed 0 sentences
+[2025-11-06 22:56:27] [INFO] Processing write data: 1 fuck me
+2 kriti
+3 aaaaaaaa.
 
-[2025-11-05 05:45:34] [INFO] Inserting at word 1: voepveopwbnewoibewboierboeirbneroibernborebn;reiobnere'n
-[2025-11-05 05:45:34] [INFO] Current word count: 0
-[2025-11-05 05:45:34] [INFO] Inserting 1 words at position 0
-[2025-11-05 05:45:34] [INFO] Reconstructed sentence: voepveopwbnewoibewboierboeirbneroibernborebn;reiobnere'n
-[2025-11-05 05:45:34] [INFO] Saved new content, length: 112
-[2025-11-05 05:45:34] [INFO] Write completed successfully for af.txt
-[2025-11-05 05:45:34] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:45:34] [INFO] UNLOCK request for af.txt sentence 1 by manja
-[2025-11-05 05:45:34] [INFO] Sentence 1 unlocked by manja (remaining locks: 0)
-[2025-11-05 05:45:39] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:45:39] [INFO] File read: af.txt by manja
-[2025-11-05 05:45:47] [REQUEST] From client:6 [samyak] - Client operation
-[2025-11-05 05:45:48] [INFO] File streamed:  to 
-[2025-11-05 05:45:48] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:45:49] [INFO] File streamed:  to 
-[2025-11-05 05:46:35] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:46:35] [INFO] LOCK request for af.txt sentence 2 by manja
-[2025-11-05 05:46:35] [INFO] Sentence 2 locked by manja (total locks: 1)
-[2025-11-05 05:46:43] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:46:43] [INFO] WRITE request for af.txt sentence 2 by manja
-[2025-11-05 05:46:43] [INFO] Loaded content, length: 112
-[2025-11-05 05:46:43] [INFO] Parsed 1 sentences
-[2025-11-05 05:46:43] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:46:43] [INFO] UNLOCK request for af.txt sentence 2 by manja
-[2025-11-05 05:46:43] [INFO] Sentence 2 unlocked by manja (remaining locks: 0)
-[2025-11-05 05:47:02] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:47:02] [INFO] File read: af.txt by manja
-[2025-11-05 05:47:54] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:47:54] [INFO] LOCK request for af.txt sentence 3 by manja
-[2025-11-05 05:47:54] [INFO] Sentence 3 locked by manja (total locks: 1)
-[2025-11-05 05:48:00] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:48:00] [INFO] WRITE request for af.txt sentence 3 by manja
-[2025-11-05 05:48:00] [INFO] Loaded content, length: 112
-[2025-11-05 05:48:00] [INFO] Parsed 1 sentences
-[2025-11-05 05:48:00] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:48:00] [INFO] UNLOCK request for af.txt sentence 3 by manja
-[2025-11-05 05:48:00] [INFO] Sentence 3 unlocked by manja (remaining locks: 0)
-[2025-11-05 05:48:33] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:48:33] [INFO] LOCK request for af.txt sentence 3 by manja
-[2025-11-05 05:48:33] [INFO] Sentence 3 locked by manja (total locks: 1)
-[2025-11-05 05:48:35] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:48:35] [INFO] WRITE request for af.txt sentence 3 by manja
-[2025-11-05 05:48:35] [INFO] Loaded content, length: 112
-[2025-11-05 05:48:35] [INFO] Parsed 1 sentences
-[2025-11-05 05:48:35] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:48:35] [INFO] UNLOCK request for af.txt sentence 3 by manja
-[2025-11-05 05:48:35] [INFO] Sentence 3 unlocked by manja (remaining locks: 0)
-[2025-11-05 05:48:56] [INFO] File created: led.txt
-[2025-11-05 05:49:01] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:49:01] [INFO] LOCK request for led.txt sentence 1 by manja
-[2025-11-05 05:49:01] [INFO] Sentence 1 locked by manja (total locks: 1)
-[2025-11-05 05:49:06] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:49:06] [INFO] WRITE request for led.txt sentence 1 by manja
-[2025-11-05 05:49:06] [INFO] Loaded content, length: 0
-[2025-11-05 05:49:06] [INFO] Parsed 0 sentences
-[2025-11-05 05:49:06] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:49:06] [INFO] UNLOCK request for led.txt sentence 1 by manja
-[2025-11-05 05:49:06] [INFO] Sentence 1 unlocked by manja (remaining locks: 0)
-[2025-11-05 05:49:11] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:49:11] [INFO] File read: led.txt by manja
-[2025-11-05 05:49:33] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:49:33] [INFO] LOCK request for led.txt sentence 1 by manja
-[2025-11-05 05:49:33] [INFO] Sentence 1 locked by manja (total locks: 1)
-[2025-11-05 05:49:37] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:49:37] [INFO] WRITE request for led.txt sentence 1 by manja
-[2025-11-05 05:49:37] [INFO] Loaded content, length: 0
-[2025-11-05 05:49:37] [INFO] Parsed 0 sentences
-[2025-11-05 05:49:37] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:49:37] [INFO] UNLOCK request for led.txt sentence 1 by manja
-[2025-11-05 05:49:37] [INFO] Sentence 1 unlocked by manja (remaining locks: 0)
-[2025-11-05 05:49:40] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:49:40] [INFO] LOCK request for led.txt sentence 0 by manja
-[2025-11-05 05:49:40] [INFO] Sentence 0 locked by manja (total locks: 1)
-[2025-11-05 05:49:43] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:49:43] [INFO] WRITE request for led.txt sentence 0 by manja
-[2025-11-05 05:49:43] [INFO] Loaded content, length: 0
-[2025-11-05 05:49:43] [INFO] Parsed 0 sentences
-[2025-11-05 05:49:43] [INFO] Processing write data: 1 wekpowe
+[2025-11-06 22:56:27] [INFO] Inserting at word 1: fuck me
+[2025-11-06 22:56:27] [INFO] Current word count: 0
+[2025-11-06 22:56:27] [INFO] Inserting 2 words at position 0
+[2025-11-06 22:56:27] [INFO] Reconstructed sentence: fuck me
+[2025-11-06 22:56:27] [INFO] Inserting at word 2: kriti
+[2025-11-06 22:56:27] [INFO] Current word count: 2
+[2025-11-06 22:56:27] [INFO] Inserting 1 words at position 1
+[2025-11-06 22:56:27] [INFO] Reconstructed sentence: fuck kriti me
+[2025-11-06 22:56:27] [INFO] Inserting at word 3: aaaaaaaa.
+[2025-11-06 22:56:27] [INFO] Current word count: 3
+[2025-11-06 22:56:27] [INFO] Inserting 1 words at position 2
+[2025-11-06 22:56:27] [INFO] Reconstructed sentence: fuck kriti aaaaaaaa. me
+[2025-11-06 22:56:27] [INFO] Saved new content, length: 23
+[2025-11-06 22:56:27] [INFO] Write completed successfully for kriti.txt
+[2025-11-06 22:56:27] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:56:27] [INFO] UNLOCK request for kriti.txt sentence 0 by Sam
+[2025-11-06 22:56:27] [INFO] Sentence 0 unlocked by Sam (remaining locks: 0)
+[2025-11-06 22:56:34] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 22:56:34] [INFO] File read: kriti.txt by Sam
+[2025-11-06 23:05:03] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-06 23:05:03] [INFO] Successfully registered with Name Server, assigned ID: 2
+[2025-11-06 23:05:03] [INFO] Listening for client connections on port 9101
+[2025-11-06 23:05:03] [INFO] Listening for NM connections on port 9001
+[2025-11-06 23:05:23] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-06 23:05:23] [INFO] Successfully registered with Name Server, assigned ID: 3
+[2025-11-06 23:05:23] [INFO] Listening for client connections on port 9101
+[2025-11-06 23:05:23] [INFO] Listening for NM connections on port 9001
+[2025-11-06 23:06:56] [INFO] File created: lala.txt
+[2025-11-06 23:07:09] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:07:09] [INFO] LOCK request for lala.txt sentence 0 by Sam
+[2025-11-06 23:07:09] [INFO] Sentence 0 locked by Sam (total locks: 1)
+[2025-11-06 23:07:25] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:07:25] [INFO] WRITE request for lala.txt sentence 0 by Sam
+[2025-11-06 23:07:25] [INFO] Loaded content, length: 0
+[2025-11-06 23:07:25] [INFO] Parsed 0 sentences
+[2025-11-06 23:07:25] [INFO] Processing write data (buffered): 1 mama mama
+2 lil
+3 girl
 
-[2025-11-05 05:49:43] [INFO] Inserting at word 1: wekpowe
-[2025-11-05 05:49:43] [INFO] Current word count: 0
-[2025-11-05 05:49:43] [INFO] Inserting 1 words at position 0
-[2025-11-05 05:49:43] [INFO] Reconstructed sentence: wekpowe
-[2025-11-05 05:49:43] [INFO] Saved new content, length: 7
-[2025-11-05 05:49:43] [INFO] Write completed successfully for led.txt
-[2025-11-05 05:49:43] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:49:43] [INFO] UNLOCK request for led.txt sentence 0 by manja
-[2025-11-05 05:49:43] [INFO] Sentence 0 unlocked by manja (remaining locks: 0)
-[2025-11-05 05:49:50] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:49:50] [INFO] File read: led.txt by manja
-[2025-11-05 05:50:28] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:50:28] [INFO] LOCK request for led.txt sentence 1 by manja
-[2025-11-05 05:50:28] [INFO] Sentence 1 locked by manja (total locks: 1)
-[2025-11-05 05:50:36] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:50:36] [INFO] WRITE request for led.txt sentence 1 by manja
-[2025-11-05 05:50:36] [INFO] Loaded content, length: 7
-[2025-11-05 05:50:36] [INFO] Parsed 1 sentences
-[2025-11-05 05:50:36] [INFO] Processing write data: 1 VWPKOEVWE
+[2025-11-06 23:07:25] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:07:25] [INFO] UNLOCK request for lala.txt sentence 0 by Sam
+[2025-11-06 23:07:25] [INFO] Sentence 0 unlocked by Sam (remaining locks: 0)
+[2025-11-06 23:08:07] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:08:07] [INFO] File read: lala.txt by Sam
+[2025-11-06 23:08:16] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:08:16] [INFO] LOCK request for lala.txt sentence 0 by Sam
+[2025-11-06 23:08:16] [INFO] Sentence 0 locked by Sam (total locks: 1)
+[2025-11-06 23:08:29] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:08:29] [INFO] WRITE request for lala.txt sentence 0 by Sam
+[2025-11-06 23:08:29] [INFO] Loaded content, length: 0
+[2025-11-06 23:08:29] [INFO] Parsed 0 sentences
+[2025-11-06 23:08:29] [INFO] Processing write data (buffered): 1 hello.
 
-[2025-11-05 05:50:36] [INFO] Inserting at word 1: VWPKOEVWE
-[2025-11-05 05:50:36] [INFO] Current word count: 0
-[2025-11-05 05:50:36] [INFO] Inserting 1 words at position 0
-[2025-11-05 05:50:36] [INFO] Reconstructed sentence: VWPKOEVWE
-[2025-11-05 05:50:36] [INFO] Saved new content, length: 17
-[2025-11-05 05:50:36] [INFO] Write completed successfully for led.txt
-[2025-11-05 05:50:36] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:50:36] [INFO] UNLOCK request for led.txt sentence 1 by manja
-[2025-11-05 05:50:36] [INFO] Sentence 1 unlocked by manja (remaining locks: 0)
-[2025-11-05 05:50:50] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:50:50] [INFO] File read: led.txt by manja
-[2025-11-05 05:50:57] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:50:57] [INFO] LOCK request for led.txt sentence 2 by manja
-[2025-11-05 05:50:57] [INFO] Sentence 2 locked by manja (total locks: 1)
-[2025-11-05 05:51:01] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:51:01] [INFO] WRITE request for led.txt sentence 2 by manja
-[2025-11-05 05:51:01] [INFO] Loaded content, length: 17
-[2025-11-05 05:51:01] [INFO] Parsed 1 sentences
-[2025-11-05 05:51:01] [REQUEST] From client:6 [manja] - Client operation
-[2025-11-05 05:51:01] [INFO] UNLOCK request for led.txt sentence 2 by manja
-[2025-11-05 05:51:01] [INFO] Sentence 2 unlocked by manja (remaining locks: 0)
+[2025-11-06 23:08:29] [INFO] Reconstructed sentence: hello.
+[2025-11-06 23:08:29] [INFO] Saved new content, length: 6
+[2025-11-06 23:08:29] [INFO] Write completed successfully for lala.txt
+[2025-11-06 23:08:29] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:08:29] [INFO] UNLOCK request for lala.txt sentence 0 by Sam
+[2025-11-06 23:08:29] [INFO] Sentence 0 unlocked by Sam (remaining locks: 0)
+[2025-11-06 23:08:37] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:08:37] [INFO] File read: hello.txt by Sam
+[2025-11-06 23:08:45] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:08:45] [INFO] File read: lala.txt by Sam
+[2025-11-06 23:09:02] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:09:02] [INFO] LOCK request for lala.txt sentence 1 by Sam
+[2025-11-06 23:09:02] [INFO] Sentence 1 locked by Sam (total locks: 1)
+[2025-11-06 23:09:30] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:09:30] [INFO] WRITE request for lala.txt sentence 1 by Sam
+[2025-11-06 23:09:30] [INFO] Loaded content, length: 6
+[2025-11-06 23:09:30] [INFO] Parsed 1 sentences
+[2025-11-06 23:09:30] [INFO] Processing write data (buffered): 1 mama mama
+2 lil.
+ETIRW 
+
+[2025-11-06 23:09:30] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:09:30] [INFO] UNLOCK request for lala.txt sentence 1 by Sam
+[2025-11-06 23:09:30] [INFO] Sentence 1 unlocked by Sam (remaining locks: 0)
+[2025-11-06 23:09:51] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:09:51] [INFO] LOCK request for lala.txt sentence 1 by Sam
+[2025-11-06 23:09:51] [INFO] Sentence 1 locked by Sam (total locks: 1)
+[2025-11-06 23:10:03] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:10:03] [INFO] WRITE request for lala.txt sentence 1 by Sam
+[2025-11-06 23:10:03] [INFO] Loaded content, length: 6
+[2025-11-06 23:10:03] [INFO] Parsed 1 sentences
+[2025-11-06 23:10:03] [INFO] Processing write data (buffered): 1 mama mama
+2 lelo.
+
+[2025-11-06 23:10:03] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:10:03] [INFO] UNLOCK request for lala.txt sentence 1 by Sam
+[2025-11-06 23:10:03] [INFO] Sentence 1 unlocked by Sam (remaining locks: 0)
+[2025-11-06 23:15:51] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-06 23:15:51] [INFO] Successfully registered with Name Server, assigned ID: 4
+[2025-11-06 23:15:51] [INFO] Listening for NM connections on port 9001
+[2025-11-06 23:15:51] [INFO] Listening for client connections on port 9101
+[2025-11-06 23:16:15] [INFO] File created: bebo.txt
+[2025-11-06 23:16:25] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:16:25] [INFO] LOCK request for bebo.txt sentence 0 by Sam
+[2025-11-06 23:16:25] [INFO] Sentence 0 locked by Sam (total locks: 1)
+[2025-11-06 23:16:43] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:16:43] [INFO] WRITE request for bebo.txt sentence 0 by Sam
+[2025-11-06 23:16:43] [INFO] Loaded content, length: 0
+[2025-11-06 23:16:43] [INFO] Parsed 0 sentences
+[2025-11-06 23:16:43] [INFO] Processing write data: 1 lal lal
+2 baba.
+
+[2025-11-06 23:16:43] [INFO] Saved new content, length: 13
+[2025-11-06 23:22:06] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-06 23:22:06] [INFO] Successfully registered with Name Server, assigned ID: 5
+[2025-11-06 23:22:06] [INFO] Listening for NM connections on port 9001
+[2025-11-06 23:22:06] [INFO] Listening for client connections on port 9101
+[2025-11-06 23:22:29] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-06 23:22:29] [INFO] Successfully registered with Name Server, assigned ID: 6
+[2025-11-06 23:22:29] [INFO] Listening for NM connections on port 9001
+[2025-11-06 23:22:29] [INFO] Listening for client connections on port 9101
+[2025-11-06 23:22:46] [INFO] File created: mama.txt
+[2025-11-06 23:23:12] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:23:12] [INFO] LOCK request for mama.txt sentence 0 by Sam
+[2025-11-06 23:23:12] [INFO] Sentence 0 locked by Sam (total locks: 1)
+[2025-11-06 23:23:26] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:23:26] [INFO] WRITE request for mama.txt sentence 0 by Sam
+[2025-11-06 23:23:26] [INFO] Loaded content, length: 0
+[2025-11-06 23:23:26] [INFO] Parsed 0 sentences
+[2025-11-06 23:23:26] [INFO] Processing write data: 1 baba baba
+2 blck
+3 sheep.
+
+[2025-11-06 23:23:26] [INFO] Saved new content, length: 21
+[2025-11-06 23:23:26] [INFO] Write completed successfully for mama.txt
+[2025-11-06 23:23:26] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:23:26] [INFO] UNLOCK request for mama.txt sentence 0 by Sam
+[2025-11-06 23:23:26] [INFO] Sentence 0 unlocked by Sam (remaining locks: 0)
+[2025-11-06 23:23:51] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:23:51] [INFO] File read: mama.txt by Sam
+[2025-11-06 23:24:47] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:24:47] [INFO] LOCK request for mama.txt sentence 1 by Sam
+[2025-11-06 23:24:47] [INFO] Sentence 1 locked by Sam (total locks: 1)
+[2025-11-06 23:25:23] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:25:23] [INFO] WRITE request for mama.txt sentence 1 by Sam
+[2025-11-06 23:25:23] [INFO] Loaded content, length: 21
+[2025-11-06 23:25:23] [INFO] Parsed 1 sentences
+[2025-11-06 23:25:23] [INFO] Processing write data: 1 only
+2 love
+3 you.
+4 .
+5 ETIRW
+
+[2025-11-06 23:25:23] [INFO] Saved new content, length: 44
+[2025-11-06 23:25:23] [INFO] Write completed successfully for mama.txt
+[2025-11-06 23:25:23] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:25:23] [INFO] UNLOCK request for mama.txt sentence 1 by Sam
+[2025-11-06 23:25:23] [INFO] Sentence 1 unlocked by Sam (remaining locks: 0)
+[2025-11-06 23:25:35] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-06 23:25:35] [INFO] File read: mama.txt by Sam
+[2025-11-07 00:41:19] [REQUEST] From client:4 [Sam] - Client operation
+[2025-11-07 00:41:19] [INFO] LOCK request for mama.txt sentence 0 by Sam
+[2025-11-07 00:41:19] [INFO] Sentence 0 locked by Sam (total locks: 1)
+[2025-11-07 00:41:34] [REQUEST] From client:4 [Sam] - Client operation
+[2025-11-07 00:41:34] [INFO] WRITE request for mama.txt sentence 0 by Sam
+[2025-11-07 00:41:34] [INFO] Loaded content, length: 44
+[2025-11-07 00:41:34] [INFO] Parsed 4 sentences
+[2025-11-07 00:41:34] [INFO] Processing write data: 1 hello
+
+[2025-11-07 00:41:34] [INFO] Saved new content, length: 50
+[2025-11-07 00:41:34] [INFO] Write completed successfully for mama.txt
+[2025-11-07 00:41:34] [REQUEST] From client:4 [Sam] - Client operation
+[2025-11-07 00:41:34] [INFO] UNLOCK request for mama.txt sentence 0 by Sam
+[2025-11-07 00:41:34] [INFO] Sentence 0 unlocked by Sam (remaining locks: 0)
+[2025-11-07 00:41:43] [REQUEST] From client:4 [Sam] - Client operation
+[2025-11-07 00:41:43] [INFO] File read: mama.txt by Sam
+[2025-11-07 00:49:39] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-07 00:49:39] [INFO] Successfully registered with Name Server, assigned ID: 7
+[2025-11-07 00:49:39] [INFO] Listening for NM connections on port 9001
+[2025-11-07 00:49:39] [INFO] Listening for client connections on port 9101
+[2025-11-07 00:50:02] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 00:50:02] [INFO] File read: mama.txt by Sam
+[2025-11-07 00:50:14] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 00:50:14] [INFO] LOCK request for mama.txt sentence 0 by Sam
+[2025-11-07 00:50:14] [ERROR] File lock info not found for mama.txt
+[2025-11-07 00:50:44] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 00:50:44] [INFO] LOCK request for mama.txt sentence 0 by Sam
+[2025-11-07 00:50:44] [ERROR] File lock info not found for mama.txt
+[2025-11-07 00:51:41] [INFO] File created: iiii.txt
+[2025-11-07 00:52:20] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 00:52:20] [INFO] LOCK request for iiii.txt sentence 0 by Sam
+[2025-11-07 00:52:20] [INFO] Sentence 0 locked by Sam (total locks: 1)
+[2025-11-07 00:52:40] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 00:52:40] [INFO] WRITE request for iiii.txt sentence 0 by Sam
+[2025-11-07 00:52:40] [INFO] Loaded content, length: 0
+[2025-11-07 00:52:40] [INFO] Parsed 0 sentences
+[2025-11-07 00:52:40] [INFO] Processing write data: 1 llo
+2 ram
+
+[2025-11-07 00:52:40] [INFO] Saved new content, length: 7
+[2025-11-07 00:52:40] [INFO] Write completed successfully for iiii.txt
+[2025-11-07 00:52:40] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 00:52:40] [INFO] UNLOCK request for iiii.txt sentence 0 by Sam
+[2025-11-07 00:52:40] [INFO] Sentence 0 unlocked by Sam (remaining locks: 0)
+[2025-11-07 00:57:40] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-07 00:57:40] [INFO] Successfully registered with Name Server, assigned ID: 8
+[2025-11-07 00:57:40] [INFO] Listening for NM connections on port 9001
+[2025-11-07 00:57:40] [INFO] Listening for client connections on port 9101
+[2025-11-07 01:01:35] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 01:01:36] [INFO] File streamed:  to 
+[2025-11-07 01:02:43] [REQUEST] From client:6 [Ghutna] - Client operation
+[2025-11-07 01:02:44] [INFO] File streamed:  to 
+[2025-11-07 01:03:59] [INFO] File read: mama.txt by Sam
+[2025-11-07 01:04:25] [INFO] File read: mama.txt by Ghutna
+[2025-11-07 01:08:25] [REQUEST] From client:6 [Ghutna] - Client operation
+[2025-11-07 01:08:25] [INFO] File read: mama.txt by Ghutna
+[2025-11-07 01:08:45] [REQUEST] From client:6 [Ghutna] - Client operation
+[2025-11-07 01:08:45] [INFO] File read: mama.txt by Ghutna
+[2025-11-07 01:09:02] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 01:09:02] [INFO] LOCK request for mama.txt sentence 2 by Sam
+[2025-11-07 01:09:02] [ERROR] File lock info not found for mama.txt
+[2025-11-07 01:10:21] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 01:10:21] [INFO] File read: mama.txt by Sam
+[2025-11-07 01:10:31] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 01:10:31] [INFO] LOCK request for mama.txt sentence 1 by Sam
+[2025-11-07 01:10:31] [ERROR] File lock info not found for mama.txt
+[2025-11-07 01:10:42] [REQUEST] From client:6 [Ghutna] - Client operation
+[2025-11-07 01:10:42] [INFO] LOCK request for mama.txt sentence 1 by Ghutna
+[2025-11-07 01:10:42] [ERROR] File lock info not found for mama.txt
+[2025-11-07 01:16:43] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-07 01:16:43] [INFO] Discovered file on startup: iiii.txt
+[2025-11-07 01:16:43] [INFO] Discovered file on startup: hello.txt
+[2025-11-07 01:16:43] [INFO] Discovered file on startup: kehde2.txt
+[2025-11-07 01:16:43] [INFO] Discovered file on startup: af.txt
+[2025-11-07 01:16:43] [INFO] Discovered file on startup: led.txt
+[2025-11-07 01:16:43] [INFO] Discovered file on startup: alu.txt
+[2025-11-07 01:16:43] [INFO] Discovered file on startup: lala.txt
+[2025-11-07 01:16:43] [INFO] Discovered file on startup: kriti.txt
+[2025-11-07 01:16:43] [INFO] Discovered file on startup: bebo.txt
+[2025-11-07 01:16:43] [INFO] Discovered file on startup: mama.txt
+[2025-11-07 01:16:43] [INFO] Discovered file on startup: kehde.txt
+[2025-11-07 01:16:43] [INFO] Discovered file on startup: sam.txt
+[2025-11-07 01:16:43] [INFO] Successfully registered with Name Server, assigned ID: 9
+[2025-11-07 01:16:43] [INFO] Listening for NM connections on port 9001
+[2025-11-07 01:16:43] [INFO] Listening for client connections on port 9101
+[2025-11-07 01:19:29] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 01:19:29] [INFO] LOCK request for mama.txt sentence 1 by Sam
+[2025-11-07 01:19:29] [INFO] Sentence 1 locked by Sam (total locks: 1)
+[2025-11-07 01:26:43] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-07 01:26:43] [INFO] Discovered file on startup: iiii.txt
+[2025-11-07 01:26:43] [INFO] Discovered file on startup: hello.txt
+[2025-11-07 01:26:43] [INFO] Discovered file on startup: kehde2.txt
+[2025-11-07 01:26:43] [INFO] Discovered file on startup: af.txt
+[2025-11-07 01:26:43] [INFO] Discovered file on startup: led.txt
+[2025-11-07 01:26:43] [INFO] Discovered file on startup: alu.txt
+[2025-11-07 01:26:43] [INFO] Discovered file on startup: lala.txt
+[2025-11-07 01:26:43] [INFO] Discovered file on startup: kriti.txt
+[2025-11-07 01:26:43] [INFO] Discovered file on startup: bebo.txt
+[2025-11-07 01:26:43] [INFO] Discovered file on startup: mama.txt
+[2025-11-07 01:26:43] [INFO] Discovered file on startup: kehde.txt
+[2025-11-07 01:26:43] [INFO] Discovered file on startup: sam.txt
+[2025-11-07 01:26:43] [INFO] Successfully registered with Name Server, assigned ID: 10
+[2025-11-07 01:26:43] [INFO] Listening for client connections on port 9101
+[2025-11-07 01:26:43] [INFO] Listening for NM connections on port 9001
+[2025-11-07 01:27:26] [REQUEST] From client:6 [Ghutna] - Client operation
+[2025-11-07 01:27:26] [INFO] File read: mama.txt by Ghutna
+[2025-11-07 01:28:09] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 01:28:09] [INFO] File read: mama.txt by Sam
+[2025-11-07 01:28:21] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 01:28:21] [INFO] LOCK request for mama.txt sentence 1 by Sam
+[2025-11-07 01:28:21] [INFO] Sentence 1 locked by Sam (total locks: 1)
+[2025-11-07 01:28:33] [REQUEST] From client:6 [Ghutna] - Client operation
+[2025-11-07 01:28:33] [INFO] File read: mama.txt by Ghutna
+[2025-11-07 01:29:04] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 01:29:04] [INFO] WRITE request for mama.txt sentence 1 by Sam
+[2025-11-07 01:29:04] [INFO] Loaded content, length: 50
+[2025-11-07 01:29:04] [INFO] Parsed 4 sentences
+[2025-11-07 01:29:04] [INFO] Processing write data: 1 jajajaja
+2 kakaka
+
+[2025-11-07 01:29:04] [INFO] Saved new content, length: 66
+[2025-11-07 01:29:04] [INFO] Write completed successfully for mama.txt
+[2025-11-07 01:29:04] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 01:29:04] [INFO] UNLOCK request for mama.txt sentence 1 by Sam
+[2025-11-07 01:29:04] [INFO] Sentence 1 unlocked by Sam (remaining locks: 0)
+[2025-11-07 01:29:12] [REQUEST] From client:6 [Ghutna] - Client operation
+[2025-11-07 01:29:12] [INFO] File read: mama.txt by Ghutna
+[2025-11-07 01:29:42] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 01:29:42] [INFO] LOCK request for mama.txt sentence 1 by Sam
+[2025-11-07 01:29:42] [INFO] Sentence 1 locked by Sam (total locks: 1)
+[2025-11-07 01:29:51] [REQUEST] From client:6 [Ghutna] - Client operation
+[2025-11-07 01:29:51] [INFO] LOCK request for mama.txt sentence 1 by Ghutna
+[2025-11-07 01:29:51] [INFO] Sentence 1 already locked by Sam
+[2025-11-07 01:30:04] [REQUEST] From client:6 [Ghutna] - Client operation
+[2025-11-07 01:30:04] [INFO] LOCK request for mama.txt sentence 0 by Ghutna
+[2025-11-07 01:30:04] [INFO] Sentence 0 locked by Ghutna (total locks: 2)
+[2025-11-07 01:31:02] [REQUEST] From client:6 [Ghutna] - Client operation
+[2025-11-07 01:31:02] [INFO] WRITE request for mama.txt sentence 0 by Ghutna
+[2025-11-07 01:31:02] [INFO] Loaded content, length: 66
+[2025-11-07 01:31:02] [INFO] Parsed 4 sentences
+[2025-11-07 01:31:02] [INFO] Processing write data: 1 samyak
+2 is
+3 rand.
+
+[2025-11-07 01:31:02] [INFO] Saved new content, length: 82
+[2025-11-07 01:31:02] [INFO] Write completed successfully for mama.txt
+[2025-11-07 01:31:02] [REQUEST] From client:6 [Ghutna] - Client operation
+[2025-11-07 01:31:02] [INFO] UNLOCK request for mama.txt sentence 0 by Ghutna
+[2025-11-07 01:31:02] [INFO] Sentence 0 unlocked by Ghutna (remaining locks: 1)
+[2025-11-07 01:31:12] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 01:31:12] [INFO] WRITE request for mama.txt sentence 1 by Sam
+[2025-11-07 01:31:12] [INFO] Loaded content, length: 82
+[2025-11-07 01:31:12] [INFO] Parsed 5 sentences
+[2025-11-07 01:31:12] [INFO] Processing write data: 1 dick
+2 short
+3 mine.
+
+[2025-11-07 01:31:12] [INFO] Saved new content, length: 99
+[2025-11-07 01:31:12] [INFO] Write completed successfully for mama.txt
+[2025-11-07 01:31:12] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-07 01:31:12] [INFO] UNLOCK request for mama.txt sentence 1 by Sam
+[2025-11-07 01:31:12] [INFO] Sentence 1 unlocked by Sam (remaining locks: 0)
+[2025-11-07 01:31:20] [REQUEST] From client:6 [Ghutna] - Client operation
+[2025-11-07 01:31:20] [INFO] File read: mama.txt by Ghutna
+[2025-11-07 01:33:49] [INFO] File read: mama.txt by Ghutna
+[2025-11-07 01:34:30] [INFO] File deleted: iiii.txt
+[2025-11-07 01:38:20] [INFO] File created: kaka.txt
+[2025-11-07 01:39:02] [INFO] File deleted: bebo.txt
