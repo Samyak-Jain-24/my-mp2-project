@@ -3,6 +3,8 @@
 // Global variables
 char username[MAX_USERNAME];
 int nm_socket = -1;
+static char nm_host_ip[INET_ADDRSTRLEN] = "127.0.0.1";
+static int nm_host_port = PORT_NM;
 
 // Function prototypes
 void connect_to_nm();
@@ -21,8 +23,18 @@ void handle_exec_command(char* command);
 void handle_undo_command(char* command);
 int connect_to_ss(const char* ss_ip, int ss_port);
 
-int main() {
+int main(int argc, char* argv[]) {
     printf("=== LangOS Distributed File System - Client ===\n");
+    
+    // Optional args: ./client <nm_ip> [nm_port]
+    if (argc >= 2) {
+        strncpy(nm_host_ip, argv[1], sizeof(nm_host_ip) - 1);
+        nm_host_ip[sizeof(nm_host_ip) - 1] = '\0';
+    }
+    if (argc >= 3) {
+        nm_host_port = atoi(argv[2]);
+        if (nm_host_port <= 0) nm_host_port = PORT_NM;
+    }
     
     // Get username
     printf("Enter your username: ");
@@ -39,6 +51,7 @@ int main() {
     connect_to_nm();
     register_with_nm();
     
+    printf("\nName Server: %s:%d\n", nm_host_ip, nm_host_port);
     printf("\nAvailable commands:\n");
     printf("  VIEW [-a] [-l] [-al]\n");
     printf("  READ <filename>\n");
@@ -119,8 +132,8 @@ void connect_to_nm() {
     
     struct sockaddr_in nm_addr;
     nm_addr.sin_family = AF_INET;
-    nm_addr.sin_port = htons(PORT_NM);
-    inet_pton(AF_INET, "127.0.0.1", &nm_addr.sin_addr);
+    nm_addr.sin_port = htons(nm_host_port);
+    inet_pton(AF_INET, nm_host_ip, &nm_addr.sin_addr);
     
     if (connect(nm_socket, (struct sockaddr*)&nm_addr, sizeof(nm_addr)) < 0) {
         perror("Failed to connect to Name Server");
@@ -137,7 +150,8 @@ void register_with_nm() {
     
     msg.op_code = OP_REGISTER_CLIENT;
     strcpy(msg.username, username);
-    sprintf(msg.data, "127.0.0.1 %d %d", PORT_CLIENT_BASE, PORT_CLIENT_BASE + 1);
+    // For now, advertise placeholder client ports; NM doesn't open connections back to client in this design
+    sprintf(msg.data, "%s %d %d", "0.0.0.0", PORT_CLIENT_BASE, PORT_CLIENT_BASE + 1);
     
     if (send_message(nm_socket, &msg) < 0) {
         fprintf(stderr, "Failed to send registration\n");

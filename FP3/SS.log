@@ -507,3 +507,20 @@ ETIRW
 [2025-11-07 01:34:30] [INFO] File deleted: iiii.txt
 [2025-11-07 01:38:20] [INFO] File created: kaka.txt
 [2025-11-07 01:39:02] [INFO] File deleted: bebo.txt
+[2025-11-08 21:23:04] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-08 21:23:04] [INFO] Discovered file on startup: hello.txt
+[2025-11-08 21:23:04] [INFO] Discovered file on startup: kehde2.txt
+[2025-11-08 21:23:04] [INFO] Discovered file on startup: af.txt
+[2025-11-08 21:23:04] [INFO] Discovered file on startup: led.txt
+[2025-11-08 21:23:04] [INFO] Discovered file on startup: kaka.txt
+[2025-11-08 21:23:04] [INFO] Discovered file on startup: alu.txt
+[2025-11-08 21:23:04] [INFO] Discovered file on startup: lala.txt
+[2025-11-08 21:23:04] [INFO] Discovered file on startup: kriti.txt
+[2025-11-08 21:23:04] [INFO] Discovered file on startup: mama.txt
+[2025-11-08 21:23:04] [INFO] Discovered file on startup: kehde.txt
+[2025-11-08 21:23:04] [INFO] Discovered file on startup: sam.txt
+[2025-11-08 21:23:04] [INFO] Successfully registered with Name Server, assigned ID: 11
+[2025-11-08 21:23:04] [INFO] Listening for client connections on port 9101
+[2025-11-08 21:23:04] [INFO] Listening for NM connections on port 9001
+[2025-11-08 21:37:09] [INFO] Starting Storage Server on ports NM:192 Client:172
+[2025-11-08 21:37:09] [INFO] Registered with NM 127.0.0.1:8080, assigned ID: 12

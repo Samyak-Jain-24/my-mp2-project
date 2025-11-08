@@ -45,14 +45,22 @@ void reconstruct_content(char sentences[][MAX_SENTENCE_LEN], int sentence_count,
 void load_storage_files();
 
 int main(int argc, char* argv[]) {
+    // New usage: ./storage_server [nm_ip] <nm_port> <client_port> <storage_dir>
+    // Backwards compatible with old usage lacking nm_ip.
+    char nm_ip_override[INET_ADDRSTRLEN] = "127.0.0.1";
+    int argi = 1;
     if (argc < 4) {
-        printf("Usage: %s <nm_port> <client_port> <storage_dir>\n", argv[0]);
+        printf("Usage: %s [nm_ip] <nm_port> <client_port> <storage_dir>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-    
-    nm_port = atoi(argv[1]);
-    client_port = atoi(argv[2]);
-    strcpy(storage_dir, argv[3]);
+    if (argc == 5) { // nm_ip explicitly provided
+        strncpy(nm_ip_override, argv[argi], sizeof(nm_ip_override)-1);
+        nm_ip_override[sizeof(nm_ip_override)-1] = '\0';
+        argi++;
+    }
+    nm_port = atoi(argv[argi++]);
+    client_port = atoi(argv[argi++]);
+    strcpy(storage_dir, argv[argi++]);
     
     // Create storage directory if it doesn't exist
     mkdir(storage_dir, 0755);
@@ -74,7 +82,37 @@ int main(int argc, char* argv[]) {
     load_storage_files();
     
     // Register with Name Server
-    register_with_nm();
+    // Register with Name Server using override IP
+    int sock = create_socket();
+    if (sock < 0) {
+        log_message("SS", "ERROR", "Failed to create socket for NM registration");
+        exit(EXIT_FAILURE);
+    }
+    struct sockaddr_in nm_addr;
+    nm_addr.sin_family = AF_INET;
+    nm_addr.sin_port = htons(PORT_NM);
+    if (inet_pton(AF_INET, nm_ip_override, &nm_addr.sin_addr) != 1) {
+        log_message("SS", "ERROR", "Invalid NM IP: %s", nm_ip_override);
+        exit(EXIT_FAILURE);
+    }
+    if (connect(sock, (struct sockaddr*)&nm_addr, sizeof(nm_addr)) < 0) {
+        perror("Failed to connect to Name Server");
+        log_message("SS", "ERROR", "Failed to connect to Name Server at %s:%d", nm_ip_override, PORT_NM);
+        exit(EXIT_FAILURE);
+    }
+    Message regmsg; memset(&regmsg, 0, sizeof(regmsg));
+    regmsg.op_code = OP_REGISTER_SS;
+    sprintf(regmsg.data, "%s %d %d", ss_ip, nm_port, client_port);
+    send_message(sock, &regmsg);
+    receive_message(sock, &regmsg);
+    if (regmsg.error_code == ERR_SUCCESS) {
+        ss_id = atoi(regmsg.data);
+        log_message("SS", "INFO", "Registered with NM %s:%d, assigned ID: %d", nm_ip_override, PORT_NM, ss_id);
+    } else {
+        log_message("SS", "ERROR", "NM registration failed: %s", regmsg.error_msg);
+        exit(EXIT_FAILURE);
+    }
+    close(sock);
     
     // Start client listener thread
     pthread_t nm_thread, client_thread;
@@ -134,42 +172,8 @@ void load_storage_files() {
     closedir(d);
 }
 
-void register_with_nm() {
-    int sock = create_socket();
-    if (sock < 0) {
-        log_message("SS", "ERROR", "Failed to create socket for NM registration");
-        exit(EXIT_FAILURE);
-    }
-    
-    struct sockaddr_in nm_addr;
-    nm_addr.sin_family = AF_INET;
-    nm_addr.sin_port = htons(PORT_NM);
-    inet_pton(AF_INET, "127.0.0.1", &nm_addr.sin_addr);
-    
-    if (connect(sock, (struct sockaddr*)&nm_addr, sizeof(nm_addr)) < 0) {
-        perror("Failed to connect to Name Server");
-        log_message("SS", "ERROR", "Failed to connect to Name Server");
-        exit(EXIT_FAILURE);
-    }
-    
-    Message msg;
-    memset(&msg, 0, sizeof(Message));
-    msg.op_code = OP_REGISTER_SS;
-    sprintf(msg.data, "%s %d %d", ss_ip, nm_port, client_port);
-    
-    send_message(sock, &msg);
-    receive_message(sock, &msg);
-    
-    if (msg.error_code == ERR_SUCCESS) {
-        ss_id = atoi(msg.data);
-        log_message("SS", "INFO", "Successfully registered with Name Server, assigned ID: %d", ss_id);
-    } else {
-        log_message("SS", "ERROR", "Failed to register with Name Server: %s", msg.error_msg);
-        exit(EXIT_FAILURE);
-    }
-    
-    close(sock);
-}
+// Legacy register_with_nm retained for compatibility (unused in new main)
+void register_with_nm() { /* Deprecated path now handled inline in main */ }
 
 void* handle_nm_connection(void* arg) {
     int port = *(int*)arg;

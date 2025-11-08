@@ -316,3 +316,39 @@
 [2025-11-07 01:39:05] [REQUEST] From client:4 [Sam] - Operation
 [2025-11-07 01:39:05] [RESPONSE] To client:4 - Status: 0, VIEW command completed
 [2025-11-07 01:39:13] [REQUEST] From client:4 [Sam] - Operation
+[2025-11-08 21:23:00] [INFO] Starting Name Server on port 8080
+[2025-11-08 21:23:00] [INFO] Loaded 8 files and 11 storage servers from persistent storage
+[2025-11-08 21:23:00] [INFO] Name Server listening for connections...
+[2025-11-08 21:23:04] [INFO] New connection from 127.0.0.1:37320
+[2025-11-08 21:23:04] [REQUEST] From client:4 [] - Operation
+[2025-11-08 21:23:04] [INFO] Registered Storage Server 11: 127.0.0.1:9001 (client_port: 9101)
+[2025-11-08 21:23:04] [INFO] Client disconnected
+[2025-11-08 21:23:13] [INFO] New connection from 127.0.0.1:41920
+[2025-11-08 21:23:13] [REQUEST] From client:5 [SAMARTH] - Operation
+[2025-11-08 21:23:13] [INFO] Registered Client: SAMARTH from 127.0.0.1:10000
+[2025-11-08 21:23:16] [REQUEST] From client:5 [SAMARTH] - Operation
+[2025-11-08 21:23:33] [REQUEST] From client:5 [SAMARTH] - Operation
+[2025-11-08 21:23:33] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-08 21:23:39] [REQUEST] From client:5 [SAMARTH] - Operation
+[2025-11-08 21:23:39] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-08 21:23:43] [REQUEST] From client:5 [SAMARTH] - Operation
+[2025-11-08 21:23:43] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-08 21:23:51] [REQUEST] From client:5 [SAMARTH] - Operation
+[2025-11-08 21:23:51] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-08 21:36:30] [INFO] Starting Name Server on port 8080
+[2025-11-08 21:36:30] [INFO] Loaded 8 files and 12 storage servers from persistent storage
+[2025-11-08 21:36:30] [INFO] Name Server listening for connections...
+[2025-11-08 21:37:09] [INFO] New connection from 127.0.0.1:49572
+[2025-11-08 21:37:09] [REQUEST] From client:4 [] - Operation
+[2025-11-08 21:37:09] [INFO] Registered Storage Server 12: 127.0.0.1:192 (client_port: 172)
+[2025-11-08 21:37:09] [INFO] Client disconnected
+[2025-11-08 21:41:23] [INFO] New connection from 192.168.137.14:47972
+[2025-11-08 21:41:23] [REQUEST] From client:5 [Hello] - Operation
+[2025-11-08 21:41:23] [INFO] Registered Client: Hello from 0.0.0.0:10000
+[2025-11-08 21:41:26] [REQUEST] From client:5 [Hello] - Operation
+[2025-11-08 21:42:40] [REQUEST] From client:5 [Hello] - Operation
+[2025-11-08 21:42:46] [REQUEST] From client:5 [Hello] - Operation
+[2025-11-08 21:42:46] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-08 21:42:50] [REQUEST] From client:5 [Hello] - Operation
+[2025-11-08 21:42:50] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-08 21:43:27] [INFO] Client disconnected
