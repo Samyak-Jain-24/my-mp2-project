@@ -179,9 +179,31 @@ void handle_view_command(char* command) {
     strcpy(msg.username, username);
     msg.flags = 0;
     
-    // Parse flags
-    if (strstr(command, "-a")) msg.flags |= 1;
-    if (strstr(command, "-l")) msg.flags |= 2;
+    // Parse flags robustly: support "-a -l", "-al", "-la" (any order)
+    // Tokenize after the "VIEW" keyword and accumulate flags character-by-character
+    char cmd_copy[MAX_COMMAND];
+    strncpy(cmd_copy, command, sizeof(cmd_copy) - 1);
+    cmd_copy[sizeof(cmd_copy) - 1] = '\0';
+    
+    char* saveptr = NULL;
+    char* token = strtok_r(cmd_copy, " \t", &saveptr);
+    // First token is "VIEW"
+    if (token != NULL) {
+        token = strtok_r(NULL, " \t", &saveptr);
+    }
+    while (token != NULL) {
+        if (token[0] == '-') {
+            for (size_t i = 1; token[i] != '\0'; i++) {
+                if (token[i] == 'a' || token[i] == 'A') {
+                    msg.flags |= 1; // -a flag
+                } else if (token[i] == 'l' || token[i] == 'L') {
+                    msg.flags |= 2; // -l flag
+                }
+                // ignore unknown flags gracefully
+            }
+        }
+        token = strtok_r(NULL, " \t", &saveptr);
+    }
     
     send_message(nm_socket, &msg);
     receive_message(nm_socket, &msg);

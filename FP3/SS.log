@@ -524,3 +524,63 @@ ETIRW
 [2025-11-08 21:23:04] [INFO] Listening for NM connections on port 9001
 [2025-11-08 21:37:09] [INFO] Starting Storage Server on ports NM:192 Client:172
 [2025-11-08 21:37:09] [INFO] Registered with NM 127.0.0.1:8080, assigned ID: 12
+[2025-11-08 23:13:07] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-08 23:14:49] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-08 23:14:49] [INFO] Registered with NM 127.0.0.1:8080, assigned ID: 13
+[2025-11-08 23:14:49] [INFO] Listening for NM connections on port 9001
+[2025-11-08 23:14:49] [INFO] Listening for client connections on port 9101
+[2025-11-08 23:16:01] [INFO] Starting Storage Server on ports NM:9002 Client:9102
+[2025-11-08 23:16:08] [INFO] Starting Storage Server on ports NM:9002 Client:9102
+[2025-11-08 23:18:51] [INFO] Starting Storage Server on ports NM:9002 Client:9102
+[2025-11-08 23:18:55] [ERROR] Failed to connect to Name Server at 192.168.137.14:8080
+[2025-11-13 15:32:41] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-13 15:32:41] [INFO] Discovered file on startup: hello.txt
+[2025-11-13 15:32:41] [INFO] Discovered file on startup: kehde2.txt
+[2025-11-13 15:32:41] [INFO] Discovered file on startup: af.txt
+[2025-11-13 15:32:41] [INFO] Discovered file on startup: led.txt
+[2025-11-13 15:32:41] [INFO] Discovered file on startup: kaka.txt
+[2025-11-13 15:32:41] [INFO] Discovered file on startup: alu.txt
+[2025-11-13 15:32:41] [INFO] Discovered file on startup: lala.txt
+[2025-11-13 15:32:41] [INFO] Discovered file on startup: kriti.txt
+[2025-11-13 15:32:41] [INFO] Discovered file on startup: mama.txt
+[2025-11-13 15:32:41] [INFO] Discovered file on startup: kehde.txt
+[2025-11-13 15:32:41] [INFO] Discovered file on startup: sam.txt
+[2025-11-13 15:32:41] [INFO] Registered with NM 127.0.0.1:8080, assigned ID: 14
+[2025-11-13 15:32:41] [INFO] Listening for NM connections on port 9001
+[2025-11-13 15:32:41] [INFO] Listening for client connections on port 9101
+[2025-11-13 15:37:37] [INFO] File deleted: sam.txt
+[2025-11-13 15:38:54] [INFO] File created: sam.txt
+[2025-11-13 15:39:06] [INFO] File deleted: sam.txt
+[2025-11-13 15:45:34] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-13 15:45:34] [INFO] Discovered file on startup: hello.txt
+[2025-11-13 15:45:34] [INFO] Discovered file on startup: kehde2.txt
+[2025-11-13 15:45:34] [INFO] Discovered file on startup: af.txt
+[2025-11-13 15:45:34] [INFO] Discovered file on startup: led.txt
+[2025-11-13 15:45:34] [INFO] Discovered file on startup: kaka.txt
+[2025-11-13 15:45:34] [INFO] Discovered file on startup: alu.txt
+[2025-11-13 15:45:34] [INFO] Discovered file on startup: lala.txt
+[2025-11-13 15:45:34] [INFO] Discovered file on startup: kriti.txt
+[2025-11-13 15:45:34] [INFO] Discovered file on startup: mama.txt
+[2025-11-13 15:45:34] [INFO] Discovered file on startup: kehde.txt
+[2025-11-13 15:45:34] [INFO] Registered with NM 127.0.0.1:8080, assigned ID: 15
+[2025-11-13 15:45:34] [INFO] Listening for client connections on port 9101
+[2025-11-13 15:45:34] [INFO] Listening for NM connections on port 9001
+[2025-11-13 15:50:00] [ERROR] Failed to delete file: sam.txt
+[2025-11-13 15:53:19] [INFO] File created: sam.txt
+[2025-11-13 16:17:06] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-13 16:17:06] [INFO] Discovered file on startup: hello.txt
+[2025-11-13 16:17:06] [INFO] Discovered file on startup: kehde2.txt
+[2025-11-13 16:17:06] [INFO] Discovered file on startup: af.txt
+[2025-11-13 16:17:06] [INFO] Discovered file on startup: led.txt
+[2025-11-13 16:17:06] [INFO] Discovered file on startup: kaka.txt
+[2025-11-13 16:17:06] [INFO] Discovered file on startup: alu.txt
+[2025-11-13 16:17:06] [INFO] Discovered file on startup: lala.txt
+[2025-11-13 16:17:06] [INFO] Discovered file on startup: kriti.txt
+[2025-11-13 16:17:06] [INFO] Discovered file on startup: mama.txt
+[2025-11-13 16:17:06] [INFO] Discovered file on startup: kehde.txt
+[2025-11-13 16:17:06] [INFO] Discovered file on startup: sam.txt
+[2025-11-13 16:17:06] [INFO] Registered with NM 127.0.0.1:8080, assigned ID: 16
+[2025-11-13 16:17:06] [INFO] Listening for NM connections on port 9001
+[2025-11-13 16:17:06] [INFO] Listening for client connections on port 9101
+[2025-11-13 16:17:53] [ERROR] Failed to delete file: iiii.txt
+[2025-11-13 16:18:08] [INFO] File deleted: mama.txt
