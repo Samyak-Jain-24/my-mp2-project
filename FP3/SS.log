@@ -584,3 +584,17 @@ ETIRW
 [2025-11-13 16:17:06] [INFO] Listening for client connections on port 9101
 [2025-11-13 16:17:53] [ERROR] Failed to delete file: iiii.txt
 [2025-11-13 16:18:08] [INFO] File deleted: mama.txt
+[2025-11-13 16:23:06] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-13 16:23:06] [INFO] Discovered file on startup: hello.txt
+[2025-11-13 16:23:06] [INFO] Discovered file on startup: kehde2.txt
+[2025-11-13 16:23:06] [INFO] Discovered file on startup: af.txt
+[2025-11-13 16:23:06] [INFO] Discovered file on startup: led.txt
+[2025-11-13 16:23:06] [INFO] Discovered file on startup: kaka.txt
+[2025-11-13 16:23:06] [INFO] Discovered file on startup: alu.txt
+[2025-11-13 16:23:06] [INFO] Discovered file on startup: lala.txt
+[2025-11-13 16:23:06] [INFO] Discovered file on startup: kriti.txt
+[2025-11-13 16:23:06] [INFO] Discovered file on startup: kehde.txt
+[2025-11-13 16:23:06] [INFO] Discovered file on startup: sam.txt
+[2025-11-13 16:23:06] [INFO] Registered with NM 127.0.0.1:8080, assigned ID: 17
+[2025-11-13 16:23:06] [INFO] Listening for NM connections on port 9001
+[2025-11-13 16:23:06] [INFO] Listening for client connections on port 9101
