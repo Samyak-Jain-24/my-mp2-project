@@ -44,6 +44,18 @@ void parse_sentences(const char* content, char sentences[][MAX_SENTENCE_LEN], in
 void reconstruct_content(char sentences[][MAX_SENTENCE_LEN], int sentence_count, char* output);
 void load_storage_files();
 
+// Helper: check if the last non-whitespace character in content is a sentence delimiter
+static int ends_with_delimiter(const char* content) {
+    if (content == NULL) return 0;
+    int len = (int)strlen(content);
+    int i = len - 1;
+    while (i >= 0 && (content[i] == ' ' || content[i] == '\n' || content[i] == '\t' || content[i] == '\r')) {
+        i--;
+    }
+    if (i < 0) return 0;
+    return (content[i] == '.' || content[i] == '!' || content[i] == '?') ? 1 : 0;
+}
+
 int main(int argc, char* argv[]) {
     // New usage: ./storage_server [nm_ip] <nm_port> <client_port> <storage_dir>
     // Backwards compatible with old usage lacking nm_ip.
@@ -409,6 +421,7 @@ void handle_write_file(Message* msg) {
     
     // Load current content
     char* content = load_file_content(msg->filename);
+    int last_has_delim = ends_with_delimiter(content);
     if (content == NULL) {
         log_message("SS", "INFO", "Empty file, creating new content");
         // File doesn't exist or can't be read - create empty content
@@ -448,7 +461,8 @@ void handle_write_file(Message* msg) {
 
     log_message("SS", "INFO", "Parsed %d sentences", sentence_count);
 
-    // Validate sentence index - allow writing to sentence_count (append new sentence)
+    // Validate sentence index. Normally allow append (== sentence_count),
+    // BUT disallow append if the current content doesn't end with a delimiter.
     if (msg->sentence_number < 0 || msg->sentence_number > sentence_count) {
         msg->error_code = ERR_INVALID_INDEX;
         sprintf(msg->error_msg, "Sentence index out of range (0-%d allowed)", sentence_count);
@@ -457,8 +471,16 @@ void handle_write_file(Message* msg) {
         return;
     }
 
-    // If writing to a new sentence (== sentence_count), extend count
+    // If writing to a new sentence (== sentence_count), only allow when
+    // the existing content properly ends with a sentence delimiter.
     if (msg->sentence_number == sentence_count) {
+        if (sentence_count > 0 && !last_has_delim) {
+            msg->error_code = ERR_INVALID_INDEX;
+            sprintf(msg->error_msg, "Sentence index out of range (0-%d allowed). Terminate previous sentence to add a new one.", sentence_count - 1);
+            free(sentences);
+            pthread_mutex_unlock(&file_locks[lock_index]);
+            return;
+        }
         sentence_count++;
         sentences[msg->sentence_number][0] = '\0';
     }
@@ -719,8 +741,10 @@ void handle_lock_sentence(Message* msg) {
     pthread_mutex_lock(&file_locks[lock_index]);
     
     // Validate sentence index: must be in [0, current_sentence_count].
-    // Allow locking a new sentence by permitting == current_sentence_count.
+    // Allow locking a new sentence by permitting == current_sentence_count,
+    // BUT only if existing content ends with a delimiter.
     int current_sentence_count = 0;
+    int last_has_delim = 0;
     {
         char* content = load_file_content(msg->filename);
         // Parse existing content to determine current number of sentences
@@ -729,6 +753,7 @@ void handle_lock_sentence(Message* msg) {
             parse_sentences(content ? content : "", sentences, &current_sentence_count);
             free(sentences);
         }
+        last_has_delim = ends_with_delimiter(content);
         if (content) free(content);
     }
 
@@ -737,6 +762,15 @@ void handle_lock_sentence(Message* msg) {
         sprintf(msg->error_msg, "Sentence index out of range (0-%d allowed)", current_sentence_count);
         pthread_mutex_unlock(&file_locks[lock_index]);
         return;
+    }
+
+    if (msg->sentence_number == current_sentence_count) {
+        if (current_sentence_count > 0 && !last_has_delim) {
+            msg->error_code = ERR_INVALID_INDEX;
+            sprintf(msg->error_msg, "Sentence index out of range (0-%d allowed). Terminate previous sentence to add a new one.", current_sentence_count - 1);
+            pthread_mutex_unlock(&file_locks[lock_index]);
+            return;
+        }
     }
 
     FileLockInfo* lock_info = &file_lock_info[lock_index];

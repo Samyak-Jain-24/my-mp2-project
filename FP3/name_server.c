@@ -42,6 +42,10 @@ void update_cache(const char* filename, FileMetadata* file_info);
 void load_persistent_data();
 void save_persistent_data();
 
+// Helpers to validate SS state and purge stale metadata
+static int ss_file_exists(FileMetadata* file);
+static void purge_file_metadata(const char* filename);
+
 int main() {
     struct sockaddr_in server_addr;
     
@@ -271,6 +275,10 @@ void handle_view_command(int client_sock, Message* msg) {
     pthread_mutex_lock(&nm_lock);
     
     char response[BUFFER_SIZE] = "";
+    // To avoid showing duplicate filenames (from any prior inconsistent state),
+    // keep track of what we've already emitted in this response.
+    char seen[MAX_FILES][MAX_FILENAME];
+    int seen_count = 0;
     
     if (show_details) {
         strcat(response, "---------------------------------------------------------\n");
@@ -278,26 +286,50 @@ void handle_view_command(int client_sock, Message* msg) {
         strcat(response, "|------------|-------|-------|------------------|-------|\n");
     }
     
-    for (int i = 0; i < file_count; i++) {
+    // Iterate carefully since we may purge stale entries (modifies files[]/file_count)
+    for (int i = 0; i < file_count; ) {
         FileMetadata* file = &files[i];
         
-        // Check access
-        if (!show_all && !check_access(file, msg->username, ACCESS_READ)) {
+        // If file doesn't exist on SS anymore (stale), purge and continue without incrementing i
+        int exists = ss_file_exists(file);
+        if (exists == 0) {
+            purge_file_metadata(file->filename);
+            // After purge, files[i] now contains a new entry (swapped), so re-check same index
+            continue;
+        }
+        // If SS unreachable, we don't purge metadata; just skip listing to avoid showing ghost files
+        if (exists < 0) {
+            i++;
             continue;
         }
         
-        if (show_details) {
-            char time_str[32];
-            strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M", localtime(&file->accessed_time));
-            char line[256];
-            snprintf(line, sizeof(line), "| %-10s | %5d | %5d | %16s | %-5s |\n",
-                    file->filename, file->word_count, file->char_count, time_str, file->owner);
-            strcat(response, line);
-        } else {
-            strcat(response, "--> ");
-            strcat(response, file->filename);
-            strcat(response, "\n");
+        // Check access
+        if (!show_all && !check_access(file, msg->username, ACCESS_READ)) {
+            i++;
+            continue;
         }
+        // Skip duplicates within this listing
+        int dup = 0;
+        for (int s = 0; s < seen_count; s++) {
+            if (strcmp(seen[s], file->filename) == 0) { dup = 1; break; }
+        }
+        if (!dup) {
+            strcpy(seen[seen_count++], file->filename);
+            
+            if (show_details) {
+                char time_str[32];
+                strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M", localtime(&file->accessed_time));
+                char line[256];
+                snprintf(line, sizeof(line), "| %-10s | %5d | %5d | %16s | %-5s |\n",
+                        file->filename, file->word_count, file->char_count, time_str, file->owner);
+                strcat(response, line);
+            } else {
+                strcat(response, "--> ");
+                strcat(response, file->filename);
+                strcat(response, "\n");
+            }
+        }
+        i++;
     }
     
     if (show_details) {
@@ -432,24 +464,27 @@ void handle_delete_command(int client_sock, Message* msg) {
         if (connect(ss_sock, (struct sockaddr*)&ss_addr, sizeof(ss_addr)) >= 0) {
             send_message(ss_sock, msg);
             receive_message(ss_sock, msg);
+        } else {
+            // If we couldn't reach SS, return connection failed and do not mutate NM state
+            msg->error_code = ERR_CONNECTION_FAILED;
+            strcpy(msg->error_msg, "Failed to connect to storage server");
         }
         close(ss_sock);
+    } else {
+        msg->error_code = ERR_CONNECTION_FAILED;
+        strcpy(msg->error_msg, "Failed to create socket to storage server");
     }
-    
-    // Remove from trie
-    trie_delete(file_trie_root, msg->filename);
-    
-    // Remove from SS file list
-    for (int i = 0; i < ss->file_count; i++) {
-        if (strcmp(ss->files[i], msg->filename) == 0) {
-            for (int j = i; j < ss->file_count - 1; j++) {
-                strcpy(ss->files[j], ss->files[j + 1]);
-            }
-            ss->file_count--;
-            break;
-        }
+
+    // If SS deletion failed, abort here without touching NM metadata
+    if (msg->error_code != ERR_SUCCESS) {
+        pthread_mutex_unlock(&nm_lock);
+        send_message(client_sock, msg);
+        return;
     }
-    
+
+    // Purge metadata now that SS deletion succeeded
+    purge_file_metadata(msg->filename);
+
     msg->error_code = ERR_SUCCESS;
     strcpy(msg->data, "File deleted successfully");
     
@@ -472,6 +507,18 @@ void handle_info_command(int client_sock, Message* msg) {
         send_message(client_sock, msg);
         return;
     }
+    
+    // Validate existence on SS; if missing, purge metadata and report not found
+    int exists = ss_file_exists(file);
+    if (exists == 0) {
+        purge_file_metadata(file->filename);
+        msg->error_code = ERR_FILE_NOT_FOUND;
+        strcpy(msg->error_msg, "File not found");
+        pthread_mutex_unlock(&nm_lock);
+        send_message(client_sock, msg);
+        return;
+    }
+    // If SS unreachable, fall through to return metadata we have (avoid blocking all INFO)
     
     char response[BUFFER_SIZE];
     char created_time[64], modified_time[64], accessed_time[64];
@@ -872,10 +919,22 @@ void load_persistent_data() {
     fread(&ss_count, sizeof(int), 1, fp);
     fread(storage_servers, sizeof(StorageServerInfo), ss_count, fp);
     
-    // Rebuild trie
+    // Rebuild trie with de-duplication to recover from any stale entries
+    int new_count = 0;
     for (int i = 0; i < file_count; i++) {
-        trie_insert(file_trie_root, files[i].filename, &files[i]);
+        int exists = 0;
+        for (int j = 0; j < new_count; j++) {
+            if (strcmp(files[j].filename, files[i].filename) == 0) { exists = 1; break; }
+        }
+        if (!exists) {
+            if (i != new_count) {
+                files[new_count] = files[i];
+            }
+            trie_insert(file_trie_root, files[new_count].filename, &files[new_count]);
+            new_count++;
+        }
     }
+    file_count = new_count;
     
     fclose(fp);
     log_message("NM", "INFO", "Loaded %d files and %d storage servers from persistent storage", file_count, ss_count);
@@ -894,4 +953,89 @@ void save_persistent_data() {
     fwrite(storage_servers, sizeof(StorageServerInfo), ss_count, fp);
     
     fclose(fp);
+}
+
+// Connect to SS (NM port) and check if file exists by attempting a lightweight READ
+// Returns: 1 = exists, 0 = not found (purge candidate), -1 = SS unreachable/error
+static int ss_file_exists(FileMetadata* file) {
+    if (file == NULL) return 0;
+    if (file->ss_id < 0 || file->ss_id >= ss_count) return -1;
+    StorageServerInfo* ss = &storage_servers[file->ss_id];
+
+    int ss_sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (ss_sock < 0) return -1;
+
+    struct sockaddr_in ss_addr;
+    ss_addr.sin_family = AF_INET;
+    ss_addr.sin_port = htons(ss->nm_port);
+    if (inet_pton(AF_INET, ss->ip, &ss_addr.sin_addr) != 1) {
+        close(ss_sock);
+        return -1;
+    }
+    if (connect(ss_sock, (struct sockaddr*)&ss_addr, sizeof(ss_addr)) < 0) {
+        close(ss_sock);
+        return -1;
+    }
+
+    Message m; memset(&m, 0, sizeof(m));
+    m.op_code = OP_READ; // SS NM listener supports OP_READ
+    strncpy(m.filename, file->filename, sizeof(m.filename)-1);
+    strncpy(m.username, "NM", sizeof(m.username)-1);
+    send_message(ss_sock, &m);
+    receive_message(ss_sock, &m);
+    close(ss_sock);
+
+    if (m.error_code == ERR_SUCCESS) return 1;
+    if (m.error_code == ERR_FILE_NOT_FOUND) return 0;
+    return -1;
+}
+
+// Remove all traces of a filename from NM memory (trie, arrays, SS lists) and reset cache
+static void purge_file_metadata(const char* filename) {
+    if (filename == NULL || filename[0] == '\0') return;
+
+    // Remove from trie (primary index) — safe even if not present
+    trie_delete(file_trie_root, filename);
+
+    // Remove from ALL SS file lists (clean up any stale entries)
+    for (int s = 0; s < ss_count; s++) {
+        StorageServerInfo* ssp = &storage_servers[s];
+        for (int i = 0; i < ssp->file_count; i++) {
+            if (strcmp(ssp->files[i], filename) == 0) {
+                for (int j = i; j < ssp->file_count - 1; j++) {
+                    strcpy(ssp->files[j], ssp->files[j + 1]);
+                }
+                ssp->file_count--;
+                i--; // stay at same index after shift
+            }
+        }
+    }
+
+    // Remove ALL occurrences from files[] and keep array compact
+    int i = 0;
+    while (i < file_count) {
+        if (strcmp(files[i].filename, filename) == 0) {
+            int last = file_count - 1;
+            if (i != last) {
+                char swapped_name[MAX_FILENAME];
+                strcpy(swapped_name, files[last].filename);
+                files[i] = files[last];
+                file_count--;
+                // Update trie pointer for swapped element
+                trie_delete(file_trie_root, swapped_name);
+                trie_insert(file_trie_root, swapped_name, &files[i]);
+                // re-check this index
+            } else {
+                file_count--;
+            }
+        } else {
+            i++;
+        }
+    }
+
+    // Invalidate search cache (pointers may have moved)
+    cache_size = 0;
+
+    // Persist immediately to avoid stale records after restart
+    save_persistent_data();
 }

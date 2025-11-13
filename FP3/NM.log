@@ -484,3 +484,186 @@
 [2025-11-13 16:23:33] [REQUEST] From client:5 [Sama] - Operation
 [2025-11-13 16:23:33] [RESPONSE] To client:5 - Status: 0, VIEW command completed
 [2025-11-13 16:25:28] [INFO] Client disconnected
+[2025-11-13 16:33:01] [INFO] Starting Name Server on port 8080
+[2025-11-13 16:33:01] [INFO] Loaded 8 files and 18 storage servers from persistent storage
+[2025-11-13 16:33:01] [INFO] Name Server listening for connections...
+[2025-11-13 16:33:10] [INFO] New connection from 127.0.0.1:42098
+[2025-11-13 16:33:10] [REQUEST] From client:4 [] - Operation
+[2025-11-13 16:33:10] [INFO] Registered Storage Server 18: 127.0.0.1:9001 (client_port: 9101)
+[2025-11-13 16:33:11] [INFO] Client disconnected
+[2025-11-13 16:33:38] [INFO] New connection from 127.0.0.1:57984
+[2025-11-13 16:33:38] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:33:38] [INFO] Registered Client: Sam from 0.0.0.0:10000
+[2025-11-13 16:33:43] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:33:43] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-13 16:33:55] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:33:55] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-13 16:34:14] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:34:14] [INFO] File deleted: hello.txt by Sam
+[2025-11-13 16:34:22] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:34:22] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-13 16:34:31] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:34:31] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-13 16:34:44] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:35:13] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:36:59] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:37:20] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:39:49] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:39:54] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:43:24] [INFO] Client disconnected
+[2025-11-13 16:47:00] [INFO] Starting Name Server on port 8080
+[2025-11-13 16:47:00] [INFO] Loaded 7 files and 19 storage servers from persistent storage
+[2025-11-13 16:47:00] [INFO] Name Server listening for connections...
+[2025-11-13 16:47:03] [INFO] New connection from 127.0.0.1:55238
+[2025-11-13 16:47:03] [REQUEST] From client:4 [] - Operation
+[2025-11-13 16:47:03] [INFO] Registered Storage Server 19: 127.0.0.1:9001 (client_port: 9101)
+[2025-11-13 16:47:03] [INFO] Client disconnected
+[2025-11-13 16:47:15] [INFO] New connection from 127.0.0.1:55994
+[2025-11-13 16:47:15] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:47:15] [INFO] Registered Client: Sam from 0.0.0.0:10000
+[2025-11-13 16:47:23] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:47:23] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-13 16:47:32] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:47:32] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-13 16:48:06] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:48:06] [INFO] File deleted: kriti.txt by Sam
+[2025-11-13 16:48:14] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:48:14] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-13 16:48:18] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:48:18] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-13 16:48:28] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:48:35] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:49:59] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:49:59] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-13 16:50:45] [INFO] New connection from 127.0.0.1:41174
+[2025-11-13 16:50:45] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:50:45] [INFO] Registered Client: manja from 0.0.0.0:10000
+[2025-11-13 16:51:15] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:51:15] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-13 16:51:19] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:51:19] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-13 16:51:24] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:51:24] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-13 16:51:51] [REQUEST] From client:5 [Sam] - Operation
+[2025-11-13 16:51:51] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-13 16:52:11] [INFO] Client disconnected
+[2025-11-13 16:52:17] [INFO] New connection from 127.0.0.1:49758
+[2025-11-13 16:52:17] [REQUEST] From client:6 [Sam] - Operation
+[2025-11-13 16:52:17] [INFO] Re-registered Client: Sam from 0.0.0.0:10000
+[2025-11-13 16:52:21] [REQUEST] From client:6 [Sam] - Operation
+[2025-11-13 16:52:21] [RESPONSE] To client:6 - Status: 0, VIEW command completed
+[2025-11-13 16:52:38] [REQUEST] From client:6 [Sam] - Operation
+[2025-11-13 16:52:38] [INFO] Access granted to manja for file lala.txt
+[2025-11-13 16:52:40] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:52:40] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-13 16:52:55] [REQUEST] From client:6 [Sam] - Operation
+[2025-11-13 16:53:09] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:53:14] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:53:56] [REQUEST] From client:6 [Sam] - Operation
+[2025-11-13 16:54:13] [REQUEST] From client:6 [Sam] - Operation
+[2025-11-13 16:54:13] [INFO] File created: test.txt by Sam on SS 3
+[2025-11-13 16:54:36] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:54:38] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:54:38] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-13 16:54:39] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:54:39] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-13 16:54:46] [REQUEST] From client:6 [Sam] - Operation
+[2025-11-13 16:54:47] [INFO] Access granted to manja for file test.txt
+[2025-11-13 16:54:47] [REQUEST] From client:6 [Sam] - Operation
+[2025-11-13 16:54:47] [RESPONSE] To client:6 - Status: 0, VIEW command completed
+[2025-11-13 16:54:55] [REQUEST] From client:6 [Sam] - Operation
+[2025-11-13 16:55:04] [REQUEST] From client:6 [Sam] - Operation
+[2025-11-13 16:55:13] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:55:19] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:55:38] [REQUEST] From client:6 [Sam] - Operation
+[2025-11-13 16:55:43] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:56:16] [REQUEST] From client:6 [Sam] - Operation
+[2025-11-13 16:57:05] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:57:13] [REQUEST] From client:4 [manja] - Operation
+[2025-11-13 16:57:22] [INFO] Client disconnected
+[2025-11-13 16:57:32] [INFO] New connection from 127.0.0.1:37760
+[2025-11-13 16:57:32] [REQUEST] From client:5 [manja] - Operation
+[2025-11-13 16:57:32] [INFO] Re-registered Client: manja from 0.0.0.0:10000
+[2025-11-13 17:07:16] [INFO] Starting Name Server on port 8080
+[2025-11-13 17:07:16] [INFO] Loaded 4 files and 20 storage servers from persistent storage
+[2025-11-13 17:07:16] [INFO] Name Server listening for connections...
+[2025-11-13 17:07:20] [INFO] New connection from 127.0.0.1:42768
+[2025-11-13 17:07:20] [REQUEST] From client:4 [] - Operation
+[2025-11-13 17:07:20] [INFO] Registered Storage Server 20: 127.0.0.1:9001 (client_port: 9101)
+[2025-11-13 17:07:20] [INFO] Client disconnected
+[2025-11-13 17:07:26] [INFO] New connection from 127.0.0.1:34268
+[2025-11-13 17:07:26] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-13 17:07:26] [INFO] Registered Client: samyak from 0.0.0.0:10000
+[2025-11-13 17:07:29] [INFO] New connection from 127.0.0.1:34276
+[2025-11-13 17:07:29] [REQUEST] From client:4 [samaarth] - Operation
+[2025-11-13 17:07:29] [INFO] Registered Client: samaarth from 0.0.0.0:10000
+[2025-11-13 17:07:32] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-13 17:07:32] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-13 17:07:33] [REQUEST] From client:4 [samaarth] - Operation
+[2025-11-13 17:07:33] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-13 17:07:39] [REQUEST] From client:5 [samyak] - Operation
+[2025-11-13 17:07:39] [INFO] File created: mytest.txt by samyak on SS 4
+[2025-11-13 17:07:40] [REQUEST] From client:4 [samaarth] - Operation
+[2025-11-13 17:07:40] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-13 17:07:43] [REQUEST] From client:4 [samaarth] - Operation
+[2025-11-13 17:07:43] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-13 17:08:00] [INFO] Client disconnected
+[2025-11-13 17:08:04] [INFO] New connection from 127.0.0.1:52076
+[2025-11-13 17:08:04] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:08:04] [INFO] Re-registered Client: samyak from 0.0.0.0:10000
+[2025-11-13 17:08:06] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:08:06] [RESPONSE] To client:6 - Status: 0, VIEW command completed
+[2025-11-13 17:08:18] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:08:31] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:08:31] [INFO] Access granted to samaarth for file mytest.txt
+[2025-11-13 17:08:55] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:08:59] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:09:04] [REQUEST] From client:4 [samaarth] - Operation
+[2025-11-13 17:09:09] [REQUEST] From client:4 [samaarth] - Operation
+[2025-11-13 17:09:28] [REQUEST] From client:4 [samaarth] - Operation
+[2025-11-13 17:10:02] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:10:13] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:10:27] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:10:32] [REQUEST] From client:4 [samaarth] - Operation
+[2025-11-13 17:10:38] [INFO] Client disconnected
+[2025-11-13 17:10:43] [INFO] New connection from 127.0.0.1:55638
+[2025-11-13 17:10:43] [REQUEST] From client:5 [samaarth] - Operation
+[2025-11-13 17:10:43] [INFO] Re-registered Client: samaarth from 0.0.0.0:10000
+[2025-11-13 17:10:45] [REQUEST] From client:5 [samaarth] - Operation
+[2025-11-13 17:10:45] [RESPONSE] To client:5 - Status: 0, VIEW command completed
+[2025-11-13 17:10:56] [REQUEST] From client:5 [samaarth] - Operation
+[2025-11-13 17:11:10] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:12:07] [REQUEST] From client:5 [samaarth] - Operation
+[2025-11-13 17:12:21] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:12:33] [REQUEST] From client:5 [samaarth] - Operation
+[2025-11-13 17:12:39] [REQUEST] From client:5 [samaarth] - Operation
+[2025-11-13 17:12:45] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:12:50] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:13:07] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:13:11] [REQUEST] From client:5 [samaarth] - Operation
+[2025-11-13 17:13:19] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:13:25] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:13:34] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:13:56] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:14:18] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:14:18] [RESPONSE] To client:6 - Status: 0, VIEW command completed
+[2025-11-13 17:14:21] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:14:21] [RESPONSE] To client:6 - Status: 0, VIEW command completed
+[2025-11-13 17:14:24] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:14:24] [RESPONSE] To client:6 - Status: 0, VIEW command completed
+[2025-11-13 17:14:35] [REQUEST] From client:5 [samaarth] - Operation
+[2025-11-13 17:14:35] [INFO] File created: lawda.txt by samaarth on SS 5
+[2025-11-13 17:14:37] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:14:37] [RESPONSE] To client:6 - Status: 0, VIEW command completed
+[2025-11-13 17:14:40] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:14:40] [RESPONSE] To client:6 - Status: 0, VIEW command completed
+[2025-11-13 17:14:53] [REQUEST] From client:5 [samaarth] - Operation
+[2025-11-13 17:14:54] [INFO] File deleted: lawda.txt by samaarth
+[2025-11-13 17:14:56] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:14:56] [RESPONSE] To client:6 - Status: 0, VIEW command completed
+[2025-11-13 17:14:58] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:14:58] [RESPONSE] To client:6 - Status: 0, VIEW command completed
+[2025-11-13 17:15:02] [REQUEST] From client:6 [samyak] - Operation
+[2025-11-13 17:15:07] [REQUEST] From client:5 [samaarth] - Operation
+[2025-11-13 17:15:38] [INFO] Client disconnected
+[2025-11-13 17:15:39] [INFO] Client disconnected

@@ -598,3 +598,369 @@ ETIRW
 [2025-11-13 16:23:06] [INFO] Registered with NM 127.0.0.1:8080, assigned ID: 17
 [2025-11-13 16:23:06] [INFO] Listening for NM connections on port 9001
 [2025-11-13 16:23:06] [INFO] Listening for client connections on port 9101
+[2025-11-13 16:33:10] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-13 16:33:10] [INFO] Discovered file on startup: hello.txt
+[2025-11-13 16:33:10] [INFO] Discovered file on startup: kehde2.txt
+[2025-11-13 16:33:10] [INFO] Discovered file on startup: af.txt
+[2025-11-13 16:33:10] [INFO] Discovered file on startup: led.txt
+[2025-11-13 16:33:10] [INFO] Discovered file on startup: kaka.txt
+[2025-11-13 16:33:10] [INFO] Discovered file on startup: alu.txt
+[2025-11-13 16:33:10] [INFO] Discovered file on startup: lala.txt
+[2025-11-13 16:33:10] [INFO] Discovered file on startup: kriti.txt
+[2025-11-13 16:33:10] [INFO] Discovered file on startup: kehde.txt
+[2025-11-13 16:33:10] [INFO] Discovered file on startup: sam.txt
+[2025-11-13 16:33:10] [INFO] Registered with NM 127.0.0.1:8080, assigned ID: 18
+[2025-11-13 16:33:10] [INFO] Listening for NM connections on port 9001
+[2025-11-13 16:33:10] [INFO] Listening for client connections on port 9101
+[2025-11-13 16:34:14] [INFO] File deleted: hello.txt
+[2025-11-13 16:34:44] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-13 16:34:44] [INFO] File read: lala.txt by Sam
+[2025-11-13 16:36:59] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-13 16:39:49] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-13 16:47:03] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-13 16:47:03] [INFO] Discovered file on startup: kaka.txt
+[2025-11-13 16:47:03] [INFO] Discovered file on startup: lala.txt
+[2025-11-13 16:47:03] [INFO] Discovered file on startup: kriti.txt
+[2025-11-13 16:47:03] [INFO] Discovered file on startup: sam.txt
+[2025-11-13 16:47:03] [INFO] Registered with NM 127.0.0.1:8080, assigned ID: 19
+[2025-11-13 16:47:03] [INFO] Listening for NM connections on port 9001
+[2025-11-13 16:47:03] [INFO] Listening for client connections on port 9101
+[2025-11-13 16:47:23] [INFO] File read: sam.txt by NM
+[2025-11-13 16:47:23] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:47:23] [INFO] File read: kriti.txt by NM
+[2025-11-13 16:47:23] [INFO] File read: lala.txt by NM
+[2025-11-13 16:47:32] [INFO] File read: sam.txt by NM
+[2025-11-13 16:47:32] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:47:32] [INFO] File read: kriti.txt by NM
+[2025-11-13 16:47:32] [INFO] File read: lala.txt by NM
+[2025-11-13 16:48:06] [INFO] File deleted: kriti.txt
+[2025-11-13 16:48:14] [INFO] File read: sam.txt by NM
+[2025-11-13 16:48:14] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:48:14] [INFO] File read: lala.txt by NM
+[2025-11-13 16:48:18] [INFO] File read: sam.txt by NM
+[2025-11-13 16:48:18] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:48:18] [INFO] File read: lala.txt by NM
+[2025-11-13 16:49:59] [INFO] File read: sam.txt by NM
+[2025-11-13 16:49:59] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:49:59] [INFO] File read: lala.txt by NM
+[2025-11-13 16:51:15] [INFO] File read: sam.txt by NM
+[2025-11-13 16:51:15] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:51:15] [INFO] File read: lala.txt by NM
+[2025-11-13 16:51:19] [INFO] File read: sam.txt by NM
+[2025-11-13 16:51:19] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:51:19] [INFO] File read: lala.txt by NM
+[2025-11-13 16:51:24] [INFO] File read: sam.txt by NM
+[2025-11-13 16:51:24] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:51:24] [INFO] File read: lala.txt by NM
+[2025-11-13 16:51:51] [INFO] File read: sam.txt by NM
+[2025-11-13 16:51:51] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:51:51] [INFO] File read: lala.txt by NM
+[2025-11-13 16:52:21] [INFO] File read: sam.txt by NM
+[2025-11-13 16:52:21] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:52:21] [INFO] File read: lala.txt by NM
+[2025-11-13 16:52:40] [INFO] File read: sam.txt by NM
+[2025-11-13 16:52:40] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:52:40] [INFO] File read: lala.txt by NM
+[2025-11-13 16:52:55] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-13 16:52:55] [INFO] LOCK request for lala.txt sentence 0 by Sam
+[2025-11-13 16:52:55] [INFO] Sentence 0 locked by Sam (total locks: 1)
+[2025-11-13 16:53:09] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-13 16:53:09] [INFO] LOCK request for lala.txt sentence 0 by manja
+[2025-11-13 16:53:09] [INFO] Sentence 0 already locked by Sam
+[2025-11-13 16:53:14] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-13 16:53:14] [INFO] LOCK request for lala.txt sentence 1 by manja
+[2025-11-13 16:53:14] [INFO] Sentence 1 locked by manja (total locks: 2)
+[2025-11-13 16:53:45] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-13 16:53:45] [INFO] WRITE request for lala.txt sentence 1 by manja
+[2025-11-13 16:53:45] [INFO] Loaded content, length: 6
+[2025-11-13 16:53:45] [INFO] Parsed 1 sentences
+[2025-11-13 16:53:45] [INFO] Processing write data: 1 manja
+
+[2025-11-13 16:53:45] [INFO] Saved new content, length: 12
+[2025-11-13 16:53:45] [INFO] Write completed successfully for lala.txt
+[2025-11-13 16:53:45] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-13 16:53:45] [INFO] UNLOCK request for lala.txt sentence 1 by manja
+[2025-11-13 16:53:45] [INFO] Sentence 1 unlocked by manja (remaining locks: 1)
+[2025-11-13 16:53:47] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-13 16:53:47] [INFO] WRITE request for lala.txt sentence 0 by Sam
+[2025-11-13 16:53:47] [INFO] Loaded content, length: 12
+[2025-11-13 16:53:47] [INFO] Parsed 2 sentences
+[2025-11-13 16:53:47] [INFO] Processing write data: 1 kehde
+
+[2025-11-13 16:53:47] [INFO] Saved new content, length: 18
+[2025-11-13 16:53:47] [INFO] Write completed successfully for lala.txt
+[2025-11-13 16:53:47] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-13 16:53:47] [INFO] UNLOCK request for lala.txt sentence 0 by Sam
+[2025-11-13 16:53:47] [INFO] Sentence 0 unlocked by Sam (remaining locks: 0)
+[2025-11-13 16:53:56] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-13 16:53:56] [INFO] File read: lala.txt by Sam
+[2025-11-13 16:54:13] [INFO] File created: test.txt
+[2025-11-13 16:54:38] [INFO] File read: sam.txt by NM
+[2025-11-13 16:54:38] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:54:38] [INFO] File read: lala.txt by NM
+[2025-11-13 16:54:38] [INFO] File read: test.txt by NM
+[2025-11-13 16:54:39] [INFO] File read: sam.txt by NM
+[2025-11-13 16:54:39] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:54:39] [INFO] File read: lala.txt by NM
+[2025-11-13 16:54:39] [INFO] File read: test.txt by NM
+[2025-11-13 16:54:47] [INFO] File read: sam.txt by NM
+[2025-11-13 16:54:47] [INFO] File read: kaka.txt by NM
+[2025-11-13 16:54:47] [INFO] File read: lala.txt by NM
+[2025-11-13 16:54:47] [INFO] File read: test.txt by NM
+[2025-11-13 16:54:55] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-13 16:54:55] [INFO] File read: test.txt by Sam
+[2025-11-13 16:55:04] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-13 16:55:04] [INFO] LOCK request for test.txt sentence 0 by Sam
+[2025-11-13 16:55:04] [INFO] Sentence 0 locked by Sam (total locks: 1)
+[2025-11-13 16:55:13] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-13 16:55:13] [INFO] LOCK request for test.txt sentence 0 by manja
+[2025-11-13 16:55:13] [INFO] Sentence 0 already locked by Sam
+[2025-11-13 16:55:19] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-13 16:55:19] [INFO] LOCK request for test.txt sentence 1 by manja
+[2025-11-13 16:55:32] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-13 16:55:32] [INFO] WRITE request for test.txt sentence 0 by Sam
+[2025-11-13 16:55:32] [INFO] Loaded content, length: 0
+[2025-11-13 16:55:32] [INFO] Parsed 0 sentences
+[2025-11-13 16:55:32] [INFO] Processing write data: 1 manja
+
+[2025-11-13 16:55:32] [INFO] Saved new content, length: 5
+[2025-11-13 16:55:32] [INFO] Write completed successfully for test.txt
+[2025-11-13 16:55:32] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-13 16:55:32] [INFO] UNLOCK request for test.txt sentence 0 by Sam
+[2025-11-13 16:55:32] [INFO] Sentence 0 unlocked by Sam (remaining locks: 0)
+[2025-11-13 16:55:38] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-13 16:55:38] [INFO] File read: test.txt by Sam
+[2025-11-13 16:55:43] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-13 16:55:43] [INFO] LOCK request for test.txt sentence 1 by manja
+[2025-11-13 16:55:43] [INFO] Sentence 1 locked by manja (total locks: 1)
+[2025-11-13 16:56:09] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-13 16:56:09] [INFO] WRITE request for test.txt sentence 1 by manja
+[2025-11-13 16:56:09] [INFO] Loaded content, length: 5
+[2025-11-13 16:56:09] [INFO] Parsed 1 sentences
+[2025-11-13 16:56:09] [INFO] Processing write data: 1 chutiya
+
+[2025-11-13 16:56:09] [INFO] Saved new content, length: 13
+[2025-11-13 16:56:09] [INFO] Write completed successfully for test.txt
+[2025-11-13 16:56:09] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-13 16:56:09] [INFO] UNLOCK request for test.txt sentence 1 by manja
+[2025-11-13 16:56:09] [INFO] Sentence 1 unlocked by manja (remaining locks: 0)
+[2025-11-13 16:56:16] [REQUEST] From client:6 [Sam] - Client operation
+[2025-11-13 16:56:16] [INFO] File read: test.txt by Sam
+[2025-11-13 16:57:05] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-13 16:57:05] [INFO] LOCK request for test.txt sentence 2 by manja
+[2025-11-13 16:57:13] [REQUEST] From client:6 [manja] - Client operation
+[2025-11-13 16:57:13] [INFO] LOCK request for test.txt sentence 1 by manja
+[2025-11-13 16:57:13] [INFO] Sentence 1 locked by manja (total locks: 1)
+[2025-11-13 17:07:20] [INFO] Starting Storage Server on ports NM:9001 Client:9101
+[2025-11-13 17:07:20] [INFO] Discovered file on startup: test.txt
+[2025-11-13 17:07:20] [INFO] Discovered file on startup: kaka.txt
+[2025-11-13 17:07:20] [INFO] Discovered file on startup: lala.txt
+[2025-11-13 17:07:20] [INFO] Discovered file on startup: sam.txt
+[2025-11-13 17:07:20] [INFO] Registered with NM 127.0.0.1:8080, assigned ID: 20
+[2025-11-13 17:07:20] [INFO] Listening for client connections on port 9101
+[2025-11-13 17:07:20] [INFO] Listening for NM connections on port 9001
+[2025-11-13 17:07:32] [INFO] File read: sam.txt by NM
+[2025-11-13 17:07:32] [INFO] File read: kaka.txt by NM
+[2025-11-13 17:07:32] [INFO] File read: lala.txt by NM
+[2025-11-13 17:07:32] [INFO] File read: test.txt by NM
+[2025-11-13 17:07:33] [INFO] File read: sam.txt by NM
+[2025-11-13 17:07:33] [INFO] File read: kaka.txt by NM
+[2025-11-13 17:07:33] [INFO] File read: lala.txt by NM
+[2025-11-13 17:07:33] [INFO] File read: test.txt by NM
+[2025-11-13 17:07:39] [INFO] File created: mytest.txt
+[2025-11-13 17:07:40] [INFO] File read: sam.txt by NM
+[2025-11-13 17:07:40] [INFO] File read: kaka.txt by NM
+[2025-11-13 17:07:40] [INFO] File read: lala.txt by NM
+[2025-11-13 17:07:40] [INFO] File read: test.txt by NM
+[2025-11-13 17:07:40] [INFO] File read: mytest.txt by NM
+[2025-11-13 17:07:43] [INFO] File read: sam.txt by NM
+[2025-11-13 17:07:43] [INFO] File read: kaka.txt by NM
+[2025-11-13 17:07:43] [INFO] File read: lala.txt by NM
+[2025-11-13 17:07:43] [INFO] File read: test.txt by NM
+[2025-11-13 17:07:43] [INFO] File read: mytest.txt by NM
+[2025-11-13 17:08:06] [INFO] File read: sam.txt by NM
+[2025-11-13 17:08:06] [INFO] File read: kaka.txt by NM
+[2025-11-13 17:08:06] [INFO] File read: lala.txt by NM
+[2025-11-13 17:08:06] [INFO] File read: test.txt by NM
+[2025-11-13 17:08:06] [INFO] File read: mytest.txt by NM
+[2025-11-13 17:08:55] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:08:55] [INFO] File read: mytest.txt by samyak
+[2025-11-13 17:08:59] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:08:59] [INFO] LOCK request for mytest.txt sentence 0 by samyak
+[2025-11-13 17:08:59] [INFO] Sentence 0 locked by samyak (total locks: 1)
+[2025-11-13 17:09:04] [REQUEST] From client:5 [samaarth] - Client operation
+[2025-11-13 17:09:04] [INFO] LOCK request for mytest.txt sentence 0 by samaarth
+[2025-11-13 17:09:04] [INFO] Sentence 0 already locked by samyak
+[2025-11-13 17:09:09] [REQUEST] From client:5 [samaarth] - Client operation
+[2025-11-13 17:09:09] [INFO] LOCK request for mytest.txt sentence 1 by samaarth
+[2025-11-13 17:09:18] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:09:18] [INFO] WRITE request for mytest.txt sentence 0 by samyak
+[2025-11-13 17:09:18] [INFO] Loaded content, length: 0
+[2025-11-13 17:09:18] [INFO] Parsed 0 sentences
+[2025-11-13 17:09:18] [INFO] Processing write data: 1 kehde
+
+[2025-11-13 17:09:18] [INFO] Saved new content, length: 5
+[2025-11-13 17:09:18] [INFO] Write completed successfully for mytest.txt
+[2025-11-13 17:09:18] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:09:18] [INFO] UNLOCK request for mytest.txt sentence 0 by samyak
+[2025-11-13 17:09:18] [INFO] Sentence 0 unlocked by samyak (remaining locks: 0)
+[2025-11-13 17:09:28] [REQUEST] From client:5 [samaarth] - Client operation
+[2025-11-13 17:09:28] [INFO] LOCK request for mytest.txt sentence 1 by samaarth
+[2025-11-13 17:10:02] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:10:02] [INFO] File read: mytest.txt by samyak
+[2025-11-13 17:10:13] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:10:13] [INFO] LOCK request for mytest.txt sentence 0 by samyak
+[2025-11-13 17:10:13] [INFO] Sentence 0 locked by samyak (total locks: 1)
+[2025-11-13 17:10:22] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:10:22] [INFO] WRITE request for mytest.txt sentence 0 by samyak
+[2025-11-13 17:10:22] [INFO] Loaded content, length: 5
+[2025-11-13 17:10:22] [INFO] Parsed 1 sentences
+[2025-11-13 17:10:22] [INFO] Processing write data: 2 chutiya.
+
+[2025-11-13 17:10:22] [INFO] Saved new content, length: 14
+[2025-11-13 17:10:22] [INFO] Write completed successfully for mytest.txt
+[2025-11-13 17:10:22] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:10:22] [INFO] UNLOCK request for mytest.txt sentence 0 by samyak
+[2025-11-13 17:10:22] [INFO] Sentence 0 unlocked by samyak (remaining locks: 0)
+[2025-11-13 17:10:27] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:10:27] [INFO] File read: mytest.txt by samyak
+[2025-11-13 17:10:32] [REQUEST] From client:5 [samaarth] - Client operation
+[2025-11-13 17:10:32] [INFO] LOCK request for mytest.txt sentence 1 by samaarth
+[2025-11-13 17:10:32] [INFO] Sentence 1 locked by samaarth (total locks: 1)
+[2025-11-13 17:10:45] [INFO] File read: sam.txt by NM
+[2025-11-13 17:10:45] [INFO] File read: kaka.txt by NM
+[2025-11-13 17:10:45] [INFO] File read: lala.txt by NM
+[2025-11-13 17:10:45] [INFO] File read: test.txt by NM
+[2025-11-13 17:10:45] [INFO] File read: mytest.txt by NM
+[2025-11-13 17:10:56] [REQUEST] From client:5 [samaarth] - Client operation
+[2025-11-13 17:10:56] [INFO] LOCK request for mytest.txt sentence 2 by samaarth
+[2025-11-13 17:11:10] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:11:10] [INFO] LOCK request for mytest.txt sentence 1 by samyak
+[2025-11-13 17:11:10] [INFO] Sentence 1 already locked by samaarth
+[2025-11-13 17:12:07] [REQUEST] From client:5 [samaarth] - Client operation
+[2025-11-13 17:12:07] [INFO] LOCK request for mytest.txt sentence 1 by samaarth
+[2025-11-13 17:12:09] [REQUEST] From client:5 [samaarth] - Client operation
+[2025-11-13 17:12:09] [INFO] WRITE request for mytest.txt sentence 1 by samaarth
+[2025-11-13 17:12:09] [INFO] Loaded content, length: 14
+[2025-11-13 17:12:09] [INFO] Parsed 1 sentences
+[2025-11-13 17:12:09] [INFO] Processing write data: 
+[2025-11-13 17:12:09] [INFO] Saved new content, length: 15
+[2025-11-13 17:12:09] [INFO] Write completed successfully for mytest.txt
+[2025-11-13 17:12:09] [REQUEST] From client:5 [samaarth] - Client operation
+[2025-11-13 17:12:09] [INFO] UNLOCK request for mytest.txt sentence 1 by samaarth
+[2025-11-13 17:12:09] [INFO] Sentence 1 unlocked by samaarth (remaining locks: 0)
+[2025-11-13 17:12:21] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:12:21] [INFO] LOCK request for mytest.txt sentence 1 by samyak
+[2025-11-13 17:12:21] [INFO] Sentence 1 locked by samyak (total locks: 1)
+[2025-11-13 17:12:27] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:12:27] [INFO] WRITE request for mytest.txt sentence 1 by samyak
+[2025-11-13 17:12:27] [INFO] Loaded content, length: 15
+[2025-11-13 17:12:28] [INFO] Parsed 1 sentences
+[2025-11-13 17:12:28] [INFO] Processing write data: 1 ookk
+
+[2025-11-13 17:12:28] [INFO] Saved new content, length: 19
+[2025-11-13 17:12:28] [INFO] Write completed successfully for mytest.txt
+[2025-11-13 17:12:28] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:12:28] [INFO] UNLOCK request for mytest.txt sentence 1 by samyak
+[2025-11-13 17:12:28] [INFO] Sentence 1 unlocked by samyak (remaining locks: 0)
+[2025-11-13 17:12:39] [REQUEST] From client:5 [samaarth] - Client operation
+[2025-11-13 17:12:39] [INFO] LOCK request for mytest.txt sentence 2 by samaarth
+[2025-11-13 17:12:45] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:12:45] [INFO] LOCK request for mytest.txt sentence 2 by samyak
+[2025-11-13 17:12:50] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:12:50] [INFO] LOCK request for mytest.txt sentence 1 by samyak
+[2025-11-13 17:12:50] [INFO] Sentence 1 locked by samyak (total locks: 1)
+[2025-11-13 17:13:00] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:13:00] [INFO] WRITE request for mytest.txt sentence 1 by samyak
+[2025-11-13 17:13:00] [INFO] Loaded content, length: 19
+[2025-11-13 17:13:00] [INFO] Parsed 2 sentences
+[2025-11-13 17:13:00] [INFO] Processing write data: 2 .
+
+[2025-11-13 17:13:00] [INFO] Saved new content, length: 21
+[2025-11-13 17:13:00] [INFO] Write completed successfully for mytest.txt
+[2025-11-13 17:13:00] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:13:00] [INFO] UNLOCK request for mytest.txt sentence 1 by samyak
+[2025-11-13 17:13:00] [INFO] Sentence 1 unlocked by samyak (remaining locks: 0)
+[2025-11-13 17:13:07] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:13:07] [INFO] File read: mytest.txt by samyak
+[2025-11-13 17:13:11] [REQUEST] From client:5 [samaarth] - Client operation
+[2025-11-13 17:13:11] [INFO] LOCK request for mytest.txt sentence 2 by samaarth
+[2025-11-13 17:13:11] [INFO] Sentence 2 locked by samaarth (total locks: 1)
+[2025-11-13 17:13:19] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:13:19] [INFO] LOCK request for mytest.txt sentence 1 by samyak
+[2025-11-13 17:13:19] [INFO] Sentence 1 locked by samyak (total locks: 2)
+[2025-11-13 17:13:20] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:13:20] [INFO] WRITE request for mytest.txt sentence 1 by samyak
+[2025-11-13 17:13:20] [INFO] Loaded content, length: 21
+[2025-11-13 17:13:20] [INFO] Parsed 2 sentences
+[2025-11-13 17:13:20] [INFO] Processing write data: 
+[2025-11-13 17:13:20] [INFO] Saved new content, length: 21
+[2025-11-13 17:13:20] [INFO] Write completed successfully for mytest.txt
+[2025-11-13 17:13:20] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:13:20] [INFO] UNLOCK request for mytest.txt sentence 1 by samyak
+[2025-11-13 17:13:20] [INFO] Sentence 1 unlocked by samyak (remaining locks: 1)
+[2025-11-13 17:13:25] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:13:25] [INFO] LOCK request for mytest.txt sentence 1 by samyak
+[2025-11-13 17:13:25] [INFO] Sentence 1 locked by samyak (total locks: 2)
+[2025-11-13 17:13:30] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:13:30] [INFO] WRITE request for mytest.txt sentence 1 by samyak
+[2025-11-13 17:13:30] [INFO] Loaded content, length: 21
+[2025-11-13 17:13:30] [INFO] Parsed 2 sentences
+[2025-11-13 17:13:30] [INFO] Processing write data: 
+[2025-11-13 17:13:30] [INFO] Saved new content, length: 21
+[2025-11-13 17:13:30] [INFO] Write completed successfully for mytest.txt
+[2025-11-13 17:13:30] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:13:30] [INFO] UNLOCK request for mytest.txt sentence 1 by samyak
+[2025-11-13 17:13:30] [INFO] Sentence 1 unlocked by samyak (remaining locks: 1)
+[2025-11-13 17:13:34] [REQUEST] From client:5 [samyak] - Client operation
+[2025-11-13 17:13:34] [INFO] LOCK request for mytest.txt sentence 2 by samyak
+[2025-11-13 17:13:34] [INFO] Sentence 2 already locked by samaarth
+[2025-11-13 17:14:18] [INFO] File read: sam.txt by NM
+[2025-11-13 17:14:18] [INFO] File read: kaka.txt by NM
+[2025-11-13 17:14:18] [INFO] File read: lala.txt by NM
+[2025-11-13 17:14:18] [INFO] File read: test.txt by NM
+[2025-11-13 17:14:18] [INFO] File read: mytest.txt by NM
+[2025-11-13 17:14:21] [INFO] File read: sam.txt by NM
+[2025-11-13 17:14:21] [INFO] File read: kaka.txt by NM
+[2025-11-13 17:14:21] [INFO] File read: lala.txt by NM
+[2025-11-13 17:14:21] [INFO] File read: test.txt by NM
+[2025-11-13 17:14:21] [INFO] File read: mytest.txt by NM
+[2025-11-13 17:14:24] [INFO] File read: sam.txt by NM
+[2025-11-13 17:14:24] [INFO] File read: kaka.txt by NM
+[2025-11-13 17:14:24] [INFO] File read: lala.txt by NM
+[2025-11-13 17:14:24] [INFO] File read: test.txt by NM
+[2025-11-13 17:14:24] [INFO] File read: mytest.txt by NM
+[2025-11-13 17:14:31] [REQUEST] From client:5 [samaarth] - Client operation
+[2025-11-13 17:14:31] [INFO] WRITE request for mytest.txt sentence 2 by samaarth
+[2025-11-13 17:14:31] [INFO] Loaded content, length: 21
+[2025-11-13 17:14:31] [INFO] Parsed 2 sentences
+[2025-11-13 17:14:31] [INFO] Processing write data: 
+[2025-11-13 17:14:31] [INFO] Saved new content, length: 22
+[2025-11-13 17:14:31] [INFO] Write completed successfully for mytest.txt
+[2025-11-13 17:14:31] [REQUEST] From client:5 [samaarth] - Client operation
+[2025-11-13 17:14:31] [INFO] UNLOCK request for mytest.txt sentence 2 by samaarth
+[2025-11-13 17:14:31] [INFO] Sentence 2 unlocked by samaarth (remaining locks: 0)
+[2025-11-13 17:14:35] [INFO] File created: lawda.txt
+[2025-11-13 17:14:37] [INFO] File read: sam.txt by NM
+[2025-11-13 17:14:37] [INFO] File read: kaka.txt by NM
+[2025-11-13 17:14:37] [INFO] File read: lala.txt by NM
+[2025-11-13 17:14:37] [INFO] File read: test.txt by NM
+[2025-11-13 17:14:37] [INFO] File read: mytest.txt by NM
+[2025-11-13 17:14:37] [INFO] File read: lawda.txt by NM
+[2025-11-13 17:14:40] [INFO] File read: sam.txt by NM
+[2025-11-13 17:14:40] [INFO] File read: kaka.txt by NM
+[2025-11-13 17:14:40] [INFO] File read: lala.txt by NM
+[2025-11-13 17:14:40] [INFO] File read: test.txt by NM
+[2025-11-13 17:14:40] [INFO] File read: mytest.txt by NM
+[2025-11-13 17:14:40] [INFO] File read: lawda.txt by NM
+[2025-11-13 17:14:53] [INFO] File deleted: lawda.txt
+[2025-11-13 17:14:56] [INFO] File read: sam.txt by NM
+[2025-11-13 17:14:56] [INFO] File read: kaka.txt by NM
+[2025-11-13 17:14:56] [INFO] File read: lala.txt by NM
+[2025-11-13 17:14:56] [INFO] File read: test.txt by NM
+[2025-11-13 17:14:56] [INFO] File read: mytest.txt by NM
+[2025-11-13 17:14:58] [INFO] File read: sam.txt by NM
+[2025-11-13 17:14:58] [INFO] File read: kaka.txt by NM
+[2025-11-13 17:14:58] [INFO] File read: lala.txt by NM
+[2025-11-13 17:14:58] [INFO] File read: test.txt by NM
+[2025-11-13 17:14:58] [INFO] File read: mytest.txt by NM
