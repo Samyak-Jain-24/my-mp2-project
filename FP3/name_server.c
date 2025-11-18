@@ -441,10 +441,12 @@ void handle_view_command(int client_sock, Message* msg) {
         int primary_active = (file->ss_id >=0 && file->ss_id < ss_count && storage_servers[file->ss_id].active);
         int replica_active = (file->replica_ss_id >=0 && file->replica_ss_id < ss_count && storage_servers[file->replica_ss_id].active);
         if (!primary_active && !replica_active) { i++; continue; }
-        // VIEW / VIEW -l (without -a) only show owner's files
-        if (!show_all && strcmp(file->owner, msg->username) != 0) {
-            i++;
-            continue;
+        // VIEW / VIEW -l (without -a): show files where user is owner OR has been granted at least READ access.
+        // Previously we only showed owner files; now we include any file for which access_list grants READ/WRITE.
+        if (!show_all) {
+            int is_owner = (strcmp(file->owner, msg->username) == 0);
+            int has_access = is_owner || check_access(file, msg->username, ACCESS_READ);
+            if (!has_access) { i++; continue; }
         }
         // Skip duplicates within this listing
         int dup = 0;
@@ -565,27 +567,66 @@ void handle_create_command(int client_sock, Message* msg) {
         return;
     }
     
-    int ss_index = file_count % ss_count;  // Simple round-robin
-    StorageServerInfo* ss = &storage_servers[ss_index];
-    
-    // Create file metadata
+    // Try to create on an active storage server. Start from round-robin index but probe others if needed.
+    int start = (file_count < ss_count) ? (file_count % ss_count) : (file_count % ss_count);
+    int chosen = -1;
+    Message ss_reply;
+    for (int attempt = 0; attempt < ss_count; attempt++) {
+        int idx = (start + attempt) % ss_count;
+        StorageServerInfo* cand = &storage_servers[idx];
+        if (!cand->active) continue; // skip inactive
+
+        int ss_sock = socket(AF_INET, SOCK_STREAM, 0);
+        if (ss_sock < 0) continue;
+        struct sockaddr_in ss_addr; memset(&ss_addr, 0, sizeof(ss_addr));
+        ss_addr.sin_family = AF_INET; ss_addr.sin_port = htons(cand->nm_port);
+        inet_pton(AF_INET, cand->ip, &ss_addr.sin_addr);
+        if (connect(ss_sock, (struct sockaddr*)&ss_addr, sizeof(ss_addr)) == 0) {
+            // Send create to this SS
+            Message req = *msg; // includes filename/username/op already
+            send_message(ss_sock, &req);
+            memset(&ss_reply, 0, sizeof(ss_reply));
+            if (receive_message(ss_sock, &ss_reply) > 0 && ss_reply.error_code == ERR_SUCCESS) {
+                chosen = idx;
+                close(ss_sock);
+                break;
+            }
+        }
+        close(ss_sock);
+    }
+
+    if (chosen < 0) {
+        msg->error_code = ERR_CONNECTION_FAILED;
+        strcpy(msg->error_msg, "Failed to connect to storage server");
+        pthread_mutex_unlock(&nm_lock);
+        send_message(client_sock, msg);
+        return;
+    }
+
+    // Persist metadata only after SS confirmed creation
+    StorageServerInfo* ss = &storage_servers[chosen];
     FileMetadata* file = &files[file_count];
     strcpy(file->filename, msg->filename);
     strcpy(file->owner, msg->username);
     file->ss_id = ss->ss_id;
     strcpy(file->ss_ip, ss->ip);
     file->ss_port = ss->client_port;
-    // Set replica to next SS if exists
+    // Set replica to next ACTIVE SS if exists
+    int replica_id = -1; int replica_idx = -1;
     if (ss_count > 1) {
-        int replica_index = (ss_index + 1) % ss_count;
-        StorageServerInfo* rss = &storage_servers[replica_index];
-        file->replica_ss_id = rss->ss_id;
+        for (int off = 1; off <= ss_count; off++) {
+            int j = (chosen + off) % ss_count;
+            if (storage_servers[j].active && j != chosen) { replica_idx = j; break; }
+        }
+    }
+    if (replica_idx >= 0) {
+        StorageServerInfo* rss = &storage_servers[replica_idx];
+        replica_id = rss->ss_id;
+        file->replica_ss_id = replica_id;
         strcpy(file->replica_ss_ip, rss->ip);
         file->replica_ss_port = rss->client_port;
     } else {
-        file->replica_ss_id = -1;
-        file->replica_ss_ip[0] = '\0';
-        file->replica_ss_port = 0;
+        file->replica_ss_id = -1; file->replica_ss_ip[0] = '\0'; file->replica_ss_port = 0;
     }
     file->access_count = 0;
     file->created_time = time(NULL);
@@ -595,47 +636,19 @@ void handle_create_command(int client_sock, Message* msg) {
     file->word_count = 0;
     file->char_count = 0;
     strcpy(file->last_accessed_by, msg->username);
-    
-    // Add to trie
+
     trie_insert(file_trie_root, msg->filename, file);
-    
-    // Add to SS file list
+    // Add to SS file list for chosen
     strcpy(ss->files[ss->file_count], msg->filename);
     ss->file_count++;
-    
     file_count++;
-    
-    // Forward to storage server
-    int ss_sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (ss_sock < 0) {
-        msg->error_code = ERR_CONNECTION_FAILED;
-        strcpy(msg->error_msg, "Failed to connect to storage server");
-        pthread_mutex_unlock(&nm_lock);
-        send_message(client_sock, msg);
-        return;
-    }
-    
-    struct sockaddr_in ss_addr;
-    ss_addr.sin_family = AF_INET;
-    ss_addr.sin_port = htons(ss->nm_port);
-    inet_pton(AF_INET, ss->ip, &ss_addr.sin_addr);
-    
-    if (connect(ss_sock, (struct sockaddr*)&ss_addr, sizeof(ss_addr)) < 0) {
-        msg->error_code = ERR_CONNECTION_FAILED;
-        strcpy(msg->error_msg, "Failed to connect to storage server");
-        close(ss_sock);
-        pthread_mutex_unlock(&nm_lock);
-        send_message(client_sock, msg);
-        return;
-    }
-    
-    send_message(ss_sock, msg);
-    receive_message(ss_sock, msg);
-    close(ss_sock);
-    
+
+    // Return success to client
+    msg->error_code = ERR_SUCCESS;
+    strcpy(msg->data, "File created successfully");
     pthread_mutex_unlock(&nm_lock);
     send_message(client_sock, msg);
-    
+
     save_persistent_data();
     log_message("NM", "INFO", "File created: %s by %s on SS %d", msg->filename, msg->username, ss->ss_id);
 }

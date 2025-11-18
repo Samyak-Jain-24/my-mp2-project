@@ -726,6 +726,7 @@ void handle_write_file(Message* msg) {
     }
 
     int token_count = 0;
+    char sentence_delim = '\0'; // Track existing sentence terminator (.,!,?) if present
     if (sentences[msg->sentence_number][0] != '\0') {
         // Split existing sentence into words as separate tokens
         char* sentence_copy = strdup(sentences[msg->sentence_number]);
@@ -736,6 +737,25 @@ void handle_write_file(Message* msg) {
             free(sentences);
             pthread_mutex_unlock(&file_locks[lock_index]);
             return;
+        }
+
+        // Detect and strip trailing sentence delimiter so inserts go before it
+        size_t slen = strlen(sentence_copy);
+        // Trim trailing spaces just in case
+        while (slen > 0 && (sentence_copy[slen-1] == ' ' || sentence_copy[slen-1] == '\t' || sentence_copy[slen-1] == '\n' || sentence_copy[slen-1] == '\r')) {
+            sentence_copy[--slen] = '\0';
+        }
+        if (slen > 0) {
+            char lastc = sentence_copy[slen-1];
+            if (lastc == '.' || lastc == '!' || lastc == '?') {
+                sentence_delim = lastc;
+                sentence_copy[slen-1] = '\0';
+                slen--;
+                // Also remove any trailing spaces left after removing delimiter
+                while (slen > 0 && (sentence_copy[slen-1] == ' ' || sentence_copy[slen-1] == '\t')) {
+                    sentence_copy[--slen] = '\0';
+                }
+            }
         }
 
         char* saveptr2 = NULL;
@@ -801,22 +821,51 @@ void handle_write_file(Message* msg) {
             return;
         }
 
-        // Insert the entire content as a single phrase token at position (word_index - 1)
+        // Insert the content as individual word tokens at position (word_index - 1)
+        // so subsequent lines' indices see the updated word positions.
         int insert_pos = word_index - 1; // 0-based
 
-        for (int i = token_count - 1; i >= insert_pos; --i) {
-            strcpy(tokens[i + 1], tokens[i]);
-        }
-
-        // Trim and assign content
+        // Split phrase into words
         char phrase[MAX_SENTENCE_LEN];
         strncpy(phrase, content_start, sizeof(phrase) - 1);
         phrase[sizeof(phrase) - 1] = '\0';
         trim_whitespace(phrase);
-        strncpy(tokens[insert_pos], phrase, MAX_SENTENCE_LEN - 1);
-        tokens[insert_pos][MAX_SENTENCE_LEN - 1] = '\0';
 
-        token_count++;
+        char* saveptrW = NULL;
+        char* pw = strtok_r(phrase, " ", &saveptrW);
+        // Collect words first to know how many we will insert
+        char pw_buf[128][MAX_SENTENCE_LEN];
+        int pw_count = 0;
+        while (pw && pw_count < 128) {
+            if (pw[0] != '\0') {
+                strncpy(pw_buf[pw_count], pw, MAX_SENTENCE_LEN - 1);
+                pw_buf[pw_count][MAX_SENTENCE_LEN - 1] = '\0';
+                pw_count++;
+            }
+            pw = strtok_r(NULL, " ", &saveptrW);
+        }
+
+        if (token_count + pw_count > 500) {
+            msg->error_code = ERR_SERVER_ERROR;
+            strcpy(msg->error_msg, "Too many tokens in sentence");
+            free(data_copy);
+            free(tokens);
+            free(sentences);
+            pthread_mutex_unlock(&file_locks[lock_index]);
+            return;
+        }
+
+        // Make room for pw_count tokens starting at insert_pos
+        for (int i = token_count - 1; i >= insert_pos; --i) {
+            strcpy(tokens[i + pw_count], tokens[i]);
+        }
+        // Insert the words in order
+        for (int k = 0; k < pw_count; k++) {
+            strncpy(tokens[insert_pos + k], pw_buf[k], MAX_SENTENCE_LEN - 1);
+            tokens[insert_pos + k][MAX_SENTENCE_LEN - 1] = '\0';
+        }
+
+        token_count += pw_count;
         line = strtok_r(NULL, "\n", &saveptr1);
     }
 
@@ -830,6 +879,15 @@ void handle_write_file(Message* msg) {
         if (current_len + token_len + 2 < MAX_SENTENCE_LEN) {
             if (i > 0) strcat(sentences[msg->sentence_number], " ");
             strcat(sentences[msg->sentence_number], tokens[i]);
+        }
+    }
+
+    // If original sentence ended with a delimiter, append it at the very end
+    if (sentence_delim != '\0') {
+        size_t cur = strlen(sentences[msg->sentence_number]);
+        if (cur + 1 < MAX_SENTENCE_LEN) {
+            sentences[msg->sentence_number][cur] = sentence_delim;
+            sentences[msg->sentence_number][cur+1] = '\0';
         }
     }
 
