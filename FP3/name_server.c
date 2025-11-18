@@ -70,10 +70,16 @@ void save_persistent_data();
 // Helpers to validate SS state and purge stale metadata
 static int ss_file_exists(FileMetadata* file);
 static void purge_file_metadata(const char* filename);
+// Forward declarations for heartbeat & sync threads
+void* storage_server_heartbeat_loop(void* arg);
+void* sync_returned_primary(void* arg);
 
 int main() {
     // Register SIGINT handler for clean shutdown / quick restart
     signal(SIGINT, handle_sigint);
+
+    // Start heartbeat thread to monitor storage server liveness
+    pthread_t hb_thread; pthread_create(&hb_thread, NULL, storage_server_heartbeat_loop, NULL); pthread_detach(hb_thread);
 
     struct sockaddr_in server_addr;
     
@@ -278,6 +284,7 @@ void register_storage_server(int socket_fd, Message* msg) {
             break;
         }
     }
+    int was_inactive = 0;
     // If not found, append new entry
     if (ss == NULL) {
         if (ss_count >= MAX_SS) {
@@ -298,8 +305,8 @@ void register_storage_server(int socket_fd, Message* msg) {
         ss_count++;
     }
     
-    log_message("NM", "INFO", "Registered Storage Server %d: %s:%d (client_port: %d)", 
-                ss->ss_id, ss->ip, ss->nm_port, ss->client_port);
+    log_message("NM", "INFO", "Registered Storage Server %d: %s:%d (client_port: %d) active=%d", 
+                ss->ss_id, ss->ip, ss->nm_port, ss->client_port, ss->active);
     
     msg->error_code = ERR_SUCCESS;
     sprintf(msg->data, "%d", ss->ss_id);
@@ -307,6 +314,11 @@ void register_storage_server(int socket_fd, Message* msg) {
     pthread_mutex_unlock(&nm_lock);
     send_message(socket_fd, msg);
     save_persistent_data();
+
+    // If this was a returning server (previously inactive), trigger resync
+    if (was_inactive) {
+        pthread_t sync_thread; int* sid = malloc(sizeof(int)); *sid = ss->ss_id; pthread_create(&sync_thread, NULL, sync_returned_primary, sid); pthread_detach(sync_thread);
+    }
 
     // After registration, (re)announce replica partners to all active SS
     if (ss_count > 1) {
@@ -424,8 +436,13 @@ void handle_view_command(int client_sock, Message* msg) {
             continue;
         }
         
-        // Check access
-        if (!show_all && !check_access(file, msg->username, ACCESS_READ)) {
+        // Listing policy:
+        // - If both primary and replica servers inactive -> hide file entirely (skip)
+        int primary_active = (file->ss_id >=0 && file->ss_id < ss_count && storage_servers[file->ss_id].active);
+        int replica_active = (file->replica_ss_id >=0 && file->replica_ss_id < ss_count && storage_servers[file->replica_ss_id].active);
+        if (!primary_active && !replica_active) { i++; continue; }
+        // VIEW / VIEW -l (without -a) only show owner's files
+        if (!show_all && strcmp(file->owner, msg->username) != 0) {
             i++;
             continue;
         }
@@ -464,6 +481,67 @@ void handle_view_command(int client_sock, Message* msg) {
     send_message(client_sock, msg);
     
     log_response("NM", "client", client_sock, ERR_SUCCESS, "VIEW command completed");
+}
+
+// Heartbeat thread: periodically probe SS nm_port to update active flag
+void* storage_server_heartbeat_loop(void* arg) {
+    (void)arg;
+    while (1) {
+        pthread_mutex_lock(&nm_lock);
+        for (int i=0;i<ss_count;i++) {
+            StorageServerInfo* ss = &storage_servers[i];
+            int s = socket(AF_INET, SOCK_STREAM, 0);
+            if (s < 0) { ss->active = 0; continue; }
+            struct sockaddr_in addr; memset(&addr,0,sizeof(addr)); addr.sin_family=AF_INET; addr.sin_port=htons(ss->nm_port); inet_pton(AF_INET, ss->ip, &addr.sin_addr);
+            int ok = (connect(s,(struct sockaddr*)&addr,sizeof(addr))==0);
+            close(s);
+            if (!ok && ss->active){
+                ss->active = 0; log_message("NM","WARN","Heartbeat: SS %d marked inactive", ss->ss_id);
+            } else if (ok && !ss->active){
+                ss->active = 1; log_message("NM","INFO","Heartbeat: SS %d marked active", ss->ss_id);
+                // Could trigger resync if becoming active spontaneously without registration path
+            }
+        }
+        pthread_mutex_unlock(&nm_lock);
+        sleep(5);
+    }
+    return NULL;
+}
+
+// Sync thread for a returning primary: copy replica contents back
+void* sync_returned_primary(void* arg) {
+    int ss_id = *(int*)arg; free(arg);
+    pthread_mutex_lock(&nm_lock);
+    // Collect files belonging to this primary
+    FileMetadata local_files[MAX_FILES]; int count=0;
+    for (int i=0;i<file_count;i++) {
+        if (files[i].ss_id == ss_id && files[i].replica_ss_id >=0) {
+            local_files[count++] = files[i];
+        }
+    }
+    pthread_mutex_unlock(&nm_lock);
+    if (count==0) return NULL;
+    log_message("NM","INFO","Sync: primary SS %d returning, syncing %d files from replicas", ss_id, count);
+    for (int i=0;i<count;i++) {
+        FileMetadata* f = &local_files[i];
+        // Read content from replica
+        if (f->replica_ss_id <0 || f->replica_ss_id >= ss_count) continue;
+        StorageServerInfo* rss = &storage_servers[f->replica_ss_id];
+        int rs = socket(AF_INET, SOCK_STREAM, 0);
+        if (rs < 0) continue;
+        struct sockaddr_in raddr; memset(&raddr,0,sizeof(raddr)); raddr.sin_family=AF_INET; raddr.sin_port=htons(rss->nm_port); inet_pton(AF_INET, rss->ip, &raddr.sin_addr);
+        if (connect(rs,(struct sockaddr*)&raddr,sizeof(raddr))!=0){ close(rs); continue; }
+        Message req; memset(&req,0,sizeof(req)); req.op_code=OP_READ; strncpy(req.filename,f->filename,sizeof(req.filename)-1); send_message(rs,&req); receive_message(rs,&req); close(rs);
+        if (req.error_code!=ERR_SUCCESS) continue;
+        // Write content to primary (replication write)
+        StorageServerInfo* pss = &storage_servers[f->ss_id];
+        int ps = socket(AF_INET, SOCK_STREAM, 0); if (ps<0) continue;
+        struct sockaddr_in paddr; memset(&paddr,0,sizeof(paddr)); paddr.sin_family=AF_INET; paddr.sin_port=htons(pss->nm_port); inet_pton(AF_INET, pss->ip, &paddr.sin_addr);
+        if (connect(ps,(struct sockaddr*)&paddr,sizeof(paddr))!=0){ close(ps); continue; }
+        Message w; memset(&w,0,sizeof(w)); w.op_code=OP_REPL_WRITE; strncpy(w.filename,f->filename,sizeof(w.filename)-1); strncpy(w.data,req.data,sizeof(w.data)-1); send_message(ps,&w); receive_message(ps,&w); close(ps);
+    }
+    log_message("NM","INFO","Sync: completed for primary SS %d", ss_id);
+    return NULL;
 }
 
 void handle_create_command(int client_sock, Message* msg) {
@@ -1267,11 +1345,26 @@ void handle_write_command(int client_sock, Message* msg) {
         return;
     }
     
-    // Return SS connection info
+    // Return SS connection info with fallback to replica if primary client port unreachable
     SSConnection ss_conn;
     strcpy(ss_conn.ss_ip, file->ss_ip);
     ss_conn.ss_port = file->ss_port;
-    
+
+    int probe_sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (probe_sock >= 0) {
+        struct sockaddr_in addr; memset(&addr, 0, sizeof(addr));
+        addr.sin_family = AF_INET; addr.sin_port = htons(ss_conn.ss_port);
+        inet_pton(AF_INET, ss_conn.ss_ip, &addr.sin_addr);
+        if (connect(probe_sock, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
+            // try replica
+            if (file->replica_ss_port > 0 && strlen(file->replica_ss_ip) > 0) {
+                strcpy(ss_conn.ss_ip, file->replica_ss_ip);
+                ss_conn.ss_port = file->replica_ss_port;
+            }
+        }
+        close(probe_sock);
+    }
+
     sprintf(msg->data, "%s %d", ss_conn.ss_ip, ss_conn.ss_port);
     msg->error_code = ERR_SUCCESS;
     
@@ -1419,8 +1512,11 @@ void save_persistent_data() {
 // Returns: 1 = exists, 0 = not found (purge candidate), -1 = SS unreachable/error
 static int ss_file_exists(FileMetadata* file) {
     if (file == NULL) return 0;
-    if (file->ss_id < 0 || file->ss_id >= ss_count) return -1;
-    StorageServerInfo* ss = &storage_servers[file->ss_id];
+    int tried_replica = 0;
+    int which_ss = file->ss_id;
+    if (which_ss < 0 || which_ss >= ss_count) return -1;
+retry_probe:
+    StorageServerInfo* ss = &storage_servers[which_ss];
 
     int ss_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (ss_sock < 0) return -1;
@@ -1439,6 +1535,10 @@ static int ss_file_exists(FileMetadata* file) {
 
     if (connect(ss_sock, (struct sockaddr*)&ss_addr, sizeof(ss_addr)) < 0) {
         close(ss_sock);
+        // if primary failed and replica exists, probe replica
+        if (!tried_replica && file->replica_ss_id >= 0 && file->replica_ss_id < ss_count) {
+            tried_replica = 1; which_ss = file->replica_ss_id; goto retry_probe;
+        }
         return -1;
     }
 
