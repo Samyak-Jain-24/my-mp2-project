@@ -1,0 +1,50 @@
+[2025-11-18 21:53:03] [INFO] Starting Name Server on port 8080
+[2025-11-18 21:53:03] [INFO] No persistent data found, starting fresh
+[2025-11-18 21:53:03] [INFO] Name Server listening for connections...
+[2025-11-18 21:53:14] [INFO] New connection from 127.0.0.1:58292
+[2025-11-18 21:53:14] [REQUEST] From client:4 [] - Operation
+[2025-11-18 21:53:14] [INFO] Registered Storage Server 0: 127.0.0.1:9001 (client_port: 9101)
+[2025-11-18 21:53:14] [INFO] Client disconnected
+[2025-11-18 21:53:14] [INFO] Active clients after disconnect: 0
+[2025-11-18 21:53:32] [INFO] New connection from 127.0.0.1:54234
+[2025-11-18 21:53:32] [REQUEST] From client:5 [Samarth] - Operation
+[2025-11-18 21:53:32] [INFO] Registered Client: Samarth from 0.0.0.0:10000 (active clients: 1)
+[2025-11-18 21:54:00] [INFO] New connection from 10.42.0.21:39846
+[2025-11-18 21:54:00] [REQUEST] From client:4 [samyak] - Operation
+[2025-11-18 21:54:00] [INFO] Registered Client: samyak from 0.0.0.0:10000 (active clients: 2)
+[2025-11-18 21:54:37] [REQUEST] From client:4 [samyak] - Operation
+[2025-11-18 21:54:37] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-18 21:54:37] [INFO] Client disconnected
+[2025-11-18 21:54:37] [INFO] Active clients after disconnect: 1
+[2025-11-18 21:54:40] [INFO] New connection from 10.42.0.21:48356
+[2025-11-18 21:54:40] [REQUEST] From client:6 [samya] - Operation
+[2025-11-18 21:54:40] [INFO] Registered Client: samya from 0.0.0.0:10000 (active clients: 2)
+[2025-11-18 21:54:49] [REQUEST] From client:6 [samya] - Operation
+[2025-11-18 21:54:52] [INFO] Client disconnected
+[2025-11-18 21:54:52] [INFO] Active clients after disconnect: 1
+[2025-11-18 21:54:55] [INFO] New connection from 10.42.0.21:55244
+[2025-11-18 21:54:55] [REQUEST] From client:4 [samyak] - Operation
+[2025-11-18 21:54:55] [INFO] Re-registered Client: samyak from 0.0.0.0:10000 (active clients: 2)
+[2025-11-18 21:54:59] [REQUEST] From client:4 [samyak] - Operation
+[2025-11-18 21:55:01] [REQUEST] From client:5 [Samarth] - Operation
+[2025-11-18 21:55:29] [REQUEST] From client:5 [Samarth] - Operation
+[2025-11-18 21:55:29] [INFO] File created: baba.txt by Samarth on SS 0
+[2025-11-18 21:55:30] [REQUEST] From client:4 [samyak] - Operation
+[2025-11-18 21:55:30] [INFO] File created: manja.txt by samyak on SS 0
+[2025-11-18 21:55:34] [REQUEST] From client:5 [Samarth] - Operation
+[2025-11-18 21:55:36] [REQUEST] From client:4 [samyak] - Operation
+[2025-11-18 21:56:11] [REQUEST] From client:4 [samyak] - Operation
+[2025-11-18 21:56:11] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-18 21:57:35] [REQUEST] From client:4 [samyak] - Operation
+[2025-11-18 21:57:35] [RESPONSE] To client:4 - Status: 0, VIEW command completed
+[2025-11-18 21:57:38] [REQUEST] From client:4 [samyak] - Operation
+[2025-11-18 21:58:00] [REQUEST] From client:5 [Samarth] - Operation
+[2025-11-18 21:58:00] [INFO] Access granted to samyak for file baba.txt
+[2025-11-18 21:58:04] [REQUEST] From client:4 [samyak] - Operation
+[2025-11-18 22:01:20] [INFO] New connection from 127.0.0.1:56666
+[2025-11-18 22:01:20] [REQUEST] From client:6 [] - Operation
+[2025-11-18 22:01:20] [INFO] Registered Storage Server 1: 127.0.0.1:9002 (client_port: 9102)
+[2025-11-18 22:01:20] [INFO] Client disconnected
+[2025-11-18 22:01:20] [INFO] Active clients after disconnect: 2
+[2025-11-18 22:01:35] [REQUEST] From client:5 [Samarth] - Operation
+[2025-11-18 22:01:35] [INFO] File created: gandu.txt by Samarth on SS 0

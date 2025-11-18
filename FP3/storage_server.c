@@ -91,12 +91,17 @@ int main(int argc, char* argv[]) {
     // New usage: ./storage_server [nm_ip] <nm_port> <client_port> <storage_dir>
     // Backwards compatible with old usage lacking nm_ip.
     char nm_ip_override[INET_ADDRSTRLEN] = "127.0.0.1";
+    char ss_ip_override[INET_ADDRSTRLEN] = ""; // optional advertised IP override
     int argi = 1;
     if (argc < 4) {
-        printf("Usage: %s [nm_ip] <nm_port> <client_port> <storage_dir>\n", argv[0]);
+        printf("Usage: %s [nm_ip] <nm_port> <client_port> <storage_dir> [advertise_ip]\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-    if (argc == 5) { // nm_ip explicitly provided
+    if (argc == 6) { // nm_ip + advertise_ip explicitly provided
+        strncpy(nm_ip_override, argv[argi], sizeof(nm_ip_override)-1);
+        nm_ip_override[sizeof(nm_ip_override)-1] = '\0';
+        argi++;
+    } else if (argc == 5) { // nm_ip explicitly provided (no advertise_ip)
         strncpy(nm_ip_override, argv[argi], sizeof(nm_ip_override)-1);
         nm_ip_override[sizeof(nm_ip_override)-1] = '\0';
         argi++;
@@ -104,15 +109,48 @@ int main(int argc, char* argv[]) {
     nm_port = atoi(argv[argi++]);
     client_port = atoi(argv[argi++]);
     strcpy(storage_dir, argv[argi++]);
+    if (argc == 6) {
+        strncpy(ss_ip_override, argv[argi++], sizeof(ss_ip_override)-1);
+        ss_ip_override[sizeof(ss_ip_override)-1] = '\0';
+    }
     
     // Create storage directory if it doesn't exist
     mkdir(storage_dir, 0755);
     
-    // Get local IP
-    strcpy(ss_ip, "127.0.0.1");  // For simplicity, using localhost
+    // Determine advertised SS IP
+    // Priority: explicit arg -> env var SS_IP -> derive by UDP connect to NM -> fallback 127.0.0.1
+    const char* env_ss = getenv("SS_IP");
+    if (ss_ip_override[0] != '\0') {
+        strncpy(ss_ip, ss_ip_override, sizeof(ss_ip)-1);
+        ss_ip[sizeof(ss_ip)-1] = '\0';
+    } else if (env_ss && env_ss[0] != '\0') {
+        strncpy(ss_ip, env_ss, sizeof(ss_ip)-1);
+        ss_ip[sizeof(ss_ip)-1] = '\0';
+    } else {
+        // UDP connect trick to learn the outward-facing IP used to reach NM
+        int us = socket(AF_INET, SOCK_DGRAM, 0);
+        if (us >= 0) {
+            struct sockaddr_in probe; memset(&probe, 0, sizeof(probe));
+            probe.sin_family = AF_INET; probe.sin_port = htons(PORT_NM);
+            inet_pton(AF_INET, nm_ip_override, &probe.sin_addr);
+            if (connect(us, (struct sockaddr*)&probe, sizeof(probe)) == 0) {
+                struct sockaddr_in local; socklen_t llen = sizeof(local);
+                if (getsockname(us, (struct sockaddr*)&local, &llen) == 0) {
+                    inet_ntop(AF_INET, &local.sin_addr, ss_ip, sizeof(ss_ip));
+                } else {
+                    strcpy(ss_ip, "127.0.0.1");
+                }
+            } else {
+                strcpy(ss_ip, "127.0.0.1");
+            }
+            close(us);
+        } else {
+            strcpy(ss_ip, "127.0.0.1");
+        }
+    }
     
     printf("=== LangOS Storage Server ===\n");
-    log_message("SS", "INFO", "Starting Storage Server on ports NM:%d Client:%d", nm_port, client_port);
+    log_message("SS", "INFO", "Starting Storage Server on %s, ports NM:%d Client:%d", ss_ip, nm_port, client_port);
     
     // Initialize file locks
     for (int i = 0; i < MAX_FILES; i++) {
