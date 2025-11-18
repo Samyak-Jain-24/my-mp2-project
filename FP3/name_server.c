@@ -1,4 +1,20 @@
 #include "common.h"
+#include <sys/time.h>
+#include <signal.h>
+#include <ctype.h>
+
+// Graceful shutdown control
+static volatile sig_atomic_t nm_running = 1;
+// Forward declaration of listening socket defined later
+extern int nm_socket;
+
+static void handle_sigint(int sig) {
+    (void)sig;
+    nm_running = 0;
+    log_message("NM", "INFO", "SIGINT received, shutting down...");
+    // Close listening socket to break accept()
+    if (nm_socket > 0) close(nm_socket);
+}
 
 // Global variables
 StorageServerInfo storage_servers[MAX_SS];
@@ -37,6 +53,15 @@ void handle_remaccess_command(int client_sock, Message* msg);
 void handle_exec_command(int client_sock, Message* msg);
 void handle_read_stream_undo_command(int client_sock, Message* msg);
 void handle_write_command(int client_sock, Message* msg);
+// Bonus handlers
+void handle_createfolder_command(int client_sock, Message* msg);
+void handle_viewfolder_command(int client_sock, Message* msg);
+void handle_move_command(int client_sock, Message* msg);
+void handle_reqaccess_command(int client_sock, Message* msg);
+void handle_viewrequests_command(int client_sock, Message* msg);
+void handle_approve_command(int client_sock, Message* msg);
+void handle_deny_command(int client_sock, Message* msg);
+void handle_recents_command(int client_sock, Message* msg);
 FileMetadata* search_file_cached(const char* filename);
 void update_cache(const char* filename, FileMetadata* file_info);
 void load_persistent_data();
@@ -47,6 +72,9 @@ static int ss_file_exists(FileMetadata* file);
 static void purge_file_metadata(const char* filename);
 
 int main() {
+    // Register SIGINT handler for clean shutdown / quick restart
+    signal(SIGINT, handle_sigint);
+
     struct sockaddr_in server_addr;
     
     printf("=== LangOS Distributed File System - Name Server ===\n");
@@ -64,6 +92,10 @@ int main() {
         log_message("NM", "ERROR", "Failed to create socket");
         exit(EXIT_FAILURE);
     }
+
+    // Allow quick rebinding after Ctrl-C (TIME_WAIT)
+    int opt = 1;
+    setsockopt(nm_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
     
     // Bind socket
     server_addr.sin_family = AF_INET;
@@ -85,8 +117,11 @@ int main() {
     
     log_message("NM", "INFO", "Name Server listening for connections...");
     
+    // NOTE: Keep persisted storage servers marked active so metadata ss_id mappings remain valid.
+    // A server re-registering will refresh its entry; inactive detection can be added later.
+
     // Accept connections
-    while (1) {
+    while (nm_running) {
         struct sockaddr_in client_addr;
         socklen_t client_len = sizeof(client_addr);
         
@@ -113,7 +148,7 @@ int main() {
         }
     }
     
-    close(nm_socket);
+    if (nm_socket > 0) close(nm_socket);
     trie_free(file_trie_root);
     return 0;
 }
@@ -137,6 +172,8 @@ void* handle_client_connection(void* arg) {
                     break;
                 }
             }
+            int active_total = 0; for (int k=0;k<client_count;k++){ if (clients[k].active) active_total++; }
+            log_message("NM", "INFO", "Active clients after disconnect: %d", active_total);
             pthread_mutex_unlock(&nm_lock);
             break;
         }
@@ -154,11 +191,20 @@ void* handle_client_connection(void* arg) {
             case OP_VIEW:
                 handle_view_command(client_sock, &msg);
                 break;
+            case OP_VIEWFOLDER:
+                handle_viewfolder_command(client_sock, &msg);
+                break;
             case OP_CREATE:
                 handle_create_command(client_sock, &msg);
                 break;
+            case OP_CREATEFOLDER:
+                handle_createfolder_command(client_sock, &msg);
+                break;
             case OP_DELETE:
                 handle_delete_command(client_sock, &msg);
+                break;
+            case OP_MOVE:
+                handle_move_command(client_sock, &msg);
                 break;
             case OP_INFO:
                 handle_info_command(client_sock, &msg);
@@ -172,16 +218,35 @@ void* handle_client_connection(void* arg) {
             case OP_REMACCESS:
                 handle_remaccess_command(client_sock, &msg);
                 break;
+            case OP_REQACCESS:
+                handle_reqaccess_command(client_sock, &msg);
+                break;
+            case OP_VIEWREQUESTS:
+                handle_viewrequests_command(client_sock, &msg);
+                break;
+            case OP_APPROVE:
+                handle_approve_command(client_sock, &msg);
+                break;
+            case OP_DENY:
+                handle_deny_command(client_sock, &msg);
+                break;
             case OP_EXEC:
                 handle_exec_command(client_sock, &msg);
                 break;
             case OP_READ:
             case OP_STREAM:
             case OP_UNDO:
+            case OP_CHECKPOINT:
+            case OP_VIEWCHECKPOINT:
+            case OP_REVERT:
+            case OP_LISTCHECKPOINTS:
                 handle_read_stream_undo_command(client_sock, &msg);
                 break;
             case OP_WRITE:
                 handle_write_command(client_sock, &msg);
+                break;
+            case OP_RECENTS:
+                handle_recents_command(client_sock, &msg);
                 break;
             default:
                 msg.error_code = ERR_INVALID_COMMAND;
@@ -198,24 +263,43 @@ void* handle_client_connection(void* arg) {
 void register_storage_server(int socket_fd, Message* msg) {
     pthread_mutex_lock(&nm_lock);
     
-    if (ss_count >= MAX_SS) {
-        msg->error_code = ERR_SERVER_ERROR;
-        strcpy(msg->error_msg, "Maximum storage servers reached");
-        pthread_mutex_unlock(&nm_lock);
-        send_message(socket_fd, msg);
-        return;
+    // Parse registration data first
+    char reg_ip[INET_ADDRSTRLEN]; int reg_nm_port = 0; int reg_client_port = 0;
+    sscanf(msg->data, "%15s %d %d", reg_ip, &reg_nm_port, &reg_client_port);
+
+    // Try to find existing inactive (or active) entry matching ip+ports to reuse
+    StorageServerInfo* ss = NULL;
+    for (int i = 0; i < ss_count; i++) {
+        if (strcmp(storage_servers[i].ip, reg_ip) == 0 &&
+            storage_servers[i].nm_port == reg_nm_port &&
+            storage_servers[i].client_port == reg_client_port) {
+            ss = &storage_servers[i];
+            ss->active = 1; // Reactivate
+            break;
+        }
     }
-    
-    StorageServerInfo* ss = &storage_servers[ss_count];
-    ss->ss_id = ss_count;
-    sscanf(msg->data, "%s %d %d", ss->ip, &ss->nm_port, &ss->client_port);
-    ss->active = 1;
-    ss->file_count = 0;
+    // If not found, append new entry
+    if (ss == NULL) {
+        if (ss_count >= MAX_SS) {
+            msg->error_code = ERR_SERVER_ERROR;
+            strcpy(msg->error_msg, "Maximum storage servers reached");
+            pthread_mutex_unlock(&nm_lock);
+            send_message(socket_fd, msg);
+            return;
+        }
+        ss = &storage_servers[ss_count];
+        ss->ss_id = ss_count;
+        strncpy(ss->ip, reg_ip, sizeof(ss->ip)-1); ss->ip[sizeof(ss->ip)-1]='\0';
+        ss->nm_port = reg_nm_port;
+        ss->client_port = reg_client_port;
+        ss->active = 1;
+        // Keep existing file_count if this SS had files persisted; only zero if brand new
+        if (ss->file_count < 0 || ss->file_count > MAX_FILES) ss->file_count = 0;
+        ss_count++;
+    }
     
     log_message("NM", "INFO", "Registered Storage Server %d: %s:%d (client_port: %d)", 
                 ss->ss_id, ss->ip, ss->nm_port, ss->client_port);
-    
-    ss_count++;
     
     msg->error_code = ERR_SUCCESS;
     sprintf(msg->data, "%d", ss->ss_id);
@@ -223,6 +307,37 @@ void register_storage_server(int socket_fd, Message* msg) {
     pthread_mutex_unlock(&nm_lock);
     send_message(socket_fd, msg);
     save_persistent_data();
+
+    // After registration, (re)announce replica partners to all active SS
+    if (ss_count > 1) {
+        for (int i = 0; i < ss_count; i++) {
+            if (!storage_servers[i].active) continue;
+            int partner = (i + 1) % ss_count;
+            // find next active partner (simple linear search)
+            int attempts = 0;
+            while ((partner == i || !storage_servers[partner].active) && attempts < ss_count) {
+                partner = (partner + 1) % ss_count;
+                attempts++;
+            }
+            if (partner == i || !storage_servers[partner].active) continue; // no suitable partner
+            Message ack; memset(&ack, 0, sizeof(ack));
+            ack.op_code = OP_SS_ACK;
+            // data: partner_ip partner_nm_port partner_client_port
+            sprintf(ack.data, "%s %d %d", storage_servers[partner].ip, storage_servers[partner].nm_port, storage_servers[partner].client_port);
+            int s = socket(AF_INET, SOCK_STREAM, 0);
+            if (s >= 0) {
+                struct sockaddr_in addr; memset(&addr, 0, sizeof(addr));
+                addr.sin_family = AF_INET;
+                addr.sin_port = htons(storage_servers[i].nm_port);
+                inet_pton(AF_INET, storage_servers[i].ip, &addr.sin_addr);
+                if (connect(s, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
+                    send_message(s, &ack);
+                    // ignore response
+                }
+                close(s);
+            }
+        }
+    }
 }
 
 void register_client(int socket_fd, Message* msg) {
@@ -234,7 +349,8 @@ void register_client(int socket_fd, Message* msg) {
             sscanf(msg->data, "%s %d %d", clients[i].ip, &clients[i].nm_port, &clients[i].ss_port);
             clients[i].socket_fd = socket_fd;
             clients[i].active = 1;
-            log_message("NM", "INFO", "Re-registered Client: %s from %s:%d", clients[i].username, clients[i].ip, clients[i].nm_port);
+            int active_total = 0; for (int k=0;k<client_count;k++){ if (clients[k].active) active_total++; }
+            log_message("NM", "INFO", "Re-registered Client: %s from %s:%d (active clients: %d)", clients[i].username, clients[i].ip, clients[i].nm_port, active_total);
             msg->error_code = ERR_SUCCESS;
             strcpy(msg->data, "Registration successful");
             pthread_mutex_unlock(&nm_lock);
@@ -257,9 +373,9 @@ void register_client(int socket_fd, Message* msg) {
     client->socket_fd = socket_fd;
     client->active = 1;
 
-    log_message("NM", "INFO", "Registered Client: %s from %s:%d", client->username, client->ip, client->nm_port);
-
     client_count++;
+    int active_total = 0; for (int k=0;k<client_count;k++){ if (clients[k].active) active_total++; }
+    log_message("NM", "INFO", "Registered Client: %s from %s:%d (active clients: %d)", client->username, client->ip, client->nm_port, active_total);
 
     msg->error_code = ERR_SUCCESS;
     strcpy(msg->data, "Registration successful");
@@ -291,10 +407,15 @@ void handle_view_command(int client_sock, Message* msg) {
         FileMetadata* file = &files[i];
         
         // If file doesn't exist on SS anymore (stale), purge and continue without incrementing i
+        int pre_count = file_count;
         int exists = ss_file_exists(file);
         if (exists == 0) {
             purge_file_metadata(file->filename);
-            // After purge, files[i] now contains a new entry (swapped), so re-check same index
+            // If purge didn't change file_count (unexpected), advance to prevent infinite loop
+            if (file_count == pre_count) {
+                i++;
+            }
+            // After purge, files[i] now contains a new entry (swapped), so re-check same index if count changed
             continue;
         }
         // If SS unreachable, we don't purge metadata; just skip listing to avoid showing ghost files
@@ -320,7 +441,7 @@ void handle_view_command(int client_sock, Message* msg) {
                 char time_str[32];
                 strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M", localtime(&file->accessed_time));
                 char line[256];
-                snprintf(line, sizeof(line), "| %-10s | %5d | %5d | %16s | %-5s |\n",
+                snprintf(line, sizeof(line), "| %-32s | %5d | %5d | %16s | %-12s |\n",
                         file->filename, file->word_count, file->char_count, time_str, file->owner);
                 strcat(response, line);
             } else {
@@ -333,7 +454,7 @@ void handle_view_command(int client_sock, Message* msg) {
     }
     
     if (show_details) {
-        strcat(response, "---------------------------------------------------------\n");
+        strcat(response, "-------------------------------------------------------------------------------------------------------------\n");
     }
     
     strcpy(msg->data, response);
@@ -376,6 +497,18 @@ void handle_create_command(int client_sock, Message* msg) {
     file->ss_id = ss->ss_id;
     strcpy(file->ss_ip, ss->ip);
     file->ss_port = ss->client_port;
+    // Set replica to next SS if exists
+    if (ss_count > 1) {
+        int replica_index = (ss_index + 1) % ss_count;
+        StorageServerInfo* rss = &storage_servers[replica_index];
+        file->replica_ss_id = rss->ss_id;
+        strcpy(file->replica_ss_ip, rss->ip);
+        file->replica_ss_port = rss->client_port;
+    } else {
+        file->replica_ss_id = -1;
+        file->replica_ss_ip[0] = '\0';
+        file->replica_ss_port = 0;
+    }
     file->access_count = 0;
     file->created_time = time(NULL);
     file->modified_time = time(NULL);
@@ -573,6 +706,263 @@ void handle_list_command(int client_sock, Message* msg) {
     msg->error_code = ERR_SUCCESS;
     
     pthread_mutex_unlock(&nm_lock);
+    send_message(client_sock, msg);
+}
+
+// BONUS: CREATEFOLDER - instruct all SS to mkdir the folder path under their storage_dir
+void handle_createfolder_command(int client_sock, Message* msg) {
+    pthread_mutex_lock(&nm_lock);
+    char folder[MAX_FILENAME];
+    strncpy(folder, msg->filename, sizeof(folder)-1);
+    folder[sizeof(folder)-1] = '\0';
+    int successes = 0;
+    for (int i = 0; i < ss_count; i++) {
+        int s = socket(AF_INET, SOCK_STREAM, 0);
+        if (s < 0) continue;
+        struct sockaddr_in addr; memset(&addr, 0, sizeof(addr));
+        addr.sin_family = AF_INET; addr.sin_port = htons(storage_servers[i].nm_port);
+        inet_pton(AF_INET, storage_servers[i].ip, &addr.sin_addr);
+        if (connect(s, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
+            Message m; memset(&m, 0, sizeof(m));
+            m.op_code = OP_CREATEFOLDER;
+            strncpy(m.filename, folder, sizeof(m.filename)-1);
+            send_message(s, &m);
+            receive_message(s, &m);
+            if (m.error_code == ERR_SUCCESS) successes++;
+        }
+        close(s);
+    }
+    pthread_mutex_unlock(&nm_lock);
+    if (successes > 0) {
+        msg->error_code = ERR_SUCCESS;
+        strcpy(msg->data, "Folder created");
+    } else {
+        msg->error_code = ERR_SERVER_ERROR;
+        strcpy(msg->error_msg, "Failed to create folder");
+    }
+    send_message(client_sock, msg);
+}
+
+// BONUS: VIEWFOLDER - list files under a given folder prefix
+void handle_viewfolder_command(int client_sock, Message* msg) {
+    pthread_mutex_lock(&nm_lock);
+    char folder[MAX_FILENAME];
+    strncpy(folder, msg->filename, sizeof(folder)-1);
+    folder[sizeof(folder)-1] = '\0';
+    char prefix[MAX_FILENAME+2];
+    snprintf(prefix, sizeof(prefix), "%s/", folder);
+    size_t plen = strlen(prefix);
+    char response[BUFFER_SIZE] = "";
+    for (int i = 0; i < file_count; i++) {
+        FileMetadata* f = &files[i];
+        if (strncmp(f->filename, prefix, plen) == 0) {
+            if (!check_access(f, msg->username, ACCESS_READ)) continue;
+            strcat(response, "--> ");
+            // Show leaf name after folder/
+            const char* leaf = f->filename + plen;
+            strcat(response, leaf);
+            strcat(response, "\n");
+        }
+    }
+    pthread_mutex_unlock(&nm_lock);
+    msg->error_code = ERR_SUCCESS;
+    strncpy(msg->data, response, sizeof(msg->data)-1);
+    send_message(client_sock, msg);
+}
+
+// BONUS: MOVE - move a file into a folder (updates metadata and ask SS to rename)
+static const char* basename_const(const char* path) {
+    const char* slash = strrchr(path, '/');
+    return slash ? slash + 1 : path;
+}
+
+void handle_move_command(int client_sock, Message* msg) {
+    pthread_mutex_lock(&nm_lock);
+    FileMetadata* file = trie_search(file_trie_root, msg->filename);
+    if (!file) {
+        msg->error_code = ERR_FILE_NOT_FOUND;
+        strcpy(msg->error_msg, "File not found");
+        pthread_mutex_unlock(&nm_lock);
+        send_message(client_sock, msg);
+        return;
+    }
+    if (strcmp(file->owner, msg->username) != 0) {
+        msg->error_code = ERR_NOT_OWNER;
+        strcpy(msg->error_msg, "Only owner can move file");
+        pthread_mutex_unlock(&nm_lock);
+        send_message(client_sock, msg);
+        return;
+    }
+    char folder[MAX_FILENAME]; strncpy(folder, msg->data, sizeof(folder)-1); folder[sizeof(folder)-1] = '\0';
+    char newname[MAX_FILENAME];
+    snprintf(newname, sizeof(newname), "%s/%s", folder, basename_const(file->filename));
+    // Ask SS to move first
+    StorageServerInfo* ss = &storage_servers[file->ss_id];
+    int s = socket(AF_INET, SOCK_STREAM, 0);
+    if (s >= 0) {
+        struct sockaddr_in addr; memset(&addr, 0, sizeof(addr));
+        addr.sin_family = AF_INET; addr.sin_port = htons(ss->nm_port);
+        inet_pton(AF_INET, ss->ip, &addr.sin_addr);
+        if (connect(s, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
+            Message m; memset(&m, 0, sizeof(m));
+            m.op_code = OP_MOVE; strncpy(m.filename, file->filename, sizeof(m.filename)-1);
+            strncpy(m.data, newname, sizeof(m.data)-1);
+            send_message(s, &m);
+            receive_message(s, &m);
+            close(s);
+            if (m.error_code != ERR_SUCCESS) {
+                msg->error_code = m.error_code;
+                strncpy(msg->error_msg, m.error_msg, sizeof(msg->error_msg)-1);
+                pthread_mutex_unlock(&nm_lock);
+                send_message(client_sock, msg);
+                return;
+            }
+            // Best-effort replicate MOVE to replica SS (synchronous to ensure path consistency if partner exists)
+            if (file->replica_ss_port > 0 && strlen(file->replica_ss_ip) > 0) {
+                int rs = socket(AF_INET, SOCK_STREAM, 0);
+                if (rs >= 0) {
+                    struct sockaddr_in raddr; memset(&raddr, 0, sizeof(raddr));
+                    raddr.sin_family = AF_INET; raddr.sin_port = htons(storage_servers[file->replica_ss_id].nm_port);
+                    inet_pton(AF_INET, storage_servers[file->replica_ss_id].ip, &raddr.sin_addr);
+                    if (connect(rs, (struct sockaddr*)&raddr, sizeof(raddr)) == 0) {
+                        Message rm; memset(&rm, 0, sizeof(rm));
+                        rm.op_code = OP_MOVE; // use normal MOVE so replica renames and its own code can replicate if chain exists
+                        strncpy(rm.filename, file->filename, sizeof(rm.filename)-1);
+                        strncpy(rm.data, newname, sizeof(rm.data)-1);
+                        send_message(rs, &rm);
+                        // ignore response errors best-effort
+                        receive_message(rs, &rm);
+                    }
+                    close(rs);
+                }
+            }
+        } else {
+            close(s);
+            msg->error_code = ERR_CONNECTION_FAILED;
+            strcpy(msg->error_msg, "Failed to connect to storage server");
+            pthread_mutex_unlock(&nm_lock);
+            send_message(client_sock, msg);
+            return;
+        }
+    }
+    // Update NM metadata and trie
+    char oldname[MAX_FILENAME]; strncpy(oldname, file->filename, sizeof(oldname)-1); oldname[sizeof(oldname)-1] = '\0';
+    trie_delete(file_trie_root, oldname);
+    strncpy(file->filename, newname, sizeof(file->filename)-1);
+    trie_insert(file_trie_root, file->filename, file);
+    // Also update SS file list entry
+    StorageServerInfo* ssp = &storage_servers[file->ss_id];
+    for (int i = 0; i < ssp->file_count; i++) {
+        if (strcmp(ssp->files[i], oldname) == 0) { strncpy(ssp->files[i], newname, MAX_FILENAME-1); ssp->files[i][MAX_FILENAME-1]='\0'; break; }
+    }
+    save_persistent_data();
+    pthread_mutex_unlock(&nm_lock);
+    msg->error_code = ERR_SUCCESS;
+    strcpy(msg->data, "Move successful");
+    send_message(client_sock, msg);
+}
+
+// BONUS: Access requests
+void handle_reqaccess_command(int client_sock, Message* msg) {
+    pthread_mutex_lock(&nm_lock);
+    FileMetadata* file = trie_search(file_trie_root, msg->filename);
+    if (!file) { msg->error_code = ERR_FILE_NOT_FOUND; strcpy(msg->error_msg, "File not found"); pthread_mutex_unlock(&nm_lock); send_message(client_sock, msg); return; }
+    if (strcmp(file->owner, msg->username) == 0) { msg->error_code = ERR_INVALID_COMMAND; strcpy(msg->error_msg, "Owner already has full access"); pthread_mutex_unlock(&nm_lock); send_message(client_sock, msg); return; }
+    // If already has access, ignore
+    if (check_access(file, msg->username, (msg->flags & 1) ? ACCESS_WRITE : ACCESS_READ)) {
+        msg->error_code = ERR_SUCCESS; strcpy(msg->data, "Already has access"); pthread_mutex_unlock(&nm_lock); send_message(client_sock, msg); return;
+    }
+    // Add pending if not present
+    for (int i=0;i<file->pending_count;i++){ if (strcmp(file->pending_requests[i].username, msg->username)==0){ msg->error_code=ERR_SUCCESS; strcpy(msg->data, "Request already pending"); pthread_mutex_unlock(&nm_lock); send_message(client_sock,msg); return; }}
+    if (file->pending_count < MAX_ACCESS_LIST) {
+        strcpy(file->pending_requests[file->pending_count].username, msg->username);
+        file->pending_requests[file->pending_count].access_type = (msg->flags & 1) ? ACCESS_WRITE : ACCESS_READ;
+        file->pending_count++;
+        save_persistent_data();
+        msg->error_code = ERR_SUCCESS; strcpy(msg->data, "Access request submitted");
+    } else { msg->error_code = ERR_SERVER_ERROR; strcpy(msg->error_msg, "Too many pending requests"); }
+    pthread_mutex_unlock(&nm_lock);
+    send_message(client_sock, msg);
+}
+
+void handle_viewrequests_command(int client_sock, Message* msg) {
+    pthread_mutex_lock(&nm_lock);
+    FileMetadata* file = trie_search(file_trie_root, msg->filename);
+    if (!file) { msg->error_code = ERR_FILE_NOT_FOUND; strcpy(msg->error_msg, "File not found"); pthread_mutex_unlock(&nm_lock); send_message(client_sock, msg); return; }
+    if (strcmp(file->owner, msg->username) != 0) { msg->error_code = ERR_NOT_OWNER; strcpy(msg->error_msg, "Only owner can view requests"); pthread_mutex_unlock(&nm_lock); send_message(client_sock, msg); return; }
+    char resp[BUFFER_SIZE] = "";
+    for (int i=0;i<file->pending_count;i++) {
+        char line[128]; snprintf(line, sizeof(line), "--> %s (%s)\n", file->pending_requests[i].username, file->pending_requests[i].access_type==ACCESS_WRITE?"W":"R");
+        strcat(resp, line);
+    }
+    msg->error_code = ERR_SUCCESS; strncpy(msg->data, resp, sizeof(msg->data)-1);
+    pthread_mutex_unlock(&nm_lock);
+    send_message(client_sock, msg);
+}
+
+void handle_approve_command(int client_sock, Message* msg) {
+    pthread_mutex_lock(&nm_lock);
+    FileMetadata* file = trie_search(file_trie_root, msg->filename);
+    if (!file) { msg->error_code = ERR_FILE_NOT_FOUND; strcpy(msg->error_msg, "File not found"); pthread_mutex_unlock(&nm_lock); send_message(client_sock, msg); return; }
+    if (strcmp(file->owner, msg->username) != 0) { msg->error_code = ERR_NOT_OWNER; strcpy(msg->error_msg, "Only owner can approve"); pthread_mutex_unlock(&nm_lock); send_message(client_sock, msg); return; }
+    char target[MAX_USERNAME]; int want_write = (msg->flags & 1);
+    sscanf(msg->data, "%63s", target);
+    int idx=-1; for (int i=0;i<file->pending_count;i++){ if(strcmp(file->pending_requests[i].username,target)==0){ idx=i; break; }}
+    if (idx<0){ msg->error_code=ERR_USER_NOT_FOUND; strcpy(msg->error_msg, "Request not found"); pthread_mutex_unlock(&nm_lock); send_message(client_sock,msg); return; }
+    int grant = want_write ? ACCESS_WRITE : file->pending_requests[idx].access_type;
+    // Update or add access entry
+    int aidx=-1; for(int i=0;i<file->access_count;i++){ if(strcmp(file->access_list[i].username,target)==0){ aidx=i; break; }}
+    if (aidx>=0){ file->access_list[aidx].access_type = grant; } else if (file->access_count<MAX_ACCESS_LIST){ strcpy(file->access_list[file->access_count].username,target); file->access_list[file->access_count].access_type=grant; file->access_count++; }
+    // Remove pending
+    for (int j=idx;j<file->pending_count-1;j++){ file->pending_requests[j]=file->pending_requests[j+1]; }
+    file->pending_count--;
+    save_persistent_data();
+    msg->error_code=ERR_SUCCESS; strcpy(msg->data, "Approved");
+    pthread_mutex_unlock(&nm_lock);
+    send_message(client_sock, msg);
+}
+
+void handle_deny_command(int client_sock, Message* msg) {
+    pthread_mutex_lock(&nm_lock);
+    FileMetadata* file = trie_search(file_trie_root, msg->filename);
+    if (!file) { msg->error_code = ERR_FILE_NOT_FOUND; strcpy(msg->error_msg, "File not found"); pthread_mutex_unlock(&nm_lock); send_message(client_sock, msg); return; }
+    if (strcmp(file->owner, msg->username) != 0) { msg->error_code = ERR_NOT_OWNER; strcpy(msg->error_msg, "Only owner can deny"); pthread_mutex_unlock(&nm_lock); send_message(client_sock, msg); return; }
+    char target[MAX_USERNAME]; sscanf(msg->data, "%63s", target);
+    int idx=-1; for (int i=0;i<file->pending_count;i++){ if(strcmp(file->pending_requests[i].username,target)==0){ idx=i; break; }}
+    if (idx<0){ msg->error_code=ERR_USER_NOT_FOUND; strcpy(msg->error_msg, "Request not found"); pthread_mutex_unlock(&nm_lock); send_message(client_sock,msg); return; }
+    for (int j=idx;j<file->pending_count-1;j++){ file->pending_requests[j]=file->pending_requests[j+1]; }
+    file->pending_count--;
+    save_persistent_data();
+    msg->error_code=ERR_SUCCESS; strcpy(msg->data, "Denied");
+    pthread_mutex_unlock(&nm_lock);
+    send_message(client_sock, msg);
+}
+
+// BONUS: RECENTS - list last 5 files accessed by user
+void handle_recents_command(int client_sock, Message* msg) {
+    pthread_mutex_lock(&nm_lock);
+    // Collect candidates
+    int idxs[100]; int cnt=0;
+    for (int i=0;i<file_count;i++) {
+        if (check_access(&files[i], msg->username, ACCESS_READ)) {
+            idxs[cnt++] = i; if (cnt>=100) break;
+        }
+    }
+    // Partial sort by accessed_time desc (simple selection of top 5)
+    int top = cnt < 5 ? cnt : 5;
+    for (int i=0;i<top;i++){
+        int best=i; for(int j=i+1;j<cnt;j++){ if(files[idxs[j]].accessed_time > files[idxs[best]].accessed_time) best=j; }
+        int tmp=idxs[i]; idxs[i]=idxs[best]; idxs[best]=tmp;
+    }
+    char resp[BUFFER_SIZE] = "";
+    for (int i=0;i<top;i++){
+        char line[256];
+        char time_str[32]; strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M", localtime(&files[idxs[i]].accessed_time));
+        snprintf(line, sizeof(line), "--> %s (last: %s)\n", files[idxs[i]].filename, time_str);
+        strcat(resp, line);
+    }
+    pthread_mutex_unlock(&nm_lock);
+    msg->error_code = ERR_SUCCESS; strncpy(msg->data, resp, sizeof(msg->data)-1);
     send_message(client_sock, msg);
 }
 
@@ -804,7 +1194,7 @@ void handle_read_stream_undo_command(int client_sock, Message* msg) {
         return;
     }
     
-    if (msg->op_code == OP_READ || msg->op_code == OP_STREAM) {
+    if (msg->op_code == OP_READ || msg->op_code == OP_STREAM || msg->op_code == OP_VIEWCHECKPOINT || msg->op_code == OP_LISTCHECKPOINTS) {
         if (!check_access(file, msg->username, ACCESS_READ)) {
             msg->error_code = ERR_ACCESS_DENIED;
             strcpy(msg->error_msg, "Access denied");
@@ -813,11 +1203,37 @@ void handle_read_stream_undo_command(int client_sock, Message* msg) {
             return;
         }
     }
+    if (msg->op_code == OP_UNDO || msg->op_code == OP_REVERT || msg->op_code == OP_CHECKPOINT) {
+        if (!check_access(file, msg->username, ACCESS_WRITE)) {
+            msg->error_code = ERR_ACCESS_DENIED;
+            strcpy(msg->error_msg, "Access denied");
+            pthread_mutex_unlock(&nm_lock);
+            send_message(client_sock, msg);
+            return;
+        }
+    }
     
-    // Return SS connection info
+    // Return SS connection info with fallback to replica if primary unreachable
     SSConnection ss_conn;
     strcpy(ss_conn.ss_ip, file->ss_ip);
     ss_conn.ss_port = file->ss_port;
+    
+    // Probe primary client port; if unreachable and replica exists, use replica
+    int probe_sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (probe_sock >= 0) {
+        struct sockaddr_in addr; memset(&addr, 0, sizeof(addr));
+        addr.sin_family = AF_INET;
+        addr.sin_port = htons(ss_conn.ss_port);
+        inet_pton(AF_INET, ss_conn.ss_ip, &addr.sin_addr);
+        if (connect(probe_sock, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
+            // try replica
+            if (file->replica_ss_port > 0 && strlen(file->replica_ss_ip) > 0) {
+                strcpy(ss_conn.ss_ip, file->replica_ss_ip);
+                ss_conn.ss_port = file->replica_ss_port;
+            }
+        }
+        close(probe_sock);
+    }
     
     strcpy(msg->data, "");
     sprintf(msg->data, "%s %d", ss_conn.ss_ip, ss_conn.ss_port);
@@ -914,14 +1330,54 @@ void load_persistent_data() {
         return;
     }
     
-    fread(&file_count, sizeof(int), 1, fp);
-    fread(files, sizeof(FileMetadata), file_count, fp);
-    fread(&ss_count, sizeof(int), 1, fp);
-    fread(storage_servers, sizeof(StorageServerInfo), ss_count, fp);
+    // Validate file size and read counts defensively
+    int rc;
+    rc = fread(&file_count, sizeof(int), 1, fp);
+    if (rc != 1 || file_count < 0 || file_count > MAX_FILES) {
+        fclose(fp);
+        file_count = 0; ss_count = 0;
+        log_message("NM", "ERROR", "Corrupt nm_data.dat (file_count). Starting fresh");
+        save_persistent_data();
+        return;
+    }
+    rc = fread(files, sizeof(FileMetadata), file_count, fp);
+    if (rc != file_count) {
+        fclose(fp);
+        file_count = 0; ss_count = 0;
+        log_message("NM", "ERROR", "Corrupt nm_data.dat (files array). Starting fresh");
+        save_persistent_data();
+        return;
+    }
+    rc = fread(&ss_count, sizeof(int), 1, fp);
+    if (rc != 1 || ss_count < 0 || ss_count > MAX_SS) {
+        fclose(fp);
+        ss_count = 0;
+        log_message("NM", "ERROR", "Corrupt nm_data.dat (ss_count); continuing with 0 storage servers");
+        save_persistent_data();
+        // continue with files only
+        fp = NULL;
+    }
+    if (fp) {
+        rc = fread(storage_servers, sizeof(StorageServerInfo), ss_count, fp);
+        if (rc != ss_count) {
+            log_message("NM", "ERROR", "Corrupt nm_data.dat (storage_servers array); zeroing SS list");
+            ss_count = 0;
+        }
+    }
     
     // Rebuild trie with de-duplication to recover from any stale entries
     int new_count = 0;
+    time_t now = time(NULL);
     for (int i = 0; i < file_count; i++) {
+        // Basic validation of each record; skip invalid ones
+        files[i].filename[MAX_FILENAME-1] = '\0';
+        files[i].owner[MAX_USERNAME-1] = '\0';
+        if (files[i].filename[0] == '\0' || files[i].owner[0] == '\0') continue;
+        if (files[i].access_count < 0 || files[i].access_count > MAX_ACCESS_LIST) files[i].access_count = 0;
+        if (files[i].char_count < 0) files[i].char_count = 0;
+        if (files[i].word_count < 0) files[i].word_count = 0;
+        if (files[i].ss_id < 0 || files[i].ss_id >= MAX_SS) files[i].ss_id = 0;
+
         int exists = 0;
         for (int j = 0; j < new_count; j++) {
             if (strcmp(files[j].filename, files[i].filename) == 0) { exists = 1; break; }
@@ -930,6 +1386,10 @@ void load_persistent_data() {
             if (i != new_count) {
                 files[new_count] = files[i];
             }
+            // Initialize any zero timestamps (legacy persisted entries) to current time
+            if (files[new_count].created_time == 0) files[new_count].created_time = now;
+            if (files[new_count].modified_time == 0) files[new_count].modified_time = files[new_count].created_time;
+            if (files[new_count].accessed_time == 0) files[new_count].accessed_time = files[new_count].modified_time;
             trie_insert(file_trie_root, files[new_count].filename, &files[new_count]);
             new_count++;
         }
@@ -972,6 +1432,11 @@ static int ss_file_exists(FileMetadata* file) {
         close(ss_sock);
         return -1;
     }
+    // Set a short timeout to avoid blocking VIEW if SS is down
+    struct timeval tv; tv.tv_sec = 0; tv.tv_usec = 300000; // 300ms
+    setsockopt(ss_sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+    setsockopt(ss_sock, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+
     if (connect(ss_sock, (struct sockaddr*)&ss_addr, sizeof(ss_addr)) < 0) {
         close(ss_sock);
         return -1;
@@ -982,10 +1447,22 @@ static int ss_file_exists(FileMetadata* file) {
     strncpy(m.filename, file->filename, sizeof(m.filename)-1);
     strncpy(m.username, "NM", sizeof(m.username)-1);
     send_message(ss_sock, &m);
-    receive_message(ss_sock, &m);
+    if (receive_message(ss_sock, &m) <= 0) { close(ss_sock); return -1; }
     close(ss_sock);
 
-    if (m.error_code == ERR_SUCCESS) return 1;
+    if (m.error_code == ERR_SUCCESS) {
+        // Update metadata counts opportunistically using returned content
+        // Count chars and words in m.data
+        int chars = (int)strlen(m.data);
+        int words = 0; int inw = 0;
+        for (int i=0; i<chars; i++) {
+            if (!isspace((unsigned char)m.data[i])) { if (!inw) { words++; inw=1; } }
+            else { inw=0; }
+        }
+        file->char_count = chars;
+        file->word_count = words;
+        return 1;
+    }
     if (m.error_code == ERR_FILE_NOT_FOUND) return 0;
     return -1;
 }

@@ -25,6 +25,37 @@ typedef struct {
 FileLockInfo file_lock_info[MAX_FILES];
 int file_lock_count = 0;
 
+// Replication partner info (provided by NM via OP_SS_ACK)
+static int partner_set = 0;
+static char partner_ip[INET_ADDRSTRLEN];
+static int partner_nm_port = 0;
+static int partner_client_port = 0;
+
+static void mkdir_p_for_path(const char* fullpath) {
+    // Create parent directories for fullpath
+    char tmp[MAX_PATH]; strncpy(tmp, fullpath, sizeof(tmp)-1); tmp[sizeof(tmp)-1] = '\0';
+    for (char* p = tmp + strlen(storage_dir); *p; p++) {
+        if (*p == '/') { *p = '\0'; mkdir(tmp, 0755); *p = '/'; }
+    }
+}
+
+static void replicate_send(Message* msg) {
+    if (!partner_set) return;
+    Message m = *msg;
+    m.flags |= FLAG_REPL; // mark as replication to avoid loops
+    int s = socket(AF_INET, SOCK_STREAM, 0);
+    if (s < 0) return;
+    struct sockaddr_in addr; memset(&addr,0,sizeof(addr));
+    addr.sin_family = AF_INET; addr.sin_port = htons(partner_nm_port);
+    inet_pton(AF_INET, partner_ip, &addr.sin_addr);
+    if (connect(s, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
+        send_message(s, &m);
+        // best-effort, no wait necessary but read response to close cleanly
+        receive_message(s, &m);
+    }
+    close(s);
+}
+
 // Function prototypes
 void* handle_nm_connection(void* arg);
 void* handle_client_request(void* arg);
@@ -201,6 +232,8 @@ void* handle_nm_connection(void* arg) {
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(port);
+    int opt = 1;
+    setsockopt(server_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
     
     if (bind(server_sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
         perror("NM bind failed");
@@ -235,6 +268,81 @@ void* handle_nm_connection(void* arg) {
                 case OP_READ:
                     handle_read_file(&msg);
                     break;
+                case OP_CREATEFOLDER: {
+                    char path[MAX_PATH]; snprintf(path, sizeof(path), "%s%s", storage_dir, msg.filename);
+                    mkdir(path, 0755); // best-effort single level
+                    mkdir_p_for_path(path);
+                    msg.error_code = ERR_SUCCESS; strcpy(msg.data, "Folder created");
+                    // Replicate folder creation (best-effort) to partner
+                    if (!(msg.flags & FLAG_REPL)) {
+                        Message rm = msg; rm.op_code = OP_REPL_CREATEFOLDER; replicate_send(&rm);
+                    }
+                    break;
+                }
+                case OP_MOVE: {
+                    // MOVE from msg.filename to msg.data
+                    char src[MAX_PATH]; snprintf(src, sizeof(src), "%s%s", storage_dir, msg.filename);
+                    char dst[MAX_PATH]; snprintf(dst, sizeof(dst), "%s%s", storage_dir, msg.data);
+                    char newpath[MAX_FILENAME]; strncpy(newpath, msg.data, sizeof(newpath)-1); newpath[sizeof(newpath)-1] = '\0';
+                    mkdir_p_for_path(dst);
+                    if (rename(src, dst) == 0) {
+                        // Move .meta too (best-effort)
+                        char srcm[MAX_PATH]; snprintf(srcm, sizeof(srcm), "%s%s.meta", storage_dir, msg.filename);
+                        char dstm[MAX_PATH]; snprintf(dstm, sizeof(dstm), "%s%s.meta", storage_dir, msg.data);
+                        mkdir_p_for_path(dstm);
+                        rename(srcm, dstm);
+                        // Prepare replication BEFORE overwriting msg.data (need new path)
+                        if (!(msg.flags & FLAG_REPL)) {
+                            Message rm = msg; rm.op_code = OP_REPL_MOVE; strncpy(rm.data, newpath, sizeof(rm.data)-1); rm.data[sizeof(rm.data)-1]='\0'; replicate_send(&rm);
+                        }
+                        msg.error_code = ERR_SUCCESS; // Preserve new path in response for correctness
+                        strncpy(msg.data, newpath, sizeof(msg.data)-1); msg.data[sizeof(msg.data)-1] = '\0';
+                        strncpy(msg.error_msg, "Move successful", sizeof(msg.error_msg)-1);
+                    } else { msg.error_code = ERR_SERVER_ERROR; strcpy(msg.error_msg, "Move failed"); }
+                    break;
+                }
+                case OP_SS_ACK: {
+                    // data: partner_ip partner_nm_port partner_client_port
+                    sscanf(msg.data, "%15s %d %d", partner_ip, &partner_nm_port, &partner_client_port);
+                    partner_set = 1;
+                    msg.error_code = ERR_SUCCESS; strcpy(msg.data, "ACK");
+                    break;
+                }
+                case OP_REPL_CREATE:
+                    handle_create_file(&msg); // treat as normal without further replication
+                    break;
+                case OP_REPL_DELETE:
+                    handle_delete_file(&msg);
+                    break;
+                case OP_REPL_MOVE: {
+                    // reuse OP_MOVE logic
+                    char src[MAX_PATH]; snprintf(src, sizeof(src), "%s%s", storage_dir, msg.filename);
+                    char dst[MAX_PATH]; snprintf(dst, sizeof(dst), "%s%s", storage_dir, msg.data);
+                    mkdir_p_for_path(dst);
+                    if (rename(src, dst) == 0) {
+                        // Move meta file too
+                        char srcm[MAX_PATH]; snprintf(srcm, sizeof(srcm), "%s%s.meta", storage_dir, msg.filename);
+                        char dstm[MAX_PATH]; snprintf(dstm, sizeof(dstm), "%s%s.meta", storage_dir, msg.data);
+                        mkdir_p_for_path(dstm);
+                        rename(srcm, dstm);
+                        msg.error_code = ERR_SUCCESS; // Keep destination path in data for potential debugging
+                        strncpy(msg.error_msg, "Move successful", sizeof(msg.error_msg)-1);
+                    } else { msg.error_code = ERR_SERVER_ERROR; strcpy(msg.error_msg, "Move failed"); }
+                    break;
+                }
+                case OP_REPL_CREATEFOLDER: {
+                    char path[MAX_PATH]; snprintf(path, sizeof(path), "%s%s", storage_dir, msg.filename);
+                    mkdir(path, 0755);
+                    mkdir_p_for_path(path);
+                    msg.error_code = ERR_SUCCESS; strcpy(msg.data, "Folder created");
+                    break;
+                }
+                case OP_REPL_WRITE: {
+                    // Overwrite content with replicated data
+                    save_file_content(msg.filename, msg.data);
+                    msg.error_code = ERR_SUCCESS; strcpy(msg.data, "Replicated");
+                    break;
+                }
                 default:
                     msg.error_code = ERR_INVALID_COMMAND;
                     strcpy(msg.error_msg, "Invalid command from NM");
@@ -264,6 +372,8 @@ void* handle_client_request(void* arg) {
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(port);
+    int opt = 1;
+    setsockopt(server_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
     
     if (bind(server_sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
         perror("Client bind failed");
@@ -306,6 +416,55 @@ void* handle_client_request(void* arg) {
                     handle_undo_file(&msg);
                     send_message(client_sock, &msg);
                     break;
+                case OP_CHECKPOINT: {
+                    // data: checkpoint_tag
+                    char* content = load_file_content(msg.filename);
+                    if (!content) { msg.error_code = ERR_FILE_NOT_FOUND; strcpy(msg.error_msg, "File not found"); send_message(client_sock, &msg); break; }
+                    char path[MAX_PATH]; snprintf(path, sizeof(path), "%s.checkpoints/%s/%s", storage_dir, msg.filename, msg.data);
+                    mkdir_p_for_path(path);
+                    FILE* fp = fopen(path, "w"); if (!fp) { free(content); msg.error_code=ERR_SERVER_ERROR; strcpy(msg.error_msg, "Failed to create checkpoint"); send_message(client_sock,&msg); break; }
+                    fprintf(fp, "%s", content); fclose(fp); free(content);
+                    msg.error_code = ERR_SUCCESS; strcpy(msg.data, "Checkpoint created"); send_message(client_sock, &msg);
+                    break;
+                }
+                case OP_VIEWCHECKPOINT: {
+                    // data: checkpoint_tag
+                    char path[MAX_PATH]; snprintf(path, sizeof(path), "%s.checkpoints/%s/%s", storage_dir, msg.filename, msg.data);
+                    FILE* fp = fopen(path, "r"); if (!fp) { msg.error_code=ERR_FILE_NOT_FOUND; strcpy(msg.error_msg, "Checkpoint not found"); send_message(client_sock,&msg); break; }
+                    fseek(fp, 0, SEEK_END); long sz = ftell(fp); fseek(fp, 0, SEEK_SET);
+                    char* buf = malloc(sz+1); if (!buf){ fclose(fp); msg.error_code=ERR_SERVER_ERROR; strcpy(msg.error_msg, "OOM"); send_message(client_sock,&msg); break; }
+                    fread(buf,1,sz,fp); buf[sz]='\0'; fclose(fp);
+                    strncpy(msg.data, buf, sizeof(msg.data)-1); free(buf);
+                    msg.error_code = ERR_SUCCESS; send_message(client_sock,&msg);
+                    break;
+                }
+                case OP_REVERT: {
+                    // data: checkpoint_tag
+                    char path[MAX_PATH]; snprintf(path, sizeof(path), "%s.checkpoints/%s/%s", storage_dir, msg.filename, msg.data);
+                    FILE* fp = fopen(path, "r"); if (!fp) { msg.error_code=ERR_FILE_NOT_FOUND; strcpy(msg.error_msg, "Checkpoint not found"); send_message(client_sock,&msg); break; }
+                    fseek(fp, 0, SEEK_END); long sz = ftell(fp); fseek(fp, 0, SEEK_SET);
+                    char* buf = malloc(sz+1); if (!buf){ fclose(fp); msg.error_code=ERR_SERVER_ERROR; strcpy(msg.error_msg, "OOM"); send_message(client_sock,&msg); break; }
+                    fread(buf,1,sz,fp); buf[sz]='\0'; fclose(fp);
+                    save_file_content(msg.filename, buf);
+                    // Replicate revert as write
+                    Message rm = msg; rm.op_code = OP_REPL_WRITE; strncpy(rm.data, buf, sizeof(rm.data)-1); if (!(rm.flags & FLAG_REPL)) replicate_send(&rm);
+                    free(buf);
+                    msg.error_code = ERR_SUCCESS; strcpy(msg.data, "Reverted"); send_message(client_sock,&msg);
+                    break;
+                }
+                case OP_LISTCHECKPOINTS: {
+                    char dirpath[MAX_PATH]; snprintf(dirpath, sizeof(dirpath), "%s.checkpoints/%s", storage_dir, msg.filename);
+                    DIR* d = opendir(dirpath);
+                    if (!d) { msg.error_code = ERR_SUCCESS; msg.data[0]='\0'; send_message(client_sock,&msg); break; }
+                    struct dirent* ent; msg.data[0]='\0';
+                    while ((ent = readdir(d)) != NULL) {
+                        if (strcmp(ent->d_name, ".")==0 || strcmp(ent->d_name, "..")==0) continue;
+                        strcat(msg.data, "--> "); strcat(msg.data, ent->d_name); strcat(msg.data, "\n");
+                    }
+                    closedir(d);
+                    msg.error_code = ERR_SUCCESS; send_message(client_sock, &msg);
+                    break;
+                }
                 case OP_LOCK_SENTENCE:
                     handle_lock_sentence(&msg);
                     send_message(client_sock, &msg);
@@ -362,6 +521,11 @@ void handle_create_file(Message* msg) {
     msg->error_code = ERR_SUCCESS;
     strcpy(msg->data, "File created successfully");
     log_message("SS", "INFO", "File created: %s", msg->filename);
+
+    // Replicate creation to partner
+    if (!(msg->flags & FLAG_REPL)) {
+        Message rm = *msg; rm.op_code = OP_REPL_CREATE; replicate_send(&rm);
+    }
 }
 
 void handle_delete_file(Message* msg) {
@@ -383,6 +547,11 @@ void handle_delete_file(Message* msg) {
     msg->error_code = ERR_SUCCESS;
     strcpy(msg->data, "File deleted successfully");
     log_message("SS", "INFO", "File deleted: %s", msg->filename);
+
+    // Replicate deletion to partner
+    if (!(msg->flags & FLAG_REPL)) {
+        Message rm = *msg; rm.op_code = OP_REPL_DELETE; replicate_send(&rm);
+    }
 }
 
 void handle_read_file(Message* msg) {
@@ -646,6 +815,14 @@ void handle_write_file(Message* msg) {
 
     log_message("SS", "INFO", "Saved new content, length: %zu", strlen(new_content));
 
+    // Replicate write to partner (best-effort)
+    if (!(msg->flags & FLAG_REPL)) {
+        Message rm = *msg; rm.op_code = OP_REPL_WRITE; rm.data[0] = '\0';
+        // Ensure data carries content to write
+        strncpy(rm.data, new_content, sizeof(rm.data)-1);
+        replicate_send(&rm);
+    }
+
     free(new_content);
     free(sentences);
     
@@ -908,6 +1085,7 @@ int get_file_lock_info(const char* filename) {
 void save_file_content(const char* filename, const char* content) {
     char filepath[MAX_PATH];
     snprintf(filepath, sizeof(filepath), "%s%s", storage_dir, filename);
+    mkdir_p_for_path(filepath);
     
     FILE* fp = fopen(filepath, "w");
     if (fp) {

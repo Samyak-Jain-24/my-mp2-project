@@ -23,6 +23,20 @@ void handle_exec_command(char* command);
 void handle_undo_command(char* command);
 int connect_to_ss(const char* ss_ip, int ss_port);
 
+// Bonus command handlers (prototypes)
+void handle_createfolder_command(char* command);
+void handle_viewfolder_command(char* command);
+void handle_move_command(char* command);
+void handle_recents_command();
+void handle_reqaccess_command(char* command);
+void handle_viewrequests_command(char* command);
+void handle_approve_command(char* command);
+void handle_deny_command(char* command);
+void handle_checkpoint_command(char* command);
+void handle_viewcheckpoint_command(char* command);
+void handle_listcheckpoints_command(char* command);
+void handle_revert_command(char* command);
+
 int main(int argc, char* argv[]) {
     printf("=== LangOS Distributed File System - Client ===\n");
     
@@ -56,15 +70,27 @@ int main(int argc, char* argv[]) {
     printf("  VIEW [-a] [-l] [-al]\n");
     printf("  READ <filename>\n");
     printf("  CREATE <filename>\n");
+    printf("  CREATEFOLDER <folder>\n");
     printf("  WRITE <filename> <sentence_number>\n");
     printf("  DELETE <filename>\n");
     printf("  INFO <filename>\n");
     printf("  STREAM <filename>\n");
+    printf("  VIEWFOLDER <folder>\n");
+    printf("  MOVE <filename> <folder>\n");
     printf("  LIST\n");
     printf("  ADDACCESS -R/-W <filename> <username>\n");
     printf("  REMACCESS <filename> <username>\n");
     printf("  EXEC <filename>\n");
     printf("  UNDO <filename>\n");
+    printf("  REQACCESS -R/-W <filename>\n");
+    printf("  VIEWREQUESTS <filename>\n");
+    printf("  APPROVE [-W] <filename> <username>\n");
+    printf("  DENY <filename> <username>\n");
+    printf("  RECENTS\n");
+    printf("  CHECKPOINT <filename> <tag>\n");
+    printf("  VIEWCHECKPOINT <filename> <tag>\n");
+    printf("  LISTCHECKPOINTS <filename>\n");
+    printf("  REVERT <filename> <tag>\n");
     printf("  EXIT\n\n");
     
     // Command loop
@@ -83,32 +109,59 @@ int main(int argc, char* argv[]) {
             continue;
         }
         
-        // Parse and route command
-        if (strncmp(command, "VIEW", 4) == 0) {
+        // Tokenize first word for precise matching
+        char cmd_copy[MAX_COMMAND]; strncpy(cmd_copy, command, sizeof(cmd_copy)-1); cmd_copy[sizeof(cmd_copy)-1]='\0';
+        char* first = strtok(cmd_copy, " \t");
+        if (!first) continue;
+        if (strcasecmp(first, "VIEW") == 0) {
             handle_view_command(command);
-        } else if (strncmp(command, "READ", 4) == 0) {
+        } else if (strcasecmp(first, "READ") == 0) {
             handle_read_command(command);
-        } else if (strncmp(command, "CREATE", 6) == 0) {
+        } else if (strcasecmp(first, "CREATEFOLDER") == 0) {
+            handle_createfolder_command(command);
+        } else if (strcasecmp(first, "CREATE") == 0) {
             handle_create_command(command);
-        } else if (strncmp(command, "WRITE", 5) == 0) {
+        } else if (strcasecmp(first, "WRITE") == 0) {
             handle_write_command(command);
-        } else if (strncmp(command, "DELETE", 6) == 0) {
+        } else if (strcasecmp(first, "DELETE") == 0) {
             handle_delete_command(command);
-        } else if (strncmp(command, "INFO", 4) == 0) {
+        } else if (strcasecmp(first, "INFO") == 0) {
             handle_info_command(command);
-        } else if (strncmp(command, "STREAM", 6) == 0) {
+        } else if (strcasecmp(first, "STREAM") == 0) {
             handle_stream_command(command);
-        } else if (strncmp(command, "LIST", 4) == 0) {
+        } else if (strcasecmp(first, "VIEWFOLDER") == 0) {
+            handle_viewfolder_command(command);
+        } else if (strcasecmp(first, "MOVE") == 0) {
+            handle_move_command(command);
+        } else if (strcasecmp(first, "LIST") == 0) {
             handle_list_command();
-        } else if (strncmp(command, "ADDACCESS", 9) == 0) {
+        } else if (strcasecmp(first, "ADDACCESS") == 0) {
             handle_addaccess_command(command);
-        } else if (strncmp(command, "REMACCESS", 9) == 0) {
+        } else if (strcasecmp(first, "REMACCESS") == 0) {
             handle_remaccess_command(command);
-        } else if (strncmp(command, "EXEC", 4) == 0) {
+        } else if (strcasecmp(first, "REQACCESS") == 0) {
+            handle_reqaccess_command(command);
+        } else if (strcasecmp(first, "VIEWREQUESTS") == 0) {
+            handle_viewrequests_command(command);
+        } else if (strcasecmp(first, "APPROVE") == 0) {
+            handle_approve_command(command);
+        } else if (strcasecmp(first, "DENY") == 0) {
+            handle_deny_command(command);
+        } else if (strcasecmp(first, "RECENTS") == 0) {
+            handle_recents_command();
+        } else if (strcasecmp(first, "CHECKPOINT") == 0) {
+            handle_checkpoint_command(command);
+        } else if (strcasecmp(first, "VIEWCHECKPOINT") == 0) {
+            handle_viewcheckpoint_command(command);
+        } else if (strcasecmp(first, "LISTCHECKPOINTS") == 0) {
+            handle_listcheckpoints_command(command);
+        } else if (strcasecmp(first, "REVERT") == 0) {
+            handle_revert_command(command);
+        } else if (strcasecmp(first, "EXEC") == 0) {
             handle_exec_command(command);
-        } else if (strncmp(command, "UNDO", 4) == 0) {
+        } else if (strcasecmp(first, "UNDO") == 0) {
             handle_undo_command(command);
-        } else if (strncmp(command, "EXIT", 4) == 0 || strncmp(command, "exit", 4) == 0) {
+        } else if (strcasecmp(first, "EXIT") == 0) {
             printf("Goodbye!\n");
             break;
         } else {
@@ -749,4 +802,136 @@ int connect_to_ss(const char* ss_ip, int ss_port) {
     }
     
     return sock;
+}
+
+// === Bonus command implementations ===
+void handle_createfolder_command(char* command) {
+    char folder[MAX_FILENAME];
+    if (sscanf(command, "CREATEFOLDER %255s", folder) != 1) {
+        printf("Usage: CREATEFOLDER <folder>\n"); return;
+    }
+    Message msg; memset(&msg,0,sizeof(msg));
+    msg.op_code = OP_CREATEFOLDER; strcpy(msg.username, username); strncpy(msg.filename, folder, sizeof(msg.filename)-1);
+    send_message(nm_socket, &msg); receive_message(nm_socket, &msg);
+    if (msg.error_code == ERR_SUCCESS) printf("%s\n", msg.data[0]?msg.data:"Folder Created Successfully!\n"); else print_error(msg.error_code, "CREATEFOLDER");
+}
+
+void handle_viewfolder_command(char* command) {
+    char folder[MAX_FILENAME];
+    if (sscanf(command, "VIEWFOLDER %255s", folder) != 1) { printf("Usage: VIEWFOLDER <folder>\n"); return; }
+    Message msg; memset(&msg,0,sizeof(msg)); msg.op_code=OP_VIEWFOLDER; strcpy(msg.username, username); strncpy(msg.filename, folder, sizeof(msg.filename)-1);
+    send_message(nm_socket,&msg); receive_message(nm_socket,&msg);
+    if (msg.error_code==ERR_SUCCESS) printf("%s", msg.data); else print_error(msg.error_code, "VIEWFOLDER");
+}
+
+void handle_move_command(char* command) {
+    char filename[MAX_FILENAME], folder[MAX_FILENAME];
+    if (sscanf(command, "MOVE %255s %255s", filename, folder) != 2) { printf("Usage: MOVE <filename> <folder>\n"); return; }
+    Message msg; memset(&msg,0,sizeof(msg)); msg.op_code=OP_MOVE; strcpy(msg.username, username); strncpy(msg.filename, filename, sizeof(msg.filename)-1); strncpy(msg.data, folder, sizeof(msg.data)-1);
+    send_message(nm_socket,&msg); receive_message(nm_socket,&msg);
+    if (msg.error_code==ERR_SUCCESS) printf("%s\n", msg.data); else print_error(msg.error_code, "MOVE");
+}
+
+void handle_recents_command() {
+    Message msg; memset(&msg,0,sizeof(msg)); msg.op_code=OP_RECENTS; strcpy(msg.username, username);
+    send_message(nm_socket,&msg); receive_message(nm_socket,&msg);
+    if (msg.error_code==ERR_SUCCESS) printf("%s", msg.data); else print_error(msg.error_code, "RECENTS");
+}
+
+void handle_reqaccess_command(char* command) {
+    char filename[MAX_FILENAME]; char flagstr[8];
+    // Accept forms: REQACCESS -R filename | REQACCESS -W filename
+    int hasFlag = sscanf(command, "REQACCESS %7s %255s", flagstr, filename);
+    if (hasFlag != 2 || (strcmp(flagstr, "-R")!=0 && strcmp(flagstr, "-W")!=0)) { printf("Usage: REQACCESS -R/-W <filename>\n"); return; }
+    Message msg; memset(&msg,0,sizeof(msg)); msg.op_code=OP_REQACCESS; strcpy(msg.username, username); strncpy(msg.filename, filename, sizeof(msg.filename)-1);
+    if (strcmp(flagstr, "-W") == 0) msg.flags |= 1; // reuse bit 1 for write request
+    send_message(nm_socket,&msg); receive_message(nm_socket,&msg);
+    if (msg.error_code==ERR_SUCCESS) printf("%s\n", msg.data); else print_error(msg.error_code, "REQACCESS");
+}
+
+void handle_viewrequests_command(char* command) {
+    char filename[MAX_FILENAME]; if (sscanf(command, "VIEWREQUESTS %255s", filename)!=1){ printf("Usage: VIEWREQUESTS <filename>\n"); return; }
+    Message msg; memset(&msg,0,sizeof(msg)); msg.op_code=OP_VIEWREQUESTS; strcpy(msg.username, username); strncpy(msg.filename, filename, sizeof(msg.filename)-1);
+    send_message(nm_socket,&msg); receive_message(nm_socket,&msg);
+    if (msg.error_code==ERR_SUCCESS) printf("%s", msg.data); else print_error(msg.error_code, "VIEWREQUESTS");
+}
+
+void handle_approve_command(char* command) {
+    char filename[MAX_FILENAME], user[MAX_USERNAME]; char flag[8];
+    // APPROVE [-W] filename user
+    int parts = sscanf(command, "APPROVE %7s %255s %63s", flag, filename, user);
+    int writeOverride = 0;
+    if (parts == 3 && strcmp(flag, "-W") == 0) {
+        // Provided override flag
+        writeOverride = 1;
+    } else if (parts == 2) { // Without -W we parsed filename into flag variable; shift
+        // Re-parse without flag
+        if (sscanf(command, "APPROVE %255s %63s", filename, user) != 2) { printf("Usage: APPROVE [-W] <filename> <username>\n"); return; }
+    } else if (parts != 3) {
+        printf("Usage: APPROVE [-W] <filename> <username>\n"); return;
+    }
+    Message msg; memset(&msg,0,sizeof(msg)); msg.op_code=OP_APPROVE; strcpy(msg.username, username); strncpy(msg.filename, filename, sizeof(msg.filename)-1); strncpy(msg.data, user, sizeof(msg.data)-1);
+    if (writeOverride) msg.flags |= 1;
+    send_message(nm_socket,&msg); receive_message(nm_socket,&msg);
+    if (msg.error_code==ERR_SUCCESS) printf("%s\n", msg.data); else print_error(msg.error_code, "APPROVE");
+}
+
+void handle_deny_command(char* command) {
+    char filename[MAX_FILENAME], user[MAX_USERNAME];
+    if (sscanf(command, "DENY %255s %63s", filename, user) != 2) { printf("Usage: DENY <filename> <username>\n"); return; }
+    Message msg; memset(&msg,0,sizeof(msg)); msg.op_code=OP_DENY; strcpy(msg.username, username); strncpy(msg.filename, filename, sizeof(msg.filename)-1); strncpy(msg.data, user, sizeof(msg.data)-1);
+    send_message(nm_socket,&msg); receive_message(nm_socket,&msg);
+    if (msg.error_code==ERR_SUCCESS) printf("%s\n", msg.data); else print_error(msg.error_code, "DENY");
+}
+
+// Helper to get SS connection for a file-based op
+static int fetch_ss_conn(int op_code, const char* filename, const char* extra, Message* out_ss_info) {
+    Message msg; memset(&msg,0,sizeof(msg)); msg.op_code = op_code; strcpy(msg.username, username); strncpy(msg.filename, filename, sizeof(msg.filename)-1);
+    if (extra) strncpy(msg.data, extra, sizeof(msg.data)-1);
+    send_message(nm_socket,&msg); receive_message(nm_socket,&msg);
+    if (msg.error_code != ERR_SUCCESS) { *out_ss_info = msg; return -1; }
+    *out_ss_info = msg; return 0;
+}
+
+void handle_checkpoint_command(char* command) {
+    char filename[MAX_FILENAME], tag[MAX_FILENAME];
+    if (sscanf(command, "CHECKPOINT %255s %255s", filename, tag) != 2) { printf("Usage: CHECKPOINT <filename> <tag>\n"); return; }
+    Message ssinfo; if (fetch_ss_conn(OP_CHECKPOINT, filename, NULL, &ssinfo) != 0) { print_error(ssinfo.error_code, "CHECKPOINT"); return; }
+    char ss_ip[INET_ADDRSTRLEN]; int ss_port; sscanf(ssinfo.data, "%15s %d", ss_ip, &ss_port);
+    int ss_sock = connect_to_ss(ss_ip, ss_port); if (ss_sock < 0) { fprintf(stderr,"Failed to connect to storage server\n"); return; }
+    Message m; memset(&m,0,sizeof(m)); m.op_code=OP_CHECKPOINT; strcpy(m.username, username); strncpy(m.filename, filename, sizeof(m.filename)-1); strncpy(m.data, tag, sizeof(m.data)-1);
+    send_message(ss_sock,&m); receive_message(ss_sock,&m); close(ss_sock);
+    if (m.error_code==ERR_SUCCESS) printf("Checkpoint saved: %s\n", tag); else print_error(m.error_code, "CHECKPOINT");
+}
+
+void handle_viewcheckpoint_command(char* command) {
+    char filename[MAX_FILENAME], tag[MAX_FILENAME];
+    if (sscanf(command, "VIEWCHECKPOINT %255s %255s", filename, tag) != 2) { printf("Usage: VIEWCHECKPOINT <filename> <tag>\n"); return; }
+    Message ssinfo; if (fetch_ss_conn(OP_VIEWCHECKPOINT, filename, NULL, &ssinfo) != 0) { print_error(ssinfo.error_code, "VIEWCHECKPOINT"); return; }
+    char ss_ip[INET_ADDRSTRLEN]; int ss_port; sscanf(ssinfo.data, "%15s %d", ss_ip, &ss_port);
+    int ss_sock = connect_to_ss(ss_ip, ss_port); if (ss_sock < 0) { fprintf(stderr,"Failed to connect to storage server\n"); return; }
+    Message m; memset(&m,0,sizeof(m)); m.op_code=OP_VIEWCHECKPOINT; strcpy(m.username, username); strncpy(m.filename, filename, sizeof(m.filename)-1); strncpy(m.data, tag, sizeof(m.data)-1);
+    send_message(ss_sock,&m); receive_message(ss_sock,&m); close(ss_sock);
+    if (m.error_code==ERR_SUCCESS) printf("%s", m.data); else print_error(m.error_code, "VIEWCHECKPOINT");
+}
+
+void handle_listcheckpoints_command(char* command) {
+    char filename[MAX_FILENAME]; if (sscanf(command, "LISTCHECKPOINTS %255s", filename)!=1){ printf("Usage: LISTCHECKPOINTS <filename>\n"); return; }
+    Message ssinfo; if (fetch_ss_conn(OP_LISTCHECKPOINTS, filename, NULL, &ssinfo)!=0){ print_error(ssinfo.error_code, "LISTCHECKPOINTS"); return; }
+    char ss_ip[INET_ADDRSTRLEN]; int ss_port; sscanf(ssinfo.data, "%15s %d", ss_ip, &ss_port);
+    int ss_sock = connect_to_ss(ss_ip, ss_port); if (ss_sock < 0) { fprintf(stderr,"Failed to connect to storage server\n"); return; }
+    Message m; memset(&m,0,sizeof(m)); m.op_code=OP_LISTCHECKPOINTS; strcpy(m.username, username); strncpy(m.filename, filename, sizeof(m.filename)-1);
+    send_message(ss_sock,&m); receive_message(ss_sock,&m); close(ss_sock);
+    if (m.error_code==ERR_SUCCESS) printf("%s", m.data); else print_error(m.error_code, "LISTCHECKPOINTS");
+}
+
+void handle_revert_command(char* command) {
+    char filename[MAX_FILENAME], tag[MAX_FILENAME];
+    if (sscanf(command, "REVERT %255s %255s", filename, tag) != 2) { printf("Usage: REVERT <filename> <tag>\n"); return; }
+    Message ssinfo; if (fetch_ss_conn(OP_REVERT, filename, NULL, &ssinfo) != 0) { print_error(ssinfo.error_code, "REVERT"); return; }
+    char ss_ip[INET_ADDRSTRLEN]; int ss_port; sscanf(ssinfo.data, "%15s %d", ss_ip, &ss_port);
+    int ss_sock = connect_to_ss(ss_ip, ss_port); if (ss_sock < 0) { fprintf(stderr,"Failed to connect to storage server\n"); return; }
+    Message m; memset(&m,0,sizeof(m)); m.op_code=OP_REVERT; strcpy(m.username, username); strncpy(m.filename, filename, sizeof(m.filename)-1); strncpy(m.data, tag, sizeof(m.data)-1);
+    send_message(ss_sock,&m); receive_message(ss_sock,&m); close(ss_sock);
+    if (m.error_code==ERR_SUCCESS) printf("Reverted to checkpoint %s\n", tag); else print_error(m.error_code, "REVERT");
 }

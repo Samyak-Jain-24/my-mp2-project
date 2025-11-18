@@ -67,6 +67,25 @@
 #define OP_REGISTER_SS 20
 #define OP_REGISTER_CLIENT 21
 #define OP_SS_ACK 22
+// Bonus ops
+#define OP_CREATEFOLDER 23
+#define OP_MOVE 24
+#define OP_VIEWFOLDER 25
+#define OP_CHECKPOINT 26
+#define OP_VIEWCHECKPOINT 27
+#define OP_REVERT 28
+#define OP_LISTCHECKPOINTS 29
+#define OP_REQACCESS 30
+#define OP_VIEWREQUESTS 31
+#define OP_APPROVE 32
+#define OP_DENY 33
+#define OP_REPL_CREATE 34
+#define OP_REPL_DELETE 35
+#define OP_REPL_WRITE 36
+#define OP_REPL_MOVE 37
+#define OP_RECENTS 38
+// Replication of folder creation
+#define OP_REPL_CREATEFOLDER 39
 
 // Access Types
 #define ACCESS_NONE 0
@@ -85,8 +104,15 @@ typedef struct {
     int ss_id;
     char ss_ip[INET_ADDRSTRLEN];
     int ss_port;
+    // Replica info (for fault tolerance)
+    int replica_ss_id;
+    char replica_ss_ip[INET_ADDRSTRLEN];
+    int replica_ss_port;
     AccessEntry access_list[MAX_ACCESS_LIST];
     int access_count;
+    // Pending access requests (bonus)
+    AccessEntry pending_requests[MAX_ACCESS_LIST];
+    int pending_count;
     time_t created_time;
     time_t modified_time;
     time_t accessed_time;
@@ -122,7 +148,7 @@ typedef struct {
     char data[MAX_CONTENT];
     int sentence_number;
     int word_index;
-    int flags; // For -a, -l, -R, -W flags
+    int flags; // For -a, -l, -R, -W and replication flags
     int error_code;
     char error_msg[256];
     int data_size;
@@ -160,5 +186,8 @@ void trie_insert(TrieNode* root, const char* filename, FileMetadata* file_info);
 FileMetadata* trie_search(TrieNode* root, const char* filename);
 void trie_delete(TrieNode* root, const char* filename);
 void trie_free(TrieNode* root);
+
+// Flags (bitmask)
+#define FLAG_REPL 0x100
 
 #endif // COMMON_H
