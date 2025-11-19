@@ -36,6 +36,7 @@ void handle_checkpoint_command(char* command);
 void handle_viewcheckpoint_command(char* command);
 void handle_listcheckpoints_command(char* command);
 void handle_revert_command(char* command);
+void handle_help_command();
 
 int main(int argc, char* argv[]) {
     printf("=== LangOS Distributed File System - Client ===\n");
@@ -91,6 +92,7 @@ int main(int argc, char* argv[]) {
     printf("  VIEWCHECKPOINT <filename> <tag>\n");
     printf("  LISTCHECKPOINTS <filename>\n");
     printf("  REVERT <filename> <tag>\n");
+    printf("  HELP\n");
     printf("  EXIT\n\n");
     
     // Command loop
@@ -161,6 +163,8 @@ int main(int argc, char* argv[]) {
             handle_exec_command(command);
         } else if (strcasecmp(first, "UNDO") == 0) {
             handle_undo_command(command);
+        } else if (strcasecmp(first, "HELP") == 0) {   // Add: HELP command
+            handle_help_command();
         } else if (strcasecmp(first, "EXIT") == 0) {
             printf("Goodbye!\n");
             break;
@@ -549,6 +553,36 @@ void handle_info_command(char* command) {
             fprintf(stderr, "Details: %s\n", msg.error_msg);
         }
     }
+}
+
+void handle_help_command() {
+    printf("\nAvailable commands:\n");
+    printf("  VIEW [-a] [-l] [-al]\n");
+    printf("  READ <filename>\n");
+    printf("  CREATE <filename>\n");
+    printf("  CREATEFOLDER <folder>\n");
+    printf("  WRITE <filename> <sentence_number>\n");
+    printf("  DELETE <filename>\n");
+    printf("  INFO <filename>\n");
+    printf("  STREAM <filename>\n");
+    printf("  VIEWFOLDER <folder>\n");
+    printf("  MOVE <filename> <folder>\n");
+    printf("  LIST\n");
+    printf("  ADDACCESS -R/-W <filename> <username>\n");
+    printf("  REMACCESS <filename> <username>\n");
+    printf("  EXEC <filename>\n");
+    printf("  UNDO <filename>\n");
+    printf("  REQACCESS -R/-W <filename>\n");
+    printf("  VIEWREQUESTS <filename>\n");
+    printf("  APPROVE [-W] <filename> <username>\n");
+    printf("  DENY <filename> <username>\n");
+    printf("  RECENTS\n");
+    printf("  CHECKPOINT <filename> <tag>\n");
+    printf("  VIEWCHECKPOINT <filename> <tag>\n");
+    printf("  LISTCHECKPOINTS <filename>\n");
+    printf("  REVERT <filename> <tag>\n");
+    printf("  HELP\n");
+    printf("  EXIT\n\n");
 }
 
 void handle_stream_command(char* command) {
