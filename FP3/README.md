@@ -1,6 +1,6 @@
 # LangOS Distributed File System
 
-A distributed file system implementation in C for collaborative document editing, similar to Google Docs. This system supports concurrent access, fine-grained locking, access control, and real-time streaming.
+A distributed file system in C for collaborative document editing. It supports concurrent access with sentence-level locks, per-user access control, fault-tolerant storage via replication, and a rich client CLI.
 
 ## Architecture
 
@@ -9,6 +9,8 @@ The system consists of three main components:
 1. **Name Server (NM)**: Central coordinator managing file metadata, access control, and routing requests
 2. **Storage Servers (SS)**: Handle actual file storage, concurrent access, and data persistence
 3. **Clients**: User interface for interacting with the file system
+
+On multi-SS deployments, the NM pairs each file with a primary SS and a replica SS to provide availability when one SS is down.
 
 ## Features
 
@@ -25,7 +27,38 @@ The system consists of three main components:
 - ✅ **Data Persistence**: Files and metadata persist across restarts
 - ✅ **Comprehensive Logging**: All operations logged with timestamps
 
+## Assumptions and Semantics (Important)
+
+- Indexing rules for WRITE:
+	- Sentence index is 0-based. Example: first sentence is sentence 0.
+	- Word index is 1-based. Example: insert at position 1 to place before the current first word.
+
+- WRITE applies lines sequentially (top to bottom). After each line is applied, the word positions are updated before processing the next line, so later indices refer to the newly updated sentence.
+
+- Sentence delimiters are `.` `!` `?`. If a sentence already ends with one of these, the delimiter is preserved at the very end after all insertions (new words are inserted before the delimiter).
+
+- VIEW policy and availability:
+	- VIEW shows only files that currently exist on at least one active storage server. Stale entries are purged.
+	- VIEW (no `-a`) lists files you own or have been granted access to; `-a` lists all.
+	- If both the primary and replica SS for a file are inactive, the file is hidden in VIEW and access is not allowed.
+
+- Fault tolerance and replication:
+	- When multiple SS are running, the NM chooses any reachable active SS as the primary when creating a file and assigns a replica to the next active SS.
+	- For client operations, NM returns the primary SS address; if the primary’s client port is unreachable, the NM will provide the replica address instead.
+	- When a primary SS returns after being down, the NM triggers a best-effort sync from the replica to the primary to restore the latest content.
+
+- If only one storage server is on no file duplication takes place. Only when more than one storage servers are available fault tolerance tolerance takes place by randomly selecting two active storage servers.
+
+These rules are enforced consistently across READ/WRITE/VIEW/INFO and minimize surprises during collaborative edits.
+
 ### Commands
+
+### HOW to run?
+- make clean && make 
+- ./name_server
+- hostnsme -I
+- ./storage_server IP 9001 9101 storage1/ IP
+- ./client IP 8080(Port)
 
 #### View Files
 ```bash
@@ -51,6 +84,10 @@ WRITE <filename> <sentence_number>
 ...
 ETIRW                             # Complete the write operation
 ```
+Notes:
+- Sentence number is 0-based; word index is 1-based.
+- Provide multiple `<word_index> <content>` lines; indexes are recalculated after each insertion.
+- If the sentence already ends with a delimiter (., !, ?), it remains at the end after your insertions.
 
 #### Access Management
 ```bash
@@ -65,6 +102,7 @@ STREAM <filename>                  # Stream file word-by-word (0.1s delay)
 EXEC <filename>                    # Execute file as shell commands
 UNDO <filename>                    # Undo last change
 LIST                               # List all users
+HELP                               # Show this command list anytime
 ```
 
 ## Building the System
@@ -100,11 +138,14 @@ The Name Server will start on port 8080 by default.
 Open new terminals and start one or more storage servers:
 
 ```bash
-# Storage Server 1
+# Local quick start
 ./storage_server 9001 9101 storage1/
-
-# Storage Server 2 (optional)
 ./storage_server 9002 9102 storage2/
+
+# LAN usage (explicit NM IP and advertised SS IP)
+#   ./storage_server <nm_ip> <nm_port> <client_port> <storage_dir> [advertise_ip]
+# Example:
+#   ./storage_server 10.2.141.33 9001 9101 storage1/ 10.2.141.33
 ```
 
 Parameters:
@@ -231,6 +272,9 @@ Hello world. This is great! Indeed it is.
 - **TCP Sockets**: Reliable communication between all components
 - **Message Protocol**: Fixed-size message structure for predictable transmission
 - **Multi-threaded Servers**: Each connection handled in separate thread
+- **Heartbeat**: NM probes SS nm_port periodically to mark servers active/inactive.
+- **Create routing**: NM attempts to create a new file on an active SS; metadata is persisted only after a successful SS ACK. No ghost files.
+- **Read/Write routing**: For READ/STREAM and WRITE, NM returns the primary SS client address; if unreachable, it falls back to the replica client address.
 
 ### Logging System
 - **Component Logs**: Separate log files for NM, SS, and clients
@@ -253,10 +297,9 @@ The system includes comprehensive error handling:
 
 ### Current Limitations
 - Single Name Server (no fault tolerance for NM)
-- Simple round-robin SS allocation
+- Best-effort two-way replication (primary+replica); complex conflicts are out of scope
 - Single undo operation per file
-- No folder hierarchy (bonus feature)
-- No checkpointing (bonus feature)
+- Basic folder and checkpoint features are provided but remain minimal
 
 ### Potential Enhancements
 - **Fault Tolerance**: Multiple Name Servers with leader election
@@ -330,6 +373,14 @@ WRITE shared.txt 0
 ETIRW
 ```
 
+### Availability in VIEW and Access
+```bash
+# With two SS: create a file, then stop the primary SS
+VIEW -al              # File remains listed (replica is active)
+# Stop both servers
+VIEW                  # File disappears (no active copy), access is blocked
+```
+
 ## Troubleshooting
 
 ### "Failed to connect to Name Server"
@@ -340,6 +391,9 @@ ETIRW
 ### "No storage servers available"
 - Start at least one storage server before creating files
 - Check storage server logs for errors
+
+### "Connection failed" then "File already exists"
+- Fixed: NM now persists metadata only after successful SS creation. If you still see this, run `./cleanup.sh` and restart components.
 
 ### "Sentence is locked by another user"
 - Wait for other user to complete WRITE operation
